@@ -57,7 +57,7 @@ using live project data instead of guessing.
 | `daily_bulletin(date)` | The agent-written bulletin (EN + HI) |
 | `search_schemes(question)` | Cited answer from the scheme documents |
 
-Run over stdio: `python -m parali mcp`. Client configuration (for example Claude Desktop or an
+Run over stdio: `python -m parali mcp`. Client configuration (for example a desktop AI assistant or an
 IDE assistant):
 
 ```json

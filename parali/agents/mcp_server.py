@@ -1,4 +1,4 @@
-"""MCP server: lets any MCP client (Claude Desktop, IDE assistants, other agents) use Parali Watch
+"""MCP server: lets any MCP client (desktop AI assistants, IDE assistants, other agents) use Parali Watch
 as tools. Run over stdio:
 
     python -m parali mcp

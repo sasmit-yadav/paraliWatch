@@ -6,8 +6,6 @@ machines before the burning, not after. It also writes a daily bulletin for dist
 English and Hindi, answers questions about the rules and schemes from official documents with page
 citations, and exposes all of this as tools for AI assistants through an MCP server.
 
-![Dashboard: fire risk by hexagon, with the reasons for a selected cell](docs/images/dashboard.png)
-
 ## Why
 
 Every October and November, paddy-straw burning in Punjab and Haryana adds heavy smoke to north
