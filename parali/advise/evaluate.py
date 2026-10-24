@@ -76,9 +76,7 @@ def summarise(rows: list[dict], ks=(1, 3, 5)) -> dict:
     out = {f"recall@{k}": sum(r["rank"] is not None and r["rank"] <= k for r in ans) / n for k in ks}
     out["mrr"] = sum(1.0 / r["rank"] for r in ans if r["rank"]) / n
     out["questions"] = len(ans)
-    out["median_latency_ms"] = (
-        round(1000 * float(np.median([r["seconds"] for r in rows])), 1) if rows else None
-    )
+    out["median_latency_ms"] = round(1000 * float(np.median([r["seconds"] for r in rows])), 1) if rows else None
     return out
 
 
@@ -87,14 +85,27 @@ def run_retrieval(
 ) -> list[dict]:
     questions = load_questions()
     pages = load_corpus()
-    rows = []
+    out_path = EVAL_DIR / "retrieval_results.json"
+    rows = json.loads(out_path.read_text(encoding="utf-8")) if out_path.exists() else []  # resume
+
+    def done(strategy, model, mode, reranker):
+        return any(
+            r["strategy"] == strategy and r["embed_model"] == model and r["mode"] == mode and r["reranker"] == reranker
+            for r in rows
+        )
+
     for strategy, model in product(strategies, models):
-        index.build(pages, strategy=strategy, model=model)
+        built = False
         for reranker in rerankers:
-            r = Retriever(strategy=strategy, model=model, rerank_model=reranker)
             for mode in MODES:
                 if mode != "hybrid_rerank" and reranker != rerankers[0]:
                     continue  # the reranker only changes the last mode
+                if done(strategy, model, mode, reranker if mode == "hybrid_rerank" else None):
+                    continue
+                if not built:
+                    index.build(pages, strategy=strategy, model=model)
+                    built = True
+                r = Retriever(strategy=strategy, model=model, rerank_model=reranker)
                 per_q = per_question(r, questions, mode)
                 for lang in ("all", "en", "hi"):
                     sub = [x for x in per_q if lang == "all" or x["lang"] == lang]
@@ -114,7 +125,7 @@ def run_retrieval(
                     rows.append(row)
                     print({k: v for k, v in row.items() if k != "top_scores"}, flush=True)
                 EVAL_DIR.mkdir(parents=True, exist_ok=True)
-                (EVAL_DIR / "retrieval_results.json").write_text(json.dumps(rows, indent=1), encoding="utf-8")
+                out_path.write_text(json.dumps(rows, indent=1), encoding="utf-8")
     return rows
 
 
@@ -196,8 +207,16 @@ def run_answers(limit: int | None = None) -> dict:
 
 if __name__ == "__main__":
     what = sys.argv[1] if len(sys.argv) > 1 else "retrieval"
-    if what == "retrieval":
-        res = run_retrieval()
+    if what == "retrieval":  # optional: retrieval <strategy> <model> <reranker> to run one config
+        args = sys.argv[2:]
+        kwargs = {}
+        if args:
+            kwargs["strategies"] = (args[0],)
+        if len(args) > 1:
+            kwargs["models"] = (args[1],)
+        if len(args) > 2:
+            kwargs["rerankers"] = (args[2],)
+        res = run_retrieval(**kwargs)
         print(best_threshold(res))
     elif what == "answers":
         run_answers()
