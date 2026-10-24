@@ -94,3 +94,4 @@ HELPLINE = "Kisan Call Centre 1800-180-1551"
 # The bulletin text comes from a template by default. Set PARALI_BULLETIN_LLM=1 to let the LLM
 # write it (recommended only with a strong model; see docs/AGENTS_AND_MCP.md for why).
 BULLETIN_LLM = os.environ.get("PARALI_BULLETIN_LLM", "0") == "1"
+USE_GRAPH = os.environ.get("PARALI_USE_GRAPH", "1") == "1"  # add knowledge-graph facts to answers

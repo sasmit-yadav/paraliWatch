@@ -1,7 +1,8 @@
 """GraphRAG: a small knowledge graph of schemes, benefits, machines, eligibility rules and penalties.
 
-Built once from the chunks by an LLM (python -m parali graph), saved to data/index/graph.json with
-the page each fact came from, and meant to be reviewed by a person before use. At question time,
+The graph used at question time is data/corpus/knowledge_graph.json: reviewed facts, each with its
+document, page and an exact supporting quote. `python -m parali graph` runs LLM extraction over the
+chunks into data/index/graph_extracted.json, for a person to review and merge. At question time,
 facts about the entities named in the question are added to the context. This helps multi-hop
 questions such as "which machines can a cooperative get, and at what subsidy?" where the answer is
 spread over several pages.
@@ -21,7 +22,8 @@ from parali.advise import llm
 from parali.advise.text import expand_bilingual
 
 log = logging.getLogger(__name__)
-GRAPH = config.INDEX_DIR / "graph.json"
+GRAPH = config.CORPUS_DIR / "knowledge_graph.json"  # reviewed graph, shipped with the repo
+EXTRACTED = config.INDEX_DIR / "graph_extracted.json"  # raw LLM extraction, to be reviewed
 TYPES = ["scheme", "benefit", "machine", "practice", "eligibility", "authority", "penalty", "place"]
 RELATIONS = [
     "provides",
@@ -71,7 +73,7 @@ def extract(chunks) -> dict:
             raw = llm.chat(
                 [{"role": "user", "content": PROMPT.format(text=c.text)}],
                 max_tokens=700,
-                json_mode=True,
+                json_mode=False,  # grammar-constrained JSON is very slow on local servers; parsed instead
                 purpose="graph",
             )
             parsed = Extraction.model_validate(llm.parse_json(raw))
@@ -91,7 +93,7 @@ def extract(chunks) -> dict:
             entities.setdefault(key, {"name": t[side], "type": t[f"{side}_type"], "aliases": []})
     graph = {"entities": entities, "triples": triples, "reviewed": False}
     config.INDEX_DIR.mkdir(parents=True, exist_ok=True)
-    GRAPH.write_text(json.dumps(graph, ensure_ascii=False, indent=1), encoding="utf-8")
+    EXTRACTED.write_text(json.dumps(graph, ensure_ascii=False, indent=1), encoding="utf-8")
     log.info("Graph: %d entities, %d facts", len(entities), len(triples))
     return graph
 

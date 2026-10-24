@@ -87,30 +87,14 @@ def run_retrieval(
 ) -> list[dict]:
     questions = load_questions()
     pages = load_corpus()
-    out_path = EVAL_DIR / "retrieval_results.json"
-    rows = json.loads(out_path.read_text(encoding="utf-8")) if out_path.exists() else []  # resume
-
-    def done(strategy, model, mode, reranker):
-        return any(
-            r["strategy"] == strategy
-            and r["embed_model"] == model
-            and r["mode"] == mode
-            and r["reranker"] == reranker
-            for r in rows
-        )
-
+    rows = []
     for strategy, model in product(strategies, models):
-        built = False
+        index.build(pages, strategy=strategy, model=model)
         for reranker in rerankers:
+            r = Retriever(strategy=strategy, model=model, rerank_model=reranker)
             for mode in MODES:
                 if mode != "hybrid_rerank" and reranker != rerankers[0]:
                     continue  # the reranker only changes the last mode
-                if done(strategy, model, mode, reranker if mode == "hybrid_rerank" else None):
-                    continue
-                if not built:
-                    index.build(pages, strategy=strategy, model=model)
-                    built = True
-                r = Retriever(strategy=strategy, model=model, rerank_model=reranker)
                 per_q = per_question(r, questions, mode)
                 for lang in ("all", "en", "hi"):
                     sub = [x for x in per_q if lang == "all" or x["lang"] == lang]
@@ -130,7 +114,7 @@ def run_retrieval(
                     rows.append(row)
                     print({k: v for k, v in row.items() if k != "top_scores"}, flush=True)
                 EVAL_DIR.mkdir(parents=True, exist_ok=True)
-                out_path.write_text(json.dumps(rows, indent=1), encoding="utf-8")
+                (EVAL_DIR / "retrieval_results.json").write_text(json.dumps(rows, indent=1), encoding="utf-8")
     return rows
 
 
@@ -163,15 +147,43 @@ def _has_fact(answer: str, fact: str) -> bool:
     return bool(nums) and nums <= numbers(a)
 
 
-def run_answers(limit: int | None = None) -> dict:
-    from parali.advise.answer import answer
+HITS_CACHE = EVAL_DIR / "retrieved_contexts.json"
+
+
+def retrieve_all(questions: list[dict]) -> None:
+    """Stage 1: retrieval for every question (loads the embedding and reranker models)."""
+    from parali.advise.answer import retrieve
+
+    out = {}
+    for q in questions:
+        hits, trace = retrieve(q["question"], use_llm=False)
+        out[q["id"]] = {
+            "trace": trace,
+            "hits": [{"chunk": h.chunk.to_dict(), "score": h.score, "detail": h.detail} for h in hits],
+        }
+    HITS_CACHE.write_text(json.dumps(out, ensure_ascii=False), encoding="utf-8")
+
+
+def run_answers(limit: int | None = None, stage: str = "both") -> dict | None:
+    """Answer quality. Stages can run in separate processes, so a local LLM server and the reranker
+    don't have to fit in memory at the same time: `answers retrieve`, then `answers generate`."""
+    from parali.advise.answer import compose
+    from parali.advise.chunking import Chunk
+    from parali.advise.retrieve import Hit
 
     questions = load_questions()[:limit]
+    if stage in ("both", "retrieve"):
+        retrieve_all(questions)
+        if stage == "retrieve":
+            return None
+    cached = json.loads(HITS_CACHE.read_text(encoding="utf-8"))
     records = []
     for q in questions:
         start = time.perf_counter()
-        a = answer(q["question"])
-        cited_gold = any(_is_gold(c, q.get("gold", [])) for c in a.citations)
+        c = cached[q["id"]]
+        hits = [Hit(Chunk(**h["chunk"]), h["score"], h["detail"]) for h in c["hits"]]
+        a = compose(q["question"], hits, {"injection_suspected": False, **c["trace"]})
+        cited_gold = any(_is_gold(cit, q.get("gold", [])) for cit in a.citations)
         records.append(
             {
                 "id": q["id"],
@@ -183,27 +195,43 @@ def run_answers(limit: int | None = None) -> dict:
                 "facts_found": [f for f in q.get("facts", []) if _has_fact(a.text, f)],
                 "facts_total": len(q.get("facts", [])),
                 "unsupported_numbers": a.checks.get("unsupported_numbers", []),
+                "has_citation": a.checks.get("has_citation"),
+                "rejected_llm_text": a.checks.get("rejected_llm_text"),
+                "llm_error": a.checks.get("llm_error"),
                 "answer": a.text,
             }
         )
-        print(records[-1]["id"], records[-1]["mode"], records[-1]["cited_gold_page"], records[-1]["seconds"])
+        print(
+            records[-1]["id"],
+            records[-1]["mode"],
+            records[-1]["cited_gold_page"],
+            records[-1]["seconds"],
+            flush=True,
+        )
     ans = [r for r in records if r["answerable"]]
     una = [r for r in records if not r["answerable"]]
+    llm_tried = [r for r in ans if r["mode"] == "llm" or r["rejected_llm_text"]]
     summary = {
         "questions": len(records),
-        "llm_answers": sum(r["mode"] == "llm" for r in ans),
+        "llm_model": config.LLM_MODEL or None,
+        "llm_attempts": len(llm_tried),
+        "llm_answers_accepted": sum(r["mode"] == "llm" for r in ans),
+        "llm_rejected_no_citation": sum(r["has_citation"] is False for r in ans),
+        "llm_rejected_unsupported_numbers": sum(bool(r["unsupported_numbers"]) for r in ans),
+        "llm_errors": sum(bool(r["llm_error"]) for r in records),
         "fallback_to_quotes": sum(r["mode"] == "extractive" for r in ans),
         "cited_gold_page": sum(r["cited_gold_page"] for r in ans) / max(1, len(ans)),
         "fact_recall": sum(len(r["facts_found"]) for r in ans) / max(1, sum(r["facts_total"] for r in ans)),
-        "answers_with_unsupported_numbers": sum(bool(r["unsupported_numbers"]) for r in ans),
         "false_answer_on_unanswerable": sum(r["mode"] != "not_found" for r in una),
         "unanswerable": len(una),
         "wrongly_refused_answerable": sum(r["mode"] == "not_found" for r in ans),
-        "median_seconds": float(np.median([r["seconds"] for r in records])) if records else None,
-        "llm_model": config.LLM_MODEL or None,
+        "median_seconds_generation": float(np.median([r["seconds"] for r in records])) if records else None,
     }
+    name = "answer_results_" + (
+        config.LLM_MODEL.replace("/", "_").replace(":", "_") if config.LLM_MODEL else "no_llm"
+    )
     EVAL_DIR.mkdir(parents=True, exist_ok=True)
-    (EVAL_DIR / "answer_results.json").write_text(
+    (EVAL_DIR / f"{name}.json").write_text(
         json.dumps({"summary": summary, "records": records}, ensure_ascii=False, indent=1), encoding="utf-8"
     )
     print(json.dumps(summary, indent=1))
@@ -212,16 +240,8 @@ def run_answers(limit: int | None = None) -> dict:
 
 if __name__ == "__main__":
     what = sys.argv[1] if len(sys.argv) > 1 else "retrieval"
-    if what == "retrieval":  # optional: retrieval <strategy> <model> <reranker> to run one config
-        args = sys.argv[2:]
-        kwargs = {}
-        if args:
-            kwargs["strategies"] = (args[0],)
-        if len(args) > 1:
-            kwargs["models"] = (args[1],)
-        if len(args) > 2:
-            kwargs["rerankers"] = (args[2],)
-        res = run_retrieval(**kwargs)
+    if what == "retrieval":
+        res = run_retrieval()
         print(best_threshold(res))
     elif what == "answers":
-        run_answers()
+        run_answers(stage=sys.argv[2] if len(sys.argv) > 2 else "both")

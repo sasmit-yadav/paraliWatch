@@ -1,0 +1,325 @@
+{
+ "reviewed": true,
+ "method": "Curated by hand from the documents; every fact carries its page and an exact quote. LLM extraction (python -m parali graph) writes data/index/graph_extracted.json for review.",
+ "entities": {
+  "thermal power plants": {
+   "name": "thermal power plants",
+   "type": "place",
+   "aliases": [
+    "थर्मल पावर प्लांट",
+    "power plants",
+    "tpp"
+   ]
+  },
+  "brick kilns": {
+   "name": "brick kilns",
+   "type": "place",
+   "aliases": [
+    "ईंट भट्ठा",
+    "ईंट भट्टों",
+    "ईंट भट्टे",
+    "brick kiln"
+   ]
+  },
+  "biomass pellets": {
+   "name": "biomass pellets",
+   "type": "practice",
+   "aliases": [
+    "बायोमास पेलेट",
+    "briquettes"
+   ]
+  },
+  "paddy straw": {
+   "name": "paddy straw",
+   "type": "practice",
+   "aliases": [
+    "पराली",
+    "stubble"
+   ]
+  },
+  "mera pani meri virasat": {
+   "name": "mera pani meri virasat",
+   "type": "scheme",
+   "aliases": [
+    "मेरा पानी मेरी विरासत",
+    "crop diversification"
+   ]
+  },
+  "parali protsahan yojana": {
+   "name": "parali protsahan yojana",
+   "type": "scheme",
+   "aliases": [
+    "crm incentive",
+    "not burning",
+    "प्रोत्साहन"
+   ]
+  },
+  "crm machines": {
+   "name": "crm machines",
+   "type": "machine",
+   "aliases": [
+    "happy seeder",
+    "super seeder",
+    "baler",
+    "हैप्पी सीडर",
+    "सुपर सीडर",
+    "machinery"
+   ]
+  },
+  "stubble burning": {
+   "name": "stubble burning",
+   "type": "penalty",
+   "aliases": [
+    "fine",
+    "penalty",
+    "जुर्माना",
+    "पराली जलाने",
+    "stubble burning fine"
+   ]
+  },
+  "direct seeded rice": {
+   "name": "direct seeded rice",
+   "type": "practice",
+   "aliases": [
+    "dsr"
+   ]
+  },
+  "bio-bitumen": {
+   "name": "bio-bitumen",
+   "type": "practice",
+   "aliases": [
+    "बायो-बिटुमेन",
+    "bitumen"
+   ]
+  },
+  "ministry of new and renewable energy": {
+   "name": "ministry of new and renewable energy",
+   "type": "authority",
+   "aliases": [
+    "mnre"
+   ]
+  }
+ },
+ "triples": [
+  {
+   "subject": "thermal power plants",
+   "subject_type": "place",
+   "relation": "applies_in",
+   "object": "Coal-based plants within 300 km of Delhi must co-fire biomass pellets (CAQM Direction No. 42)",
+   "object_type": "benefit",
+   "quote": "Coal based Thermal Power plants situated upto a radius of 300 Km of Delhi",
+   "doc_id": "caqm_direction_42_2021-09-17_paddy_straw_thermal_power_plants.pdf",
+   "title": "CAQM Direction No. 42: Paddy straw in coal-based thermal power plants",
+   "page": 3
+  },
+  {
+   "subject": "thermal power plants",
+   "subject_type": "place",
+   "relation": "amount",
+   "object": "Co-firing of biomass pellets with coal: up to 5-10%",
+   "object_type": "benefit",
+   "quote": "with Coal (up to 5-10%)",
+   "doc_id": "caqm_direction_42_2021-09-17_paddy_straw_thermal_power_plants.pdf",
+   "title": "CAQM Direction No. 42: Paddy straw in coal-based thermal power plants",
+   "page": 3
+  },
+  {
+   "subject": "thermal power plants",
+   "subject_type": "place",
+   "relation": "amount",
+   "object": "11 identified plants within 300 km of Delhi",
+   "object_type": "benefit",
+   "quote": "the 11 identified Thermal power plants within 300 kms of Delhi",
+   "doc_id": "caqm_advisory_11_2023-08-30_biomass_cofiring.pdf",
+   "title": "CAQM Advisory No. 11: Co-firing of biomass in thermal power plants",
+   "page": 3
+  },
+  {
+   "subject": "brick kilns",
+   "subject_type": "place",
+   "relation": "applies_in",
+   "object": "Punjab and non-NCR districts of Haryana must use paddy straw pellets/briquettes (CAQM Direction No. 92)",
+   "object_type": "benefit",
+   "quote": "all brick kilns located in the districts beyond NCR",
+   "doc_id": "caqm_direction_92_2025-06-03_paddy_straw_pellets_brick_kilns.pdf",
+   "title": "CAQM Direction No. 92: Paddy straw pellets in brick kilns",
+   "page": 4
+  },
+  {
+   "subject": "brick kilns",
+   "subject_type": "place",
+   "relation": "amount",
+   "object": "Paddy straw pellet co-firing targets: 30% from 01.11.2026, 40% from 01.11.2027, 50% from 01.11.2028",
+   "object_type": "benefit",
+   "quote": "30% w.e.f. 01.11.2026, 40% w.ef. 01.11.2027",
+   "doc_id": "caqm_direction_92_2025-06-03_paddy_straw_pellets_brick_kilns.pdf",
+   "title": "CAQM Direction No. 92: Paddy straw pellets in brick kilns",
+   "page": 5
+  },
+  {
+   "subject": "brick kilns",
+   "subject_type": "place",
+   "relation": "amount",
+   "object": "About 2050 brick kilns in Punjab and 940 in non-NCR Haryana",
+   "object_type": "benefit",
+   "quote": "about 940 and 2050 brick kilns are reported to be operational",
+   "doc_id": "caqm_direction_92_2025-06-03_paddy_straw_pellets_brick_kilns.pdf",
+   "title": "CAQM Direction No. 92: Paddy straw pellets in brick kilns",
+   "page": 4
+  },
+  {
+   "subject": "biomass pellets",
+   "subject_type": "practice",
+   "relation": "amount",
+   "object": "Benchmark price of non-torrefied pellets in NCR: Rs 2.32 per 1000 kcal, excluding GST and transport",
+   "object_type": "benefit",
+   "quote": "@Rs. 2.32 / 1000 Kceal",
+   "doc_id": "caqm_advisory_11_2023-08-30_biomass_cofiring.pdf",
+   "title": "CAQM Advisory No. 11: Co-firing of biomass in thermal power plants",
+   "page": 2
+  },
+  {
+   "subject": "biomass pellets",
+   "subject_type": "practice",
+   "relation": "eligible",
+   "object": "Moisture below 14% and GCV between 2800-3400 kcal/kg",
+   "object_type": "benefit",
+   "quote": "moisture content of below 14% and GCV between 2800-3400 Kceal/Kg",
+   "doc_id": "caqm_advisory_11_2023-08-30_biomass_cofiring.pdf",
+   "title": "CAQM Advisory No. 11: Co-firing of biomass in thermal power plants",
+   "page": 3
+  },
+  {
+   "subject": "paddy straw",
+   "subject_type": "practice",
+   "relation": "alternative_to",
+   "object": "Fuel for thermal power plants, waste-to-energy plants and brick kilns; pellets, briquettes, bio-ethanol, compressed bio-gas, particle board",
+   "object_type": "benefit",
+   "quote": "the major alternate usage of paddy straw as fuel is in thermal power plants, waste to energy plants, brick kilns",
+   "doc_id": "caqm_advisory_05_2021-07-28_punjab_ex_situ_stubble_management.pdf",
+   "title": "CAQM Advisory No. 5 of 2021: Ex-situ stubble management (Punjab)",
+   "page": 2
+  },
+  {
+   "subject": "ministry of new and renewable energy",
+   "subject_type": "authority",
+   "relation": "provides",
+   "object": "Subsidies for bio-fuel projects and soft loans for biomass supply chains",
+   "object_type": "benefit",
+   "quote": "provisions for providing subsidies for various bio-fuel projects and soft loans for supporting biomass supply chains",
+   "doc_id": "caqm_advisory_05_2021-07-28_punjab_ex_situ_stubble_management.pdf",
+   "title": "CAQM Advisory No. 5 of 2021: Ex-situ stubble management (Punjab)",
+   "page": 3
+  },
+  {
+   "subject": "mera pani meri virasat",
+   "subject_type": "scheme",
+   "relation": "amount",
+   "object": "Rs 7,000 per acre grant for moving away from paddy (2020-21, official note)",
+   "object_type": "benefit",
+   "quote": "farmers were given a grant of 7000 / - per acre",
+   "doc_id": "haryana_mera_pani_meri_virasat.pdf",
+   "title": "Haryana: Crop Diversification Programme - Mera Pani Meri Virasat",
+   "page": 2
+  },
+  {
+   "subject": "mera pani meri virasat",
+   "subject_type": "scheme",
+   "relation": "amount",
+   "object": "Rs 8,000 per acre (UNVERIFIED summary)",
+   "object_type": "benefit",
+   "quote": "an enhanced incentive of Rs 8,000 per acre",
+   "doc_id": "haryana_zero_stubble_burning_summary_unverified.md",
+   "title": "Haryana zero stubble burning measures: summary from project author (UNVERIFIED)",
+   "page": 1
+  },
+  {
+   "subject": "mera pani meri virasat",
+   "subject_type": "scheme",
+   "relation": "applies_in",
+   "object": "Crop diversification districts: Ambala, Yamunanagar, Kurukshetra, Karnal, Panipat, Sonipat, Jind, Kaithal, Fatehabad, Sirsa",
+   "object_type": "benefit",
+   "quote": "10 districts (Ambala, Yamunanagar, Kurukshetra, Karnal",
+   "doc_id": "haryana_mera_pani_meri_virasat.pdf",
+   "title": "Haryana: Crop Diversification Programme - Mera Pani Meri Virasat",
+   "page": 1
+  },
+  {
+   "subject": "mera pani meri virasat",
+   "subject_type": "scheme",
+   "relation": "administered_by",
+   "object": "Centre-State funding share 60:40 since 2015-16",
+   "object_type": "benefit",
+   "quote": "has been changed to 60:40 (Centre-State)",
+   "doc_id": "haryana_mera_pani_meri_virasat.pdf",
+   "title": "Haryana: Crop Diversification Programme - Mera Pani Meri Virasat",
+   "page": 1
+  },
+  {
+   "subject": "parali protsahan yojana",
+   "subject_type": "scheme",
+   "relation": "amount",
+   "object": "Rs 1,000 to Rs 1,200 per acre for managing straw without burning (UNVERIFIED summary)",
+   "object_type": "benefit",
+   "quote": "Farmers receive Rs 1,000 to Rs 1,200 per acre",
+   "doc_id": "haryana_zero_stubble_burning_summary_unverified.md",
+   "title": "Haryana zero stubble burning measures: summary from project author (UNVERIFIED)",
+   "page": 1
+  },
+  {
+   "subject": "crm machines",
+   "subject_type": "machine",
+   "relation": "amount",
+   "object": "Subsidy 50% for individual farmers, 80% for custom hiring centres (UNVERIFIED summary)",
+   "object_type": "benefit",
+   "quote": "a 50% subsidy on CRM machines",
+   "doc_id": "haryana_zero_stubble_burning_summary_unverified.md",
+   "title": "Haryana zero stubble burning measures: summary from project author (UNVERIFIED)",
+   "page": 1
+  },
+  {
+   "subject": "stubble burning",
+   "subject_type": "penalty",
+   "relation": "penalty_for",
+   "object": "FIR, fine Rs 5,000 to Rs 30,000, red entry in land record blocking e-kharid sales for two seasons (UNVERIFIED summary)",
+   "object_type": "benefit",
+   "quote": "fines ranging from Rs 5,000 to Rs 30,000",
+   "doc_id": "haryana_zero_stubble_burning_summary_unverified.md",
+   "title": "Haryana zero stubble burning measures: summary from project author (UNVERIFIED)",
+   "page": 1
+  },
+  {
+   "subject": "direct seeded rice",
+   "subject_type": "practice",
+   "relation": "amount",
+   "object": "Rs 4,500 per acre (UNVERIFIED summary)",
+   "object_type": "benefit",
+   "quote": "receive Rs 4,500 per acre",
+   "doc_id": "haryana_zero_stubble_burning_summary_unverified.md",
+   "title": "Haryana zero stubble burning measures: summary from project author (UNVERIFIED)",
+   "page": 1
+  },
+  {
+   "subject": "paddy straw",
+   "subject_type": "practice",
+   "relation": "amount",
+   "object": "Rs 500 per tonne extra for delivery to the 2G ethanol plant, Panipat (UNVERIFIED summary)",
+   "object_type": "benefit",
+   "quote": "Rs 500 per metric tonne",
+   "doc_id": "haryana_zero_stubble_burning_summary_unverified.md",
+   "title": "Haryana zero stubble burning measures: summary from project author (UNVERIFIED)",
+   "page": 1
+  },
+  {
+   "subject": "bio-bitumen",
+   "subject_type": "practice",
+   "relation": "alternative_to",
+   "object": "Crop residue converted to bio-bitumen for roads; technology by CSIR-CRRI and CSIR-IIP",
+   "object_type": "benefit",
+   "quote": "CSIR–Central Road Research Institute (CRRI)",
+   "doc_id": "pib_crop_residue_bio_bitumen.pdf",
+   "title": "PIB: Crop residue converted to bio-bitumen",
+   "page": 1
+  }
+ ]
+}

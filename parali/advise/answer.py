@@ -153,7 +153,7 @@ def compose(
 
     from parali.advise import graph  # optional knowledge-graph facts
 
-    facts = graph.facts_for(question)
+    facts = graph.facts_for(question) if config.USE_GRAPH else []
     sources = [h.chunk for h in relevant]
     blocks = [f"[{i}] {c.title}, page {c.page}:\n{c.text}" for i, c in enumerate(sources, start=1)]
     if facts:
@@ -188,6 +188,9 @@ def compose(
         text, used = _extractive(question, relevant)
         if lang == "hi":
             text = "दस्तावेज़ों से संबंधित अंश (अंग्रेज़ी में):\n" + text
+        if facts:  # reviewed facts linked to what was asked; each names its own source page
+            text += "\n\nRelated facts:\n" + "\n".join(facts[:4])
+        checks["graph_facts"] = len(facts)
     citations = [
         Citation(
             i,
