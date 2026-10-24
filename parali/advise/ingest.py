@@ -39,17 +39,32 @@ def _sources(corpus_dir: Path) -> dict[str, dict]:
         return {row["file"]: row for row in csv.DictReader(fh)}
 
 
+NUMERIC_LINE = re.compile(r"^[\d\s.,:%/-]*$|^\d{1,2}-[A-Z][a-z]{2}$")  # "120", "15-Sep", "0 0 0"
+
+
 def _quality(text: str) -> str:
-    """Text layers from scanned or legacy-font PDFs come out empty or as symbol soup."""
+    """ "ok", "needs_ocr" (scanned or symbol soup) or "chart" (mostly axis labels and numbers from
+    a chart: noise for search, so skipped)."""
     if len(text) < 40:
         return "needs_ocr"
     letters = sum(c.isalpha() for c in text)
-    return "ok" if letters / max(1, len(text)) > 0.5 else "needs_ocr"
+    if letters / max(1, len(text)) <= 0.5:
+        return "needs_ocr"
+    words = [ln for ln in text.split("\n") if ln.strip() and not NUMERIC_LINE.match(ln.strip())]
+    if sum(len(ln.split()) for ln in words) < 25:
+        return "chart"
+    return "ok"
+
+
+def _drop_numeric_lines(text: str) -> str:
+    """Lines that are only numbers or dates are chart axes and labels: noise for search."""
+    return "\n".join(ln for ln in text.split("\n") if not NUMERIC_LINE.match(ln.strip()) or not ln.strip())
 
 
 URL = re.compile(r"https?://\S+")
 BOILERPLATE = re.compile(
-    r"^(Visitor Counter|Read this release in|Share \d+ words|\(Release ID: \d+\) Visitor)"
+    r"^(Visitor Counter|Read this release in|Share \d+ words|\(Release ID: \d+\) Visitor"
+    r"|Page\s*\w{1,3}?\s*o\w?f\s*\d+$|\d+\s*\|\s*Pag\w*:?$)"  # page markers, also OCR-garbled ones
 )
 PRINT_STAMP = re.compile(r"^\d{1,2}/\d{1,2}/\d{2,4},? \d{1,2}:\d{2}( ?[AP]M)?\b")  # browser print header
 
@@ -80,11 +95,17 @@ def _strip_repeated_lines(pages: list[str]) -> tuple[list[str], str | None]:
     return cleaned, footer_url
 
 
-def _pdf_pages(path: Path) -> tuple[list[str], str | None]:
-    from pypdf import PdfReader
+def _pdf_pages(path: Path, use_sidecar: bool = True) -> tuple[list[str], str | None]:
+    """Page texts of a PDF. An OCR sidecar (<name>.ocr.txt, pages split by form feeds; see
+    parali/advise/ocr.py) replaces the PDF's own text layer when present."""
+    ocr = path.with_suffix(".ocr.txt")
+    if use_sidecar and ocr.exists():
+        raw = ocr.read_text(encoding="utf-8").split("\f")
+    else:
+        from pypdf import PdfReader
 
-    reader = PdfReader(str(path))
-    return _strip_repeated_lines([normalize(p.extract_text() or "") for p in reader.pages])
+        raw = [p.extract_text() or "" for p in PdfReader(str(path)).pages]
+    return _strip_repeated_lines([normalize(t) for t in raw])
 
 
 def _html_pages(path: Path) -> list[str]:
@@ -96,14 +117,42 @@ def _html_pages(path: Path) -> list[str]:
     return [normalize(soup.get_text("\n"))]
 
 
+SNAPSHOT = "pages.jsonl"
+
+
+def save_snapshot(pages: list[Page], corpus_dir: Path = config.CORPUS_DIR) -> Path:
+    """Write the extracted page texts. The repository ships this file instead of the PDFs, so the
+    assistant works after a fresh clone; the originals are listed in sources.csv."""
+    import json
+
+    path = corpus_dir / SNAPSHOT
+    with open(path, "w", encoding="utf-8") as fh:
+        for p in pages:
+            fh.write(json.dumps(p.to_dict(), ensure_ascii=False) + "\n")
+    return path
+
+
 def load_corpus(corpus_dir: Path = config.CORPUS_DIR) -> list[Page]:
+    """Parse the documents in corpus_dir; with no documents, fall back to the shipped snapshot."""
+    import json
+
+    has_docs = any(
+        p.suffix.lower() in SUPPORTED and not p.name.endswith(".ocr.txt") for p in corpus_dir.rglob("*")
+    )
+    snapshot = corpus_dir / SNAPSHOT
+    if not has_docs and snapshot.exists():
+        with open(snapshot, encoding="utf-8") as fh:
+            return [Page(**json.loads(line)) for line in fh if line.strip()]
     meta = _sources(corpus_dir)
     pages: list[Page] = []
-    for path in sorted(p for p in corpus_dir.rglob("*") if p.suffix.lower() in SUPPORTED):
+    files = [
+        p for p in corpus_dir.rglob("*") if p.suffix.lower() in SUPPORTED and not p.name.endswith(".ocr.txt")
+    ]
+    for path in sorted(files):
         rel = path.relative_to(corpus_dir).as_posix()
         info = meta.get(rel) or meta.get(path.name) or {}
         title = info.get("title") or path.stem.replace("_", " ").replace("-", " ")
-        source = info.get("url") or info.get("publisher")
+        source = info.get("url") or None
         footer_url = None
         try:
             if path.suffix.lower() == ".pdf":
@@ -115,7 +164,7 @@ def load_corpus(corpus_dir: Path = config.CORPUS_DIR) -> list[Page]:
         except Exception as exc:  # a broken file should not stop the whole corpus
             log.warning("Skipping %s: %s", rel, exc)
             continue
-        source = source or footer_url or rel
+        source = source or footer_url or info.get("publisher") or rel
         for i, text in enumerate(texts, start=1):
             if not text.strip():
                 continue  # blank trailing pages from browser printing
@@ -125,7 +174,7 @@ def load_corpus(corpus_dir: Path = config.CORPUS_DIR) -> list[Page]:
                     title=title,
                     source=source,
                     page=i,
-                    text=text,
+                    text=_drop_numeric_lines(text),
                     lang="hi" if is_hindi(text) else "en",
                     quality=_quality(text),
                 )

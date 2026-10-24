@@ -29,3 +29,12 @@ data/index/
 data/assistant.db
 data/logs/
 data/bulletins/
+
+# Documents checked and left out of the assistant (off-topic)
+data/corpus_excluded/
+
+# Corpus originals stay local; the repo ships the extracted text (data/corpus/pages.jsonl) and sources.csv
+data/corpus/*.pdf
+data/corpus/*.ocr.txt
+data/corpus/*.html
+data/corpus/*.htm

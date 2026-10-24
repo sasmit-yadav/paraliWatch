@@ -40,6 +40,13 @@ def cmd_index(args) -> None:
         index.build(strategy=strategy)
 
 
+def cmd_ocr(args) -> None:
+    from parali.advise import ocr
+
+    for path in ocr.run(only_missing_text=not args.all):
+        logging.info("wrote %s", path)
+
+
 def cmd_graph(args) -> None:
     from parali.advise import graph, index
     from parali.advise.ingest import load_corpus
@@ -90,6 +97,8 @@ def main() -> None:
     p_serve.add_argument("--port", type=int, default=8000)
     p_index = sub.add_parser("index", help="index the documents in data/corpus for the assistant")
     p_index.add_argument("--strategies", nargs="+", default=[config.CHUNK_STRATEGY])
+    p_ocr = sub.add_parser("ocr", help="OCR scanned PDFs in data/corpus (needs Tesseract)")
+    p_ocr.add_argument("--all", action="store_true", help="OCR every PDF, not only those without text")
     sub.add_parser("graph", help="extract the knowledge graph from the documents (needs an LLM)")
     p_ask = sub.add_parser("ask", help="ask the assistant a question")
     p_ask.add_argument("question", nargs="+")
@@ -108,6 +117,8 @@ def main() -> None:
         cmd_serve(args)
     elif args.command == "index":
         cmd_index(args)
+    elif args.command == "ocr":
+        cmd_ocr(args)
     elif args.command == "graph":
         cmd_graph(args)
     elif args.command == "ask":

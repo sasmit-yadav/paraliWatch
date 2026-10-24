@@ -45,7 +45,12 @@ def build(
 ) -> list[Chunk]:
     import lancedb
 
-    pages = load_corpus() if pages is None else pages
+    if pages is None:
+        pages = load_corpus()
+        if index_dir == config.INDEX_DIR:
+            from parali.advise.ingest import save_snapshot
+
+            save_snapshot(pages)
     chunks = make_chunks(pages, strategy, model)
     if not chunks:
         raise RuntimeError("No usable text found in the corpus. Add documents to data/corpus/.")
