@@ -40,6 +40,12 @@ def cmd_index(args) -> None:
         index.build(strategy=strategy)
 
 
+def cmd_add_url(args) -> None:
+    from parali.advise.fetch import add_url
+
+    logging.info("Saved %s. Run `python -m parali index` to include it.", add_url(args.url, args.title))
+
+
 def cmd_ocr(args) -> None:
     from parali.advise import ocr
 
@@ -97,6 +103,9 @@ def main() -> None:
     p_serve.add_argument("--port", type=int, default=8000)
     p_index = sub.add_parser("index", help="index the documents in data/corpus for the assistant")
     p_index.add_argument("--strategies", nargs="+", default=[config.CHUNK_STRATEGY])
+    p_url = sub.add_parser("add-url", help="add an official web page to the corpus by its link")
+    p_url.add_argument("url")
+    p_url.add_argument("--title")
     p_ocr = sub.add_parser("ocr", help="OCR scanned PDFs in data/corpus (needs Tesseract)")
     p_ocr.add_argument("--all", action="store_true", help="OCR every PDF, not only those without text")
     sub.add_parser("graph", help="extract the knowledge graph from the documents (needs an LLM)")
@@ -117,6 +126,8 @@ def main() -> None:
         cmd_serve(args)
     elif args.command == "index":
         cmd_index(args)
+    elif args.command == "add-url":
+        cmd_add_url(args)
     elif args.command == "ocr":
         cmd_ocr(args)
     elif args.command == "graph":

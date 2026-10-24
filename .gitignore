@@ -37,4 +37,5 @@ data/corpus_excluded/
 data/corpus/*.pdf
 data/corpus/*.ocr.txt
 data/corpus/*.html
+!data/corpus/*_unverified.md
 data/corpus/*.htm

@@ -50,26 +50,35 @@ def _is_gold(chunk, gold: list[dict]) -> bool:
     )
 
 
-def retrieval_metrics(retriever: Retriever, questions: list[dict], mode: str, ks=(1, 3, 5)) -> dict:
-    hits_at = {k: 0 for k in ks}
-    rr, n, top_scores, latency = 0.0, 0, {"answerable": [], "unanswerable": []}, []
+def per_question(retriever: Retriever, questions: list[dict], mode: str, k: int = 5) -> list[dict]:
+    """Search each question once; record the gold rank, top score and latency."""
+    out = []
     for q in questions:
         start = time.perf_counter()
-        hits = retriever.search(q["question"], k=max(ks), mode=mode)
-        latency.append(time.perf_counter() - start)
-        if hits and mode == "hybrid_rerank":
-            top_scores["answerable" if q["answerable"] else "unanswerable"].append(hits[0].score)
-        if not q["answerable"]:
-            continue
-        n += 1
+        hits = retriever.search(q["question"], k=k, mode=mode)
         rank = next((i for i, h in enumerate(hits, start=1) if _is_gold(h.chunk, q["gold"])), None)
-        for k in ks:
-            hits_at[k] += int(rank is not None and rank <= k)
-        rr += 1.0 / rank if rank else 0.0
-    out = {f"recall@{k}": hits_at[k] / max(1, n) for k in ks}
-    out.update(mrr=rr / max(1, n), questions=n, median_latency_ms=round(1000 * float(np.median(latency)), 1))
-    if mode == "hybrid_rerank":
-        out["top_scores"] = top_scores
+        out.append(
+            {
+                "id": q["id"],
+                "lang": q["lang"],
+                "answerable": q["answerable"],
+                "rank": rank,
+                "top_score": hits[0].score if hits else None,
+                "seconds": time.perf_counter() - start,
+            }
+        )
+    return out
+
+
+def summarise(rows: list[dict], ks=(1, 3, 5)) -> dict:
+    ans = [r for r in rows if r["answerable"]]
+    n = max(1, len(ans))
+    out = {f"recall@{k}": sum(r["rank"] is not None and r["rank"] <= k for r in ans) / n for k in ks}
+    out["mrr"] = sum(1.0 / r["rank"] for r in ans if r["rank"]) / n
+    out["questions"] = len(ans)
+    out["median_latency_ms"] = (
+        round(1000 * float(np.median([r["seconds"] for r in rows])), 1) if rows else None
+    )
     return out
 
 
@@ -86,30 +95,41 @@ def run_retrieval(
             for mode in MODES:
                 if mode != "hybrid_rerank" and reranker != rerankers[0]:
                     continue  # the reranker only changes the last mode
+                per_q = per_question(r, questions, mode)
                 for lang in ("all", "en", "hi"):
-                    qs = [q for q in questions if lang == "all" or q["lang"] == lang]
-                    if not qs:
-                        continue
-                    m = retrieval_metrics(r, qs, mode)
-                    rows.append(
-                        {
-                            "strategy": strategy,
-                            "embed_model": model,
-                            "mode": mode,
-                            "reranker": reranker if mode == "hybrid_rerank" else None,
-                            "lang": lang,
-                            **m,
+                    sub = [x for x in per_q if lang == "all" or x["lang"] == lang]
+                    row = {
+                        "strategy": strategy,
+                        "embed_model": model,
+                        "mode": mode,
+                        "reranker": reranker if mode == "hybrid_rerank" else None,
+                        "lang": lang,
+                        **summarise(sub),
+                    }
+                    if lang == "all" and mode == "hybrid_rerank":
+                        row["top_scores"] = {
+                            "answerable": [x["top_score"] for x in per_q if x["answerable"]],
+                            "unanswerable": [x["top_score"] for x in per_q if not x["answerable"]],
                         }
-                    )
-                    print({k: v for k, v in rows[-1].items() if k != "top_scores"})
-    EVAL_DIR.mkdir(parents=True, exist_ok=True)
-    (EVAL_DIR / "retrieval_results.json").write_text(json.dumps(rows, indent=1), encoding="utf-8")
+                    rows.append(row)
+                    print({k: v for k, v in row.items() if k != "top_scores"}, flush=True)
+                EVAL_DIR.mkdir(parents=True, exist_ok=True)
+                (EVAL_DIR / "retrieval_results.json").write_text(json.dumps(rows, indent=1), encoding="utf-8")
     return rows
 
 
-def best_threshold(rows: list[dict]) -> dict:
+def best_threshold(rows: list[dict], strategy=None, model=None, reranker=None) -> dict:
     """Pick the reranker score that best separates answerable from unanswerable questions."""
-    row = next(r for r in rows if r["mode"] == "hybrid_rerank" and r["lang"] == "all" and r.get("top_scores"))
+    row = next(
+        r
+        for r in rows
+        if r["mode"] == "hybrid_rerank"
+        and r["lang"] == "all"
+        and r.get("top_scores")
+        and strategy in (None, r["strategy"])
+        and model in (None, r["embed_model"])
+        and reranker in (None, r["reranker"])
+    )
     a, u = np.array(row["top_scores"]["answerable"]), np.array(row["top_scores"]["unanswerable"])
     best = (0.0, None)
     for t in np.unique(np.concatenate([a, u])):
