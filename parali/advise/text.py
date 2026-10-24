@@ -67,10 +67,19 @@ def expand_bilingual(query: str) -> str:
     return query + (" " + " ".join(extra) if extra else "")
 
 
-def sentences(text: str) -> list[str]:
+CLAUSE_END = re.compile(r"(?<=[;:])\s+|\s+(?=\(?[ivx]{1,4}\)\s)")  # "; " ":" and "(ii) " clause breaks
+
+
+def sentences(text: str, max_words: int = 40) -> list[str]:
+    """Sentences, with long ones (common in legal notices and OCR text) split at clause breaks."""
     lines = [re.sub(r"^\s*#+\s*", "", ln) for ln in text.split("\n")]  # drop markdown heading marks
-    parts = [p.strip() for block in lines for p in SENTENCE_END.split(block)]
-    return [p for p in parts if len(p) > 2]
+    out = []
+    for part in (p.strip() for block in lines for p in SENTENCE_END.split(block)):
+        if len(part.split()) > max_words:
+            out.extend(c.strip() for c in CLAUSE_END.split(part))
+        else:
+            out.append(part)
+    return [p for p in out if len(p) > 2]
 
 
 NUMBER = re.compile(r"(?<![\w.])(\d[\d,]*(?:\.\d+)?)")

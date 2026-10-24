@@ -36,6 +36,13 @@ Decisions and findings, newest first. Each entry says what changed and why.
 - Bulletins: the small model passed the schema and number checks yet contradicted the trend and
   produced broken Hindi. Added consistency checks and made the template the default.
 
+- Quote-mode answers were walls of OCR text (legal sentences of 80+ words). Long sentences are now
+  split at clause breaks and the 5 closest clauses are quoted: fact recall 59% -> 64%, citations on
+  a correct page 84% -> 87%. A reviewed knowledge graph adds related facts: 64% -> 79% (optimistic;
+  see docs/RAG.md).
+- File transfers between the build machine and the repo folder reused staging paths and silently
+  wrote stale copies of three files; caught by checksums, fixed, and every transferred file verified.
+
 **Forecast**
 - Chronos-Bolt (small, zero-shot) beat the own-cell rule but lost to LightGBM by 0.068 PR-AUC
   (bootstrap CI above zero): it can't see neighbouring cells.

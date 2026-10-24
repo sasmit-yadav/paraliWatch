@@ -114,7 +114,7 @@ def retrieve(question: str, profile: Profile | None = None, use_llm: bool = True
     return hits, trace
 
 
-def _extractive(question: str, hits: list[Hit], max_sentences: int = 3) -> tuple[str, list[int]]:
+def _extractive(question: str, hits: list[Hit], max_sentences: int = 5) -> tuple[str, list[int]]:
     """No LLM: quote the sentences closest in meaning to the question, each with its source."""
     candidates = [(i, s) for i, h in enumerate(hits[:3], start=1) for s in sentences(h.chunk.text)]
     if not candidates:
