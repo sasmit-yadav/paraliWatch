@@ -50,6 +50,7 @@ Open-Meteo ──┘   (download, clean,     (fires, weather, grid,       (featu
 | `GET /api/district-summary?date=` | Expected fire cells and high-risk cells per district |
 | `GET /api/districts` | District boundaries |
 | `POST /api/ask` | Cited answer from the documents (`{"question": ..., "user_id": ...}`) |
+| `POST /api/transcribe` | Speech to text (raw audio body; `?language=hi|en` optional). Needs `uv sync --group voice` |
 | `GET/PUT /api/profile/{user_id}` | Farmer profile used to personalise answers |
 | `GET /api/bulletin?date=` | Agent-written district bulletin (EN + HI), created as a draft |
 | `POST /api/bulletin/approve?date=` | Record an official's approval |

@@ -1,0 +1,33 @@
+{
+  "run": "prithvi_finetune",
+  "bbox": [
+    74.75,
+    31.2,
+    74.95,
+    31.45
+  ],
+  "pre_scene": "S2B_43RDQ_20251102_0_L2A",
+  "post_scene": "S2B_43RDQ_20251112_0_L2A",
+  "clear_share": 1.0,
+  "model_burned_share_before": 0.582,
+  "model_burned_share_after": 0.9554,
+  "viirs_fires_between_dates": 76,
+  "near_pixels_m": 200,
+  "model": {
+    "area_share": 0.3756,
+    "fires_near_mask": 0.9079,
+    "random_near_mask": 0.7922,
+    "enrichment": 1.15,
+    "fires_used": 76
+  },
+  "dnbr_threshold": {
+    "threshold": 0.1,
+    "area_share": 0.3889,
+    "fires_near_mask": 1.0,
+    "random_near_mask": 0.9976,
+    "enrichment": 1.0,
+    "fires_used": 76
+  },
+  "agreement_model_vs_dnbr_iou": 0.3213,
+  "note": "Indicative only: no pixel labels exist for Punjab. Enrichment > 1 means VIIRS fires between the two dates fall near newly predicted scars more often than random points do."
+}

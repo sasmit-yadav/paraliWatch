@@ -87,6 +87,11 @@ input[type="range"] { width: 100%; margin: 10px 0 6px; accent-color: var(--accen
 }
 .btn { border: 0; background: var(--accent); color: #fff; border-radius: 8px; padding: 0 14px; font: inherit; font-size: 13px; cursor: pointer; }
 .btn:disabled { opacity: 0.6; cursor: default; }
+.ask-actions { display: flex; flex-direction: column; gap: 4px; }
+.ask-actions .btn { flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 5px; min-height: 28px; }
+.btn-ghost { background: transparent; color: var(--accent); border: 1px solid var(--accent); }
+.btn-ghost.recording { background: #dc2626; border-color: #dc2626; color: #fff; }
+.answer .listen { margin-top: 6px; font-size: 12px; padding: 3px 10px; min-height: 0; }
 .answer { margin-top: 10px; font-size: 13px; line-height: 1.5; }
 .answer .cites { margin: 8px 0 0; padding-left: 18px; font-size: 12px; color: var(--muted); }
 .answer .mode { font-size: 11.5px; color: var(--muted); margin-top: 6px; }

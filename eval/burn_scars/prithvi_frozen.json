@@ -1,0 +1,142 @@
+{
+  "metrics": {
+    "iou_burn": 0.6274,
+    "iou_background": 0.9447,
+    "miou": 0.786,
+    "f1_burn": 0.771,
+    "precision_burn": 0.6635,
+    "recall_burn": 0.9202,
+    "accuracy": 0.9494,
+    "mean_scene_iou_burn": 0.5668,
+    "run": "prithvi_frozen",
+    "steps": 1200,
+    "batch": 8,
+    "crop": 224,
+    "params_total": 6211394,
+    "params_trained": 577346,
+    "train_minutes": 15.4,
+    "eval_seconds_per_scene": 0.295
+  },
+  "loss_curve": [
+    {
+      "step": 50,
+      "loss": 1.4417,
+      "seconds": 38
+    },
+    {
+      "step": 100,
+      "loss": 0.8067,
+      "seconds": 75
+    },
+    {
+      "step": 150,
+      "loss": 0.6487,
+      "seconds": 110
+    },
+    {
+      "step": 200,
+      "loss": 0.5463,
+      "seconds": 146
+    },
+    {
+      "step": 250,
+      "loss": 0.537,
+      "seconds": 191
+    },
+    {
+      "step": 300,
+      "loss": 0.3953,
+      "seconds": 226
+    },
+    {
+      "step": 350,
+      "loss": 0.3929,
+      "seconds": 264
+    },
+    {
+      "step": 400,
+      "loss": 0.2904,
+      "seconds": 302
+    },
+    {
+      "step": 450,
+      "loss": 0.3326,
+      "seconds": 338
+    },
+    {
+      "step": 500,
+      "loss": 0.3041,
+      "seconds": 378
+    },
+    {
+      "step": 550,
+      "loss": 0.3478,
+      "seconds": 415
+    },
+    {
+      "step": 600,
+      "loss": 0.4859,
+      "seconds": 460
+    },
+    {
+      "step": 650,
+      "loss": 0.3403,
+      "seconds": 504
+    },
+    {
+      "step": 700,
+      "loss": 0.2177,
+      "seconds": 543
+    },
+    {
+      "step": 750,
+      "loss": 0.4374,
+      "seconds": 578
+    },
+    {
+      "step": 800,
+      "loss": 0.4734,
+      "seconds": 617
+    },
+    {
+      "step": 850,
+      "loss": 0.4182,
+      "seconds": 656
+    },
+    {
+      "step": 900,
+      "loss": 0.27,
+      "seconds": 694
+    },
+    {
+      "step": 950,
+      "loss": 0.2399,
+      "seconds": 730
+    },
+    {
+      "step": 1000,
+      "loss": 0.2305,
+      "seconds": 766
+    },
+    {
+      "step": 1050,
+      "loss": 0.4161,
+      "seconds": 805
+    },
+    {
+      "step": 1100,
+      "loss": 0.3069,
+      "seconds": 845
+    },
+    {
+      "step": 1150,
+      "loss": 0.1885,
+      "seconds": 885
+    },
+    {
+      "step": 1200,
+      "loss": 0.5362,
+      "seconds": 925
+    }
+  ]
+}

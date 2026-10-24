@@ -217,6 +217,55 @@ $("approve-form").addEventListener("submit", async (e) => {
   if (res.ok) { state.bulletin = await res.json(); renderBulletin(); }
 });
 
+// Speak an answer with the browser's own text-to-speech (no server model, works offline on phones).
+function speak(text) {
+  if (!("speechSynthesis" in window)) return;
+  window.speechSynthesis.cancel();
+  const clean = text.replace(/\[\d+\]/g, "").replace(/\n+/g, ". ");
+  const u = new SpeechSynthesisUtterance(clean);
+  // choose the voice by the script most of the text is in (quoted sources may be English)
+  const deva = (clean.match(/[\u0900-\u097F]/g) || []).length;
+  const latin = (clean.match(/[A-Za-z]/g) || []).length;
+  u.lang = deva > latin ? "hi-IN" : "en-IN";
+  const voice = window.speechSynthesis.getVoices().find((v) => v.lang === u.lang);
+  if (voice) u.voice = voice;
+  window.speechSynthesis.speak(u);
+}
+
+// Voice input: record with MediaRecorder, transcribe on the server (Whisper), then ask.
+const rec = { recorder: null, chunks: [] };
+$("mic").addEventListener("click", async () => {
+  const btn = $("mic");
+  if (rec.recorder && rec.recorder.state === "recording") { rec.recorder.stop(); return; }
+  if (!navigator.mediaDevices?.getUserMedia) { $("mic-label").textContent = "No mic"; return; }
+  let stream;
+  try { stream = await navigator.mediaDevices.getUserMedia({ audio: true }); }
+  catch { $("mic-label").textContent = "Mic blocked"; return; }
+  rec.chunks = [];
+  rec.recorder = new MediaRecorder(stream);
+  rec.recorder.ondataavailable = (ev) => ev.data.size && rec.chunks.push(ev.data);
+  rec.recorder.onstop = async () => {
+    stream.getTracks().forEach((t) => t.stop());
+    btn.classList.remove("recording");
+    $("mic-label").textContent = "Listening\u2026";
+    btn.disabled = true;
+    try {
+      const blob = new Blob(rec.chunks, { type: rec.recorder.mimeType });
+      const res = await fetch("/api/transcribe", { method: "POST", body: blob, headers: { "Content-Type": blob.type || "application/octet-stream" } });
+      const t = await res.json();
+      if (!res.ok) { $("ask-answer").hidden = false; $("ask-answer").textContent = t.detail || "Could not understand the audio."; return; }
+      $("ask-input").value = t.text;
+      if (t.text.trim().length >= 3) { state.voiceAsk = true; $("ask-form").requestSubmit(); }
+    } finally {
+      btn.disabled = false;
+      $("mic-label").textContent = "Speak";
+    }
+  };
+  rec.recorder.start();
+  btn.classList.add("recording");
+  $("mic-label").textContent = "Stop";
+});
+
 $("ask-form").addEventListener("submit", async (e) => {
   e.preventDefault();
   const q = $("ask-input").value.trim();
@@ -237,6 +286,16 @@ $("ask-form").addEventListener("submit", async (e) => {
       .join("");
     const modes = { llm: "Written by the AI from the sources below.", extractive: "Quoted from the sources below (no AI model connected).", not_found: "" };
     box.innerHTML = `<div>${esc(a.text).replace(/\n/g, "<br>")}</div>${cites ? `<ol class="cites">${cites}</ol>` : ""}<div class="mode">${modes[a.mode] || ""}</div>`;
+    if ("speechSynthesis" in window) {
+      const listen = document.createElement("button");
+      listen.type = "button";
+      listen.className = "btn btn-ghost listen";
+      listen.textContent = a.language === "hi" ? "\u0938\u0941\u0928\u0947\u0902 (Listen)" : "Listen";
+      listen.addEventListener("click", () => speak(a.text));
+      box.appendChild(listen);
+      if (state.voiceAsk) speak(a.text);  // asked by voice -> answer by voice
+    }
+    state.voiceAsk = false;
   } catch {
     box.textContent = "Could not reach the assistant.";
   } finally {

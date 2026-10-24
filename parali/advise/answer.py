@@ -140,6 +140,14 @@ def answer(question: str, profile: Profile | None = None, use_llm: bool = True) 
     return compose(question, hits, checks, profile, use_llm)
 
 
+def build_messages(question: str, blocks: list[str], lang: str, profile: Profile | None = None) -> list[dict]:
+    """The exact chat prompt the answering LLM sees (also used to build fine-tuning data)."""
+    system = SYSTEM.format(helpline=config.HELPLINE, language="Hindi" if lang == "hi" else "English")
+    context = f"\nFarmer profile: {profile.as_context()}" if profile and profile.as_context() else ""
+    user = f"<sources>\n{chr(10).join(blocks)}\n</sources>{context}\n<question>{question}</question>"
+    return [{"role": "system", "content": system}, {"role": "user", "content": user}]
+
+
 def compose(
     question: str, hits: list[Hit], checks: dict, profile: Profile | None = None, use_llm: bool = True
 ) -> Answer:
@@ -161,15 +169,8 @@ def compose(
 
     text, mode, used = "", "extractive", []
     if use_llm and llm.available():
-        system = SYSTEM.format(helpline=config.HELPLINE, language="Hindi" if lang == "hi" else "English")
-        context = f"\nFarmer profile: {profile.as_context()}" if profile and profile.as_context() else ""
-        user = f"<sources>\n{chr(10).join(blocks)}\n</sources>{context}\n<question>{question}</question>"
         try:
-            text = llm.chat(
-                [{"role": "system", "content": system}, {"role": "user", "content": user}],
-                max_tokens=400,
-                purpose="answer",
-            )
+            text = llm.chat(build_messages(question, blocks, lang, profile), max_tokens=400, purpose="answer")
             mode = "llm"
             used = guard.cited_indices(text, len(sources))
             cited_texts = [f"{sources[i - 1].title}\n{sources[i - 1].text}" for i in used] or [

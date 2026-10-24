@@ -2,6 +2,29 @@
 
 Decisions and findings, newest first. Each entry says what changed and why.
 
+## 2026-10-24 (evening): Phase 3, burn-scar segmentation and voice input
+
+**Burn scars**
+- First tried weak labels for Punjab (dNBR near VIIRS points). Fires were only ~1.1x more likely
+  than random pixels to sit on a large dNBR drop: harvest, haze and VIIRS's 375 m pixel swamp the
+  signal. Dropped it rather than train on noise; switched to NASA's labelled HLS Burn Scars set.
+- Vendored Prithvi-EO-2.0 model code and removed its `timm` dependency (it pulled a torchvision
+  that broke on CPU torch). Proved the local block is identical: unit test vs PyTorch attention, and
+  masked-reconstruction loss 0.043 with official weights vs 0.83 random.
+- Four runs, same data/steps/seed, no checkpoint picking on validation: fine-tuned Prithvi 0.758
+  IoU, Prithvi from scratch 0.706, U-Net 0.700, frozen encoder 0.627. Paired bootstrap: +0.05 to
+  +0.06 over both baselines, CI above zero. Pre-training, not architecture, is what helped.
+- On Sentinel-2 over Tarn Taran it flags 81-96% of post-harvest cropland as burned: domain shift.
+  Short-interval "new scar" check gives only 1.15-1.25x enrichment with VIIRS. Not shown on the
+  dashboard; local labels are the next step.
+- Memory lesson: 2 CPUs / ~6 GB for all jobs. Running the LLM server beside the reranker or
+  training got processes OOM-killed; heavy jobs now run strictly one at a time.
+
+**Voice**
+- `/api/transcribe` (faster-whisper, int8 CPU) and a mic button; answers are read aloud with the
+  browser's own speech synthesis, so no TTS model or licence is needed (MMS-TTS is non-commercial).
+- PyAV 17+ breaks faster-whisper 1.2's decoder; pinned `av<17`.
+
 ## 2026-10-24 (later): Phase 2, assistant, agents, MCP, foundation model
 
 **Documents**

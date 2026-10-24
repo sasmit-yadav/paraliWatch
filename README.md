@@ -37,6 +37,8 @@ How the model was chosen (7 model families, bootstrap tests, ablation):
 | Assistant (RAG) | Hybrid search + multilingual reranker over CAQM, PIB, Haryana and ICAR documents; cited answers; refuses when unsure | [RAG](docs/RAG.md) |
 | MCP server | 7 tools: risk, explanations, fires, district summary, bulletin, scheme search | [Agents and MCP](docs/AGENTS_AND_MCP.md) |
 | Foundation-model check | Chronos-Bolt zero-shot vs the tuned model | [Model selection, section 10](docs/MODEL_SELECTION.md) |
+| Burn-scar segmentation | Prithvi-EO-2.0 (NASA/IBM) fine-tuned vs U-Net on HLS Burn Scars: 0.758 vs 0.700 IoU; Punjab transfer tested honestly | [Burn scars](docs/BURN_SCARS.md) |
+| Voice input | Speak a question (Hindi or English), Whisper transcribes it, the answer is read aloud | [Architecture](docs/ARCHITECTURE.md) |
 
 ## Quick start
 

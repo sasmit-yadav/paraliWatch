@@ -1,0 +1,54 @@
+{
+  "unet": {
+    "iou_burn": 0.6995,
+    "ci95": [
+      0.6457,
+      0.7492
+    ],
+    "prithvi_finetune_minus_this": {
+      "mean": 0.0586,
+      "ci95": [
+        0.03,
+        0.0887
+      ],
+      "share_of_resamples_reference_better": 1.0
+    }
+  },
+  "prithvi_scratch": {
+    "iou_burn": 0.7061,
+    "ci95": [
+      0.6447,
+      0.7584
+    ],
+    "prithvi_finetune_minus_this": {
+      "mean": 0.0524,
+      "ci95": [
+        0.029,
+        0.0843
+      ],
+      "share_of_resamples_reference_better": 1.0
+    }
+  },
+  "prithvi_frozen": {
+    "iou_burn": 0.6274,
+    "ci95": [
+      0.5705,
+      0.6817
+    ],
+    "prithvi_finetune_minus_this": {
+      "mean": 0.1308,
+      "ci95": [
+        0.0992,
+        0.1656
+      ],
+      "share_of_resamples_reference_better": 1.0
+    }
+  },
+  "prithvi_finetune": {
+    "iou_burn": 0.7584,
+    "ci95": [
+      0.7064,
+      0.8018
+    ]
+  }
+}

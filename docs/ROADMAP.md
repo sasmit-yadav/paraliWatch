@@ -4,7 +4,7 @@
 | --- | --- | --- | --- |
 | 1. Core | 1-3 | Data pipeline, forecast with baselines, calibration, SHAP, model comparison, map dashboard, tests, CI | Done (deploy pending) |
 | 2. GenAI layer | 4-5 | Hybrid RAG with multilingual reranking and OCR, GraphRAG, 50-question evaluation, LangGraph bulletin agents with approval, MCP server, Chronos comparison | Done |
-| 3. Vision + voice | 6-7 | Burn-scar segmentation (Prithvi-EO-2.0 vs U-Net), Hindi speech in/out, QLoRA small model | Next |
+| 3. Vision + voice | 6-7 | Burn-scar segmentation (Prithvi-EO-2.0 vs U-Net), Hindi speech in/out, LoRA small model | In progress (segmentation done) |
 | 4. Ops + polish | 8 | MLflow registry, drift checks, tracing, human feedback loop, public demo | Planned |
 
 ## Phase 1 follow-ups

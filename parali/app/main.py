@@ -6,7 +6,7 @@ import json
 from datetime import date
 from functools import lru_cache
 
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, HTTPException, Query, Request
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
@@ -119,6 +119,29 @@ def ask(q: Question) -> dict:
         return answer(q.question, profile).to_dict()
     except FileNotFoundError as exc:
         raise HTTPException(503, "Document index not built yet. Run: python -m parali index") from exc
+
+
+MAX_AUDIO_BYTES = 5_000_000  # about 5 minutes of compressed speech
+
+
+@app.post("/api/transcribe")
+async def transcribe(request: Request, language: str | None = Query(None, pattern="^(en|hi)$")) -> dict:
+    """Speech to text (Hindi or English) for the ask box. Body: raw audio (webm/ogg/wav/mp3)."""
+    audio = await request.body()
+    if not audio:
+        raise HTTPException(400, "Empty audio")
+    if len(audio) > MAX_AUDIO_BYTES:
+        raise HTTPException(413, "Audio too long")
+    import importlib.util
+
+    if importlib.util.find_spec("faster_whisper") is None:
+        raise HTTPException(501, "Voice input needs the optional 'voice' dependencies (uv sync --group voice)")
+    from parali.voice.asr import transcribe as run
+
+    try:
+        return run(audio, language)
+    except Exception as exc:  # undecodable audio
+        raise HTTPException(400, f"Could not read the audio: {exc}") from exc
 
 
 @app.get("/api/profile/{user_id}")

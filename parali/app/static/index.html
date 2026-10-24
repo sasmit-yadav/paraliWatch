@@ -73,7 +73,13 @@
         <p class="muted small">Answers come only from official documents, with page references. English or Hindi.</p>
         <form id="ask-form">
           <textarea id="ask-input" rows="2" maxlength="500" placeholder="e.g. पराली न जलाने पर कितना प्रोत्साहन मिलता है?" aria-label="Your question"></textarea>
-          <button type="submit" class="btn">Ask</button>
+          <div class="ask-actions">
+            <button type="submit" class="btn">Ask</button>
+            <button type="button" id="mic" class="btn btn-ghost" aria-label="Ask by voice" title="Ask by voice (Hindi or English)">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0"/><path d="M12 17v5"/></svg>
+              <span id="mic-label">Speak</span>
+            </button>
+          </div>
         </form>
         <div id="ask-answer" class="answer" hidden></div>
       </section>
