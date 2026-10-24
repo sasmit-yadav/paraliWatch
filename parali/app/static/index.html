@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Parali Watch</title>
+  <meta name="description" content="Next-3-day crop-residue fire risk for Punjab and Haryana, with reasons.">
+  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <h1>Parali Watch</h1>
+      <p class="sub">Where crop-residue fires are likely in the next 3 days, and why</p>
+    </div>
+    <span class="badge" id="mode-badge">Demo: 2025 season</span>
+  </header>
+
+  <main class="layout">
+    <aside class="panel" aria-label="Controls and details">
+      <section class="card">
+        <label class="label" for="date-range">Forecast date</label>
+        <div class="date-row">
+          <button class="icon-btn" id="prev-day" aria-label="Previous day">&#8249;</button>
+          <output id="date-label" class="date-label">-</output>
+          <button class="icon-btn" id="next-day" aria-label="Next day">&#8250;</button>
+        </div>
+        <input type="range" id="date-range" min="0" max="0" value="0">
+        <label class="toggle"><input type="checkbox" id="show-fires" checked> Show fires detected that day</label>
+      </section>
+
+      <section class="card" id="detail" hidden>
+        <div class="detail-head">
+          <div>
+            <h2 id="d-district">-</h2>
+            <p class="muted" id="d-meta">-</p>
+          </div>
+          <button class="icon-btn" id="close-detail" aria-label="Close details">&#215;</button>
+        </div>
+        <div class="stat-row">
+          <div class="stat"><span class="stat-value" id="d-prob">-</span><span class="stat-label">chance of fire, next 3 days</span></div>
+          <div class="stat"><span class="stat-value" id="d-rank">-</span><span class="stat-label">of cells today, ranked by risk</span></div>
+        </div>
+        <h3>Why</h3>
+        <ol class="reasons" id="d-reasons"></ol>
+        <h3>Fires in this cell, last 14 days</h3>
+        <div class="spark" id="d-history" role="img" aria-label="Daily fires in the last 14 days"></div>
+        <p class="outcome" id="d-outcome"></p>
+      </section>
+
+      <section class="card">
+        <h2>Highest risk today</h2>
+        <ol class="top-list" id="top-list"></ol>
+      </section>
+
+      <section class="card">
+        <h2>Legend</h2>
+        <ul class="legend" id="legend"></ul>
+        <p class="muted small"><span class="dot"></span> Fire detected by NASA VIIRS that day</p>
+      </section>
+
+      <section class="card muted small" id="about">
+        <p id="metrics-line"></p>
+        <p>Grid cells are ~36 km<sup>2</sup> H3 hexagons. Probabilities are calibrated on the 2024 season.
+          Data: NASA FIRMS (VIIRS), Open-Meteo ERA5, geoBoundaries.</p>
+      </section>
+    </aside>
+
+    <div id="map" aria-label="Map of fire risk"></div>
+  </main>
+
+  <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+  <script src="/static/app.js"></script>
+</body>
+</html>

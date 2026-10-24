@@ -1,0 +1,75 @@
+:root {
+  --bg: #f6f5f2;
+  --card: #ffffff;
+  --ink: #1f2328;
+  --muted: #5d6470;
+  --line: #e3e1dc;
+  --accent: #c2410c;
+  --accent-soft: #fff1e8;
+  --radius: 10px;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; background: var(--bg); color: var(--ink); }
+.topbar {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 10px 16px; background: var(--card); border-bottom: 1px solid var(--line);
+}
+.topbar h1 { margin: 0; font-size: 18px; letter-spacing: 0.2px; }
+.sub { margin: 2px 0 0; color: var(--muted); font-size: 13px; }
+.badge {
+  font-size: 12px; padding: 4px 10px; border-radius: 999px;
+  background: var(--accent-soft); color: var(--accent); white-space: nowrap;
+}
+.layout { display: grid; grid-template-columns: 360px 1fr; height: calc(100% - 58px); }
+.panel { overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 12px; }
+#map { height: 100%; min-height: 360px; }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 12px 14px; }
+.card h2 { font-size: 15px; margin: 0 0 8px; }
+.card h3 { font-size: 13px; margin: 14px 0 6px; color: var(--muted); font-weight: 600; }
+.label { font-size: 12px; color: var(--muted); display: block; margin-bottom: 6px; }
+.date-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.date-label { font-weight: 600; font-size: 15px; }
+input[type="range"] { width: 100%; margin: 10px 0 6px; accent-color: var(--accent); }
+.toggle { font-size: 13px; display: flex; gap: 6px; align-items: center; }
+.icon-btn {
+  border: 1px solid var(--line); background: var(--card); border-radius: 8px;
+  width: 32px; height: 32px; font-size: 18px; line-height: 1; cursor: pointer; color: var(--ink);
+}
+.icon-btn:hover { background: var(--bg); }
+.icon-btn:focus-visible, .top-list button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.muted { color: var(--muted); }
+.small { font-size: 12px; }
+.detail-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+.detail-head h2 { margin: 0; font-size: 17px; }
+.detail-head p { margin: 2px 0 0; font-size: 12px; }
+.stat-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+.stat { background: var(--bg); border-radius: 8px; padding: 8px 10px; }
+.stat-value { display: block; font-size: 22px; font-weight: 700; }
+.stat-label { font-size: 11.5px; color: var(--muted); }
+.reasons { margin: 0; padding-left: 18px; font-size: 13px; display: grid; gap: 6px; }
+.reason-bar { height: 5px; background: var(--accent); border-radius: 3px; margin-top: 3px; opacity: 0.75; }
+.reason-bar.neg { background: #2563eb; }
+.spark { display: flex; align-items: flex-end; gap: 3px; height: 48px; }
+.spark span { flex: 1; background: var(--accent); border-radius: 2px 2px 0 0; min-height: 2px; opacity: 0.8; }
+.spark span.zero { background: var(--line); }
+.outcome { font-size: 12.5px; margin: 10px 0 0; padding: 8px 10px; background: var(--bg); border-radius: 8px; }
+.top-list { margin: 0; padding: 0; list-style: none; display: grid; gap: 4px; }
+.top-list button {
+  width: 100%; display: flex; justify-content: space-between; gap: 8px; text-align: left;
+  border: 0; background: none; padding: 6px 8px; border-radius: 6px; cursor: pointer; font: inherit; font-size: 13px; color: var(--ink);
+}
+.top-list button:hover { background: var(--bg); }
+.top-list .pct { font-weight: 600; color: var(--accent); }
+.legend { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; font-size: 12.5px; }
+.legend li { display: flex; align-items: center; gap: 8px; }
+.swatch { width: 18px; height: 12px; border-radius: 3px; border: 1px solid rgba(0,0,0,0.08); }
+.dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: #7f1d1d; border: 1.5px solid #fff; box-shadow: 0 0 0 1px #7f1d1d; vertical-align: middle; }
+.maplibregl-popup-content { font-size: 12.5px; border-radius: 8px; }
+
+@media (max-width: 800px) {
+  .layout { grid-template-columns: 1fr; grid-template-rows: 55vh auto; height: auto; }
+  #map { grid-row: 1; height: 55vh; }
+  .panel { grid-row: 2; overflow: visible; }
+  .sub { display: none; }
+}
