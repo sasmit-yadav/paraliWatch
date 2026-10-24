@@ -64,3 +64,28 @@ def season_bounds(year: int) -> tuple[date, date]:
 def ensure_dirs() -> None:
     for d in (RAW_DIR, PROCESSED_DIR, DEMO_DIR, MODELS_DIR, EVAL_DIR):
         d.mkdir(parents=True, exist_ok=True)
+
+
+# ---------------------------------------------------------------------------
+# Phase 2: farmer assistant (retrieval-augmented generation) and agents
+CORPUS_DIR = DATA_DIR / "corpus"  # official documents (PDF, HTML, TXT, MD) + optional sources.csv
+INDEX_DIR = DATA_DIR / "index"  # chunks, vector table, BM25 and graph built from the corpus
+BULLETIN_DIR = DATA_DIR / "bulletins"
+
+# Chosen on the evaluation set in eval/rag (see docs/RAG.md); override with env vars to experiment.
+EMBED_MODEL = os.environ.get(
+    "PARALI_EMBED_MODEL", "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
+)
+RERANK_MODEL = os.environ.get("PARALI_RERANK_MODEL", "BAAI/bge-reranker-v2-m3-int8")
+CHUNK_STRATEGY = os.environ.get("PARALI_CHUNK_STRATEGY", "structure")
+TOP_K = 5
+
+# Any OpenAI-compatible chat endpoint: Ollama (http://localhost:11434/v1), Groq, Gemini, llama.cpp.
+# With no LLM configured the assistant still works in extractive mode (quotes the sources).
+LLM_BASE_URL = os.environ.get("PARALI_LLM_BASE_URL", "")
+LLM_API_KEY = os.environ.get("PARALI_LLM_API_KEY", "")
+LLM_MODEL = os.environ.get("PARALI_LLM_MODEL", "")
+# Below this reranker score the best passage is treated as "not relevant" and the assistant says it
+# could not find an answer. Tuned on the evaluation set's unanswerable questions (docs/RAG.md).
+MIN_RERANK_SCORE = float(os.environ.get("PARALI_MIN_RERANK_SCORE", "-3.0"))
+HELPLINE = "Kisan Call Centre 1800-180-1551"
