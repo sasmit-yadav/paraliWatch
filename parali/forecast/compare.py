@@ -251,7 +251,7 @@ def bootstrap(panel: pd.DataFrame, a: str, b: str, n: int = 300, split: str = "v
 def table() -> pd.DataFrame:
     rows = []
     for f in sorted(OUT_DIR.glob("*.json")):
-        if f.name.startswith("bootstrap_"):
+        if f.name.startswith("bootstrap_") or f.name == "ablation.json":
             continue
         r = json.loads(f.read_text(encoding="utf-8"))
         rows.append(

@@ -1,0 +1,11 @@
+{
+  "a": "lightgbm_tuned",
+  "b": "chronos_bolt_small_mean",
+  "split": "valid",
+  "mean_diff": 0.06831526380072588,
+  "ci95": [
+    0.027157859615400376,
+    0.10973844648593321
+  ],
+  "share_a_better": 1.0
+}

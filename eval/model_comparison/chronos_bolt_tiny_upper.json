@@ -1,0 +1,19 @@
+{
+  "name": "chronos_bolt_tiny_upper",
+  "label": "Chronos-Bolt tiny, zero-shot (90th-percentile forecast)",
+  "fit_seconds": 126.2,
+  "valid": {
+    "pr_auc": 0.22697464569058542,
+    "roc_auc": 0.7473867037461374,
+    "precision_top10pct": 0.23378941106484236,
+    "fire_capture_top10pct": 0.3361641764640808,
+    "base_rate": 0.08600665640057623
+  },
+  "test": {
+    "pr_auc": 0.1352779231578951,
+    "roc_auc": 0.7220445859831068,
+    "precision_top10pct": 0.12983343248066628,
+    "fire_capture_top10pct": 0.2983992099761963,
+    "base_rate": 0.04939148576821817
+  }
+}

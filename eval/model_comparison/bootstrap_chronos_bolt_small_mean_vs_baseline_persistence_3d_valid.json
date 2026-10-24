@@ -1,0 +1,11 @@
+{
+  "a": "chronos_bolt_small_mean",
+  "b": "baseline_persistence_3d",
+  "split": "valid",
+  "mean_diff": 0.12017188809985943,
+  "ci95": [
+    0.08656273989484205,
+    0.15274953598099847
+  ],
+  "share_a_better": 1.0
+}

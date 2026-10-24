@@ -142,7 +142,7 @@ was kept. Every one of these choices was made on the 2024 season only.
   says the top few are already within noise of each other.
 - Fire counts fell about 16x from 2021 to 2025, so every model is tested on a season quieter than
   anything it trained on. Results on a busy season could differ.
-- Time-series foundation models (e.g. Chronos) are planned as a further comparison in phase 2.
+- Time-series foundation models were compared separately in section 10.
 
 ## 8. Reproduce
 
@@ -177,3 +177,48 @@ list, the "Top 1%" figure, fire capture) therefore uses the raw score, and the c
 only shown as the chance of fire. On the 2025 test season calibration cut the Brier score from
 0.074 to 0.041, and the predicted and observed fire rates match within about a percentage point in
 every band (see `eval/RESULTS.md`).
+
+## 10. Time-series foundation model: Chronos-Bolt, zero-shot
+
+Foundation models for time series are pre-trained on large collections of public series and can
+forecast a new series without any training. We tested Amazon's
+[Chronos-Bolt](https://huggingface.co/amazon/chronos-bolt-small) (tiny, 9M parameters; small, 48M)
+with **no training on our data**. For each cell and day it reads that cell's daily fire counts
+(the whole previous season, then the current season up to that day) and forecasts the next 3 days.
+The forecast sum is the risk score, scored exactly like every other model.
+Code: `parali/forecast/foundation.py`.
+
+| Model | Valid PR-AUC | Test PR-AUC | Test capture @10% | Run time (2 CPU cores, both seasons) |
+| --- | --- | --- | --- | --- |
+| LightGBM, tuned (chosen) | 0.351 | 0.266 | 36.8% | ~20 s training |
+| Chronos-Bolt small, mean forecast | 0.286 | 0.154 | 30.6% | ~10 min inference |
+| Chronos-Bolt small, 90th percentile | 0.278 | 0.152 | 30.4% | (same run) |
+| Rule: fires in and around the cell | 0.242 | 0.191 | 33.6% | - |
+| Chronos-Bolt tiny, 90th percentile | 0.227 | 0.135 | 29.8% | ~2 min inference |
+| Rule: fires in the cell | 0.167 | 0.107 | 25.7% | - |
+
+Bootstrap on the 2024 season (whole days resampled, 300 times):
+
+| Comparison | Mean PR-AUC gain | 95% interval |
+| --- | --- | --- |
+| Chronos-Bolt small vs rule "fires in the cell" | +0.120 | +0.087 to +0.153 |
+| Chronos-Bolt small vs rule "fires in and around the cell" | +0.044 | +0.009 to +0.077 |
+| LightGBM vs Chronos-Bolt small | +0.068 | +0.027 to +0.110 |
+
+**What this shows:**
+
+- **Zero-shot works, up to a point.** Without seeing any of our data, Chronos-Bolt small clearly
+  beats the rule that uses the same information (the cell's own history), and on validation it
+  even beats the neighbourhood rule.
+- **It can't see neighbours.** Chronos reads one cell's series at a time. Our ablation shows
+  neighbouring fires and last year's fires are the strongest signals; a single-series model gets
+  only part of the second and none of the first. That is why the tuned tabular model wins by
+  +0.068 PR-AUC, with an interval well above zero.
+- **It generalised worse to the quiet 2025 season** (test 0.154, below the neighbourhood rule).
+- **Bigger helped:** small (48M) beat tiny (9M) by about 0.06 on validation.
+- **Cost:** ~10 minutes of CPU inference for two seasons, versus ~20 seconds to train LightGBM and
+  milliseconds to predict.
+
+**Decision:** keep LightGBM. A useful next experiment would be to feed the Chronos forecast into
+LightGBM as one more feature, or to fine-tune Chronos on these series, so the foundation model's
+view of each cell's own history is combined with the spatial features.

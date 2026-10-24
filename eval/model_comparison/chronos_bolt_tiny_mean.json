@@ -1,0 +1,19 @@
+{
+  "name": "chronos_bolt_tiny_mean",
+  "label": "Chronos-Bolt tiny, zero-shot (mean forecast)",
+  "fit_seconds": 126.2,
+  "valid": {
+    "pr_auc": 0.22116678478793383,
+    "roc_auc": 0.7286031761622815,
+    "precision_top10pct": 0.22848502875272655,
+    "fire_capture_top10pct": 0.3320915400981903,
+    "base_rate": 0.08600665640057623
+  },
+  "test": {
+    "pr_auc": 0.12407179939257643,
+    "roc_auc": 0.6714090401825702,
+    "precision_top10pct": 0.12547094983144955,
+    "fire_capture_top10pct": 0.2886638343334198,
+    "base_rate": 0.04939148576821817
+  }
+}
