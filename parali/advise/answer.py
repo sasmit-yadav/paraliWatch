@@ -134,11 +134,17 @@ def _extractive(question: str, hits: list[Hit], max_sentences: int = 3) -> tuple
 
 def answer(question: str, profile: Profile | None = None, use_llm: bool = True) -> Answer:
     question = question.strip()
-    lang = "hi" if is_hindi(question) or (profile and profile.language == "hi") else "en"
     checks = {"injection_suspected": guard.looks_like_injection(question)}
     hits, trace = retrieve(question, profile, use_llm)
     checks.update(trace)
+    return compose(question, hits, checks, profile, use_llm)
 
+
+def compose(
+    question: str, hits: list[Hit], checks: dict, profile: Profile | None = None, use_llm: bool = True
+) -> Answer:
+    """Second half of answer(): from retrieved passages to a checked, cited answer."""
+    lang = "hi" if is_hindi(question) or (profile and profile.language == "hi") else "en"
     relevant = [h for h in hits if h.score >= config.MIN_RERANK_SCORE]
     if not relevant:
         return Answer(
@@ -173,6 +179,7 @@ def answer(question: str, profile: Profile | None = None, use_llm: bool = True) 
             checks["unsupported_numbers"] = sorted(bad)
             checks["has_citation"] = bool(used)
             if bad or not used:
+                checks["rejected_llm_text"] = text[:400]
                 log.info("LLM answer failed checks (%s); falling back to quotes", checks)
                 text, mode = "", "extractive"
         except llm.LLMUnavailable as exc:

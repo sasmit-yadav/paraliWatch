@@ -76,7 +76,9 @@ def summarise(rows: list[dict], ks=(1, 3, 5)) -> dict:
     out = {f"recall@{k}": sum(r["rank"] is not None and r["rank"] <= k for r in ans) / n for k in ks}
     out["mrr"] = sum(1.0 / r["rank"] for r in ans if r["rank"]) / n
     out["questions"] = len(ans)
-    out["median_latency_ms"] = round(1000 * float(np.median([r["seconds"] for r in rows])), 1) if rows else None
+    out["median_latency_ms"] = (
+        round(1000 * float(np.median([r["seconds"] for r in rows])), 1) if rows else None
+    )
     return out
 
 
@@ -90,7 +92,10 @@ def run_retrieval(
 
     def done(strategy, model, mode, reranker):
         return any(
-            r["strategy"] == strategy and r["embed_model"] == model and r["mode"] == mode and r["reranker"] == reranker
+            r["strategy"] == strategy
+            and r["embed_model"] == model
+            and r["mode"] == mode
+            and r["reranker"] == reranker
             for r in rows
         )
 
