@@ -1,0 +1,47 @@
+"""API tests against the committed demo data (no downloads needed)."""
+
+import pytest
+from fastapi.testclient import TestClient
+
+from parali.app.main import app
+
+client = TestClient(app)
+
+
+@pytest.fixture(scope="module")
+def meta():
+    return client.get("/api/meta").json()
+
+
+def test_meta_lists_season_dates(meta):
+    assert meta["season"] == 2025
+    assert meta["default_date"] in meta["dates"]
+    assert meta["metrics"]["test"]["pr_auc"] > meta["metrics"]["best_rule"]["pr_auc"]
+
+
+def test_risk_returns_hexagons_with_probabilities(meta):
+    data = client.get(f"/api/risk?date={meta['default_date']}&min_prob=0.05").json()
+    assert data["features"]
+    f = data["features"][0]
+    assert f["geometry"]["type"] == "Polygon"
+    assert 0.05 <= f["properties"]["prob"] <= 1
+
+
+def test_top_cells_are_sorted_and_explained(meta):
+    top = client.get(f"/api/top?date={meta['default_date']}&n=5").json()
+    assert len(top) == 5
+    detail = client.get(f"/api/cell/{top[0]['cell']}?date={meta['default_date']}").json()
+    assert len(detail["reasons"]) == 3
+    assert all(r["text"] for r in detail["reasons"])
+    assert len(detail["history"]) == 14
+
+
+def test_bad_inputs_are_rejected(meta):
+    assert client.get("/api/risk?date=2020-01-01").status_code == 404
+    assert client.get("/api/risk?date=not-a-date").status_code == 400
+    assert client.get(f"/api/cell/abc?date={meta['default_date']}").status_code == 404
+
+
+def test_dashboard_is_served():
+    assert client.get("/").status_code == 200
+    assert client.get("/static/app.js").status_code == 200
