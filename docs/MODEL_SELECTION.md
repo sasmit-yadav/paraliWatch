@@ -158,3 +158,22 @@ python -m parali.forecast.compare bootstrap lightgbm_tuned mlp
 python -m parali.forecast.compare ablation
 python -m parali.forecast.compare table     # writes eval/model_comparison/summary.csv
 ```
+
+## 9. Calibration: isotonic vs Platt scaling
+
+Model scores are ranked well but are not probabilities (raw Brier score on 2025: 0.074). We map
+them to probabilities with a calibrator fitted on the 2024 season, and compared two standard
+methods by fitting on alternate days of 2024 and scoring the other days (so the choice again uses
+validation data only):
+
+| Method | Brier (cross-fitted, 2024) | Log loss (cross-fitted, 2024) | Distinct output values (2025) |
+| --- | --- | --- | --- |
+| **Isotonic regression (chosen)** | **0.0642** | **0.2226** | 170 |
+| Platt scaling (logistic on log-odds) | 0.0648 | 0.2239 | 4,557 |
+
+Isotonic is slightly better and was kept. Its one drawback is visible in the dashboard: it maps
+nearby scores to the same probability, so several top cells can all show "45%". Ranking (the top
+list, the "Top 1%" figure, fire capture) therefore uses the raw score, and the calibrated value is
+only shown as the chance of fire. On the 2025 test season calibration cut the Brier score from
+0.074 to 0.041, and the predicted and observed fire rates match within about a percentage point in
+every band (see `eval/RESULTS.md`).

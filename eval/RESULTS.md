@@ -12,7 +12,7 @@ Fire capture @10% = share of all fires in the next 3 days that fell inside the 1
 
 | Method | PR-AUC | ROC-AUC | Precision @10% | Fire capture @10% |
 | --- | --- | --- | --- | --- |
-| **LightGBM model (uncalibrated scores, used for ranking)** | **0.266** | **0.849** | **16.2%** | **36.8%** |
+| **LightGBM model (raw scores, used for ranking)** | **0.266** | **0.849** | **16.2%** | **36.8%** |
 | Baseline: Fires in the cell, last 3 days | 0.107 | 0.602 | 11.1% | 25.7% |
 | Baseline: Fires in and around the cell, last 3 days | 0.191 | 0.748 | 14.6% | 33.6% |
 | Baseline: Fires in the same cell, same days last year | 0.093 | 0.608 | 10.8% | 23.3% |
