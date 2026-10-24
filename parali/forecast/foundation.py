@@ -19,7 +19,7 @@ import numpy as np
 import pandas as pd
 
 from parali import config
-from parali.forecast.compare import OUT_DIR, _score
+from parali.forecast.compare import _score
 from parali.forecast.features import season_matrix
 from parali.forecast.train import split
 from parali.pipeline import build
@@ -39,7 +39,9 @@ def season_scores(pipeline, counts_prev: np.ndarray, counts: np.ndarray, days: n
         context = np.concatenate([counts_prev, counts[:, : t + 1]], axis=1)  # up to and including day t
         for i in range(0, n_cells, BATCH):
             ctx = torch.tensor(context[i : i + BATCH], dtype=torch.float32)
-            q = pipeline.predict(ctx, prediction_length=config.HORIZON_DAYS).numpy()  # (batch, quantiles, horizon)
+            q = pipeline.predict(
+                ctx, prediction_length=config.HORIZON_DAYS
+            ).numpy()  # (batch, quantiles, horizon)
             mean[i : i + BATCH, j] = q.mean(axis=1).sum(axis=1)
             upper[i : i + BATCH, j] = q[:, -1, :].sum(axis=1)
     return {"mean": mean, "upper": upper}
