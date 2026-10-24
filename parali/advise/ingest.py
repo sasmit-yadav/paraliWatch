@@ -160,7 +160,10 @@ def load_corpus(corpus_dir: Path = config.CORPUS_DIR) -> list[Page]:
             elif path.suffix.lower() in {".html", ".htm"}:
                 texts = _html_pages(path)
             else:
-                texts = [normalize(path.read_text(encoding="utf-8", errors="replace"))]
+                raw = path.read_text(encoding="utf-8", errors="replace")
+                if path.suffix.lower() == ".md":
+                    raw = re.sub(r"^\s*#+\s*", "", raw, flags=re.MULTILINE)  # headings become plain lines
+                texts = [normalize(raw)]
         except Exception as exc:  # a broken file should not stop the whole corpus
             log.warning("Skipping %s: %s", rel, exc)
             continue
