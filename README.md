@@ -2,7 +2,9 @@
 
 **Parali Watch forecasts where crop-residue (paddy straw) fires are likely in Punjab and Haryana
 over the next 3 days, explains why, and shows it on a map**, so officials can send teams and
-machines before the burning, not after.
+machines before the burning, not after. It also writes a daily bulletin for district officers in
+English and Hindi, answers questions about the rules and schemes from official documents with page
+citations, and exposes all of this as tools for AI assistants through an MCP server.
 
 ![Dashboard: fire risk by hexagon, with the reasons for a selected cell](docs/images/dashboard.png)
 
@@ -25,6 +27,17 @@ of the next 3 days' fires they would cover.* Full results: [`eval/RESULTS.md`](e
 How the model was chosen (7 model families, bootstrap tests, ablation):
 [`docs/MODEL_SELECTION.md`](docs/MODEL_SELECTION.md).
 
+## What's inside
+
+| Part | What it does | Details |
+| --- | --- | --- |
+| Forecast | LightGBM risk per ~36 km2 cell for the next 3 days, calibrated, with SHAP reasons | [Model selection](docs/MODEL_SELECTION.md) |
+| Dashboard | Map, date slider, cell explanations, top-risk list | [Architecture](docs/ARCHITECTURE.md) |
+| Bulletin agents | LangGraph monitor -> analyst -> writer; EN + HI; official approves | [Agents and MCP](docs/AGENTS_AND_MCP.md) |
+| Assistant (RAG) | Hybrid search + multilingual reranker over CAQM, PIB, Haryana and ICAR documents; cited answers; refuses when unsure | [RAG](docs/RAG.md) |
+| MCP server | 7 tools: risk, explanations, fires, district summary, bulletin, scheme search | [Agents and MCP](docs/AGENTS_AND_MCP.md) |
+| Foundation-model check | Chronos-Bolt zero-shot vs the tuned model | [Model selection, section 10](docs/MODEL_SELECTION.md) |
+
 ## Quick start
 
 Needs Python 3.10+ and [uv](https://docs.astral.sh/uv/). The repository ships the trained model
@@ -37,7 +50,26 @@ uv sync
 uv run python -m parali serve
 ```
 
-Open http://127.0.0.1:8000 (API docs at http://127.0.0.1:8000/docs).
+Open http://127.0.0.1:8000 (API docs at http://127.0.0.1:8000/docs). The first question to the
+assistant downloads two small models (~800 MB, once) and builds the document index (~1 minute).
+
+Optional: connect any OpenAI-compatible LLM for written answers (otherwise the assistant quotes
+the documents):
+
+```bash
+# Ollama example
+export PARALI_LLM_BASE_URL=http://localhost:11434/v1 PARALI_LLM_MODEL=qwen2.5:7b
+# or a hosted API: PARALI_LLM_BASE_URL=<provider's /v1 URL> PARALI_LLM_API_KEY=<key> PARALI_LLM_MODEL=<model>
+```
+
+Other commands:
+
+```bash
+uv run python -m parali ask "Up to what percentage can power plants co-fire paddy straw pellets?"
+uv run python -m parali bulletin 2025-11-07
+uv run python -m parali mcp           # MCP server over stdio
+uv run python -m parali add-url <link to an official page>   # then: uv run python -m parali index
+```
 
 Or with Docker: `docker compose up --build`.
 
@@ -46,7 +78,7 @@ Or with Docker: `docker compose up --build`.
 ```bash
 uv run python -m parali data    # downloads ~330 MB of FIRMS archives, boundaries, weather (~5 min)
 uv run python -m parali train   # trains, evaluates, writes eval/ and data/demo/ (~2 min)
-uv run pytest                   # 16 tests
+uv run pytest                   # 30 tests
 ```
 
 ## How it works
@@ -73,15 +105,16 @@ Architecture: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
 ## Roadmap
 
-Phase 1 (this release): data, forecast, model comparison, dashboard. Next: a Hindi assistant
-grounded in government scheme documents (RAG), alert agents and an MCP server, burn-scar detection
-from satellite images, and voice. See [`docs/ROADMAP.md`](docs/ROADMAP.md) and the
-[development log](docs/DEVLOG.md).
+Done: phase 1 (data, forecast, model comparison, dashboard) and phase 2 (document assistant,
+bulletin agents, MCP server, foundation-model comparison). Next: burn-scar detection from
+satellite images, Hindi voice and a fine-tuned small model, then MLOps. See
+[`docs/ROADMAP.md`](docs/ROADMAP.md) and the [development log](docs/DEVLOG.md).
 
 ## Data credits
 
 NASA FIRMS (VIIRS S-NPP) · Open-Meteo / Copernicus ERA5 · geoBoundaries · OpenStreetMap
-contributors (basemap).
+contributors (basemap) · Commission for Air Quality Management · Press Information Bureau ·
+Agriculture Department Haryana · ICAR-IARI CREAMS.
 
 ## Licence
 

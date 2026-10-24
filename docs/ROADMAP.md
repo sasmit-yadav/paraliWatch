@@ -3,8 +3,8 @@
 | Phase | Weeks | Scope | Status |
 | --- | --- | --- | --- |
 | 1. Core | 1-3 | Data pipeline, forecast with baselines, calibration, SHAP, model comparison, map dashboard, tests, CI | Done (deploy pending) |
-| 2. GenAI layer | 4-5 | Hybrid RAG over Haryana crop-residue scheme PDFs, GraphRAG, evaluation set, LangGraph alert agents, MCP server, time-series foundation model comparison | Next |
-| 3. Vision + voice | 6-7 | Burn-scar segmentation (Prithvi-EO-2.0 vs U-Net), Hindi speech in/out, QLoRA small model | Planned |
+| 2. GenAI layer | 4-5 | Hybrid RAG with multilingual reranking and OCR, GraphRAG, 50-question evaluation, LangGraph bulletin agents with approval, MCP server, Chronos comparison | Done |
+| 3. Vision + voice | 6-7 | Burn-scar segmentation (Prithvi-EO-2.0 vs U-Net), Hindi speech in/out, QLoRA small model | Next |
 | 4. Ops + polish | 8 | MLflow registry, drift checks, tracing, human feedback loop, public demo | Planned |
 
 ## Phase 1 follow-ups
@@ -15,3 +15,10 @@
 - [ ] Separate forecasts for day +1, +2, +3
 - [ ] Conformal intervals on each cell's probability
 - [ ] Deploy demo mode to Hugging Face Spaces
+
+## Phase 2 follow-ups
+
+- [ ] Official notices for farmer schemes (incentive, machinery subsidy, penalties) to replace the unverified summary
+- [ ] Claim-level answer verification (each sentence checked against one passage)
+- [ ] A held-out question set for the abstention cut-off
+- [ ] Evaluate written answers with a 7B+ model

@@ -2,6 +2,44 @@
 
 Decisions and findings, newest first. Each entry says what changed and why.
 
+## 2026-10-24 (later): Phase 2, assistant, agents, MCP, foundation model
+
+**Documents**
+- Government sites (agriharyana, agriwelfare, CAQM, CREAMS) block automated downloads and web
+  search is disabled for this account, so the corpus was collected by hand: 7 CAQM directions and
+  advisories, 2 PIB releases, the Haryana Mera Pani Meri Virasat note, 4 ICAR-CREAMS bulletins.
+  Two off-topic PDFs ("residue" in refineries and tea pesticides) were excluded.
+- Five CAQM notices were scans (two with no text). Added Tesseract OCR with text sidecars.
+- Printed web pages repeat a header and footer on every page: removed, and the footer URL became the
+  citation link. Chart pages in the bulletins were mostly axis numbers: filtered.
+- The project author supplied a summary of Haryana measures (incentives, subsidies, penalties) with
+  no source. It is in the corpus labelled UNVERIFIED in every citation; the assistant is told to say
+  so and to show both figures where it conflicts with official text (Mera Pani Meri Virasat:
+  Rs 7,000 in the official 2020-21 note, Rs 8,000 in the summary).
+
+**Retrieval** (50-question set; details in docs/RAG.md)
+- Reranking with multilingual bge-reranker-v2-m3: recall@1 0.61 -> 0.95. An English reranker
+  dropped Hindi recall@1 to 0.10.
+- Fixed 180-word chunks beat structure-aware and semantic chunking on these OCR'd documents.
+- MiniLM embeddings beat the 4x larger mpnet.
+- Reranker latency ~6 s on 2 cores with 20 candidates; 10 candidates keep recall@1 at 0.95 (2.8 s).
+- BM25 gave zero scores on a tiny test corpus (IDF of a word in half the documents is 0): switched
+  to BM25+.
+
+**Generation**
+- A local Qwen2.5-1.5B answered fluently but without citations in 36 of 37 cases; rejected drafts
+  swapped two states' figures and changed dates. Kept quote mode as the default.
+- The local LLM server was killed by the memory limit when it ran next to the reranker; evaluation
+  now retrieves and generates in separate stages.
+- Grammar-constrained JSON on the local server took ~5 minutes per call; graph extraction now parses
+  free-form output instead.
+- Bulletins: the small model passed the schema and number checks yet contradicted the trend and
+  produced broken Hindi. Added consistency checks and made the template the default.
+
+**Forecast**
+- Chronos-Bolt (small, zero-shot) beat the own-cell rule but lost to LightGBM by 0.068 PR-AUC
+  (bootstrap CI above zero): it can't see neighbouring cells.
+
 ## 2026-10-24: Phase 1 core (data, forecast, dashboard)
 
 **Data**

@@ -172,7 +172,84 @@ Practice: open `features.py`, close your notes, and explain `rolling()` and `for
 
 Saying these first shows you understand your own system.
 
-## 7. Questions to ask back
+## 7. Phase 2: the assistant, agents and MCP
+
+### Pitch addition (20 seconds)
+
+> On top of the forecast I built a document assistant for officials and farmers. It answers in
+> English or Hindi from CAQM directions, PIB releases, Haryana scheme notes and ICAR bulletins,
+> always with a page citation, and says "not in my documents" when it should. Adding a multilingual
+> reranker took the right page from rank 1 in 61% of questions to 95%. I also built LangGraph agents
+> that write a daily district bulletin, and an MCP server so any AI assistant can query the forecast.
+
+### Numbers to remember
+
+| What | Value |
+| --- | --- |
+| Evaluation set | 50 questions: 38 answerable (10 Hindi), 12 unanswerable, gold pages marked |
+| Recall@1: BM25 / vectors / hybrid / + reranker | 0.55 / 0.47 / 0.61 / **0.95** |
+| Hindi recall@1 with English vs multilingual reranker | 0.10 vs **1.00** |
+| Best chunking | Fixed 180-word windows (0.95) beat structure (0.89) and semantic (0.87) |
+| Answer/abstain cut-off | 47 of 50 classified correctly |
+| Small local LLM (1.5B) answers passing guardrails | 1 of 37 |
+| Chronos-Bolt zero-shot vs LightGBM (validation PR-AUC) | 0.286 vs 0.351 |
+
+### Questions and answers
+
+**"Why hybrid search? Why not just embeddings?"** Keyword search finds exact names and numbers
+("Direction No. 92", "Rs 2.32") that embeddings blur; embeddings find meaning and cross languages,
+which keyword search can't (Hindi recall@1 0.20). Reciprocal rank fusion combines the two lists by
+rank, so I don't have to calibrate a BM25 score against a cosine similarity. Hybrid recall@5 was
+0.92 vs 0.79 and 0.76 for each alone.
+
+**"What does the reranker do and why did it help so much?"** Embedding search encodes the question
+and passage separately; a cross-encoder reads them together and scores relevance directly, which is
+much more accurate but too slow for the whole corpus. So: retrieve 10 candidates cheaply, rerank
+them precisely. It must be multilingual: an English reranker dropped Hindi recall@1 to 0.10.
+
+**"Why did fixed-size chunks beat 'smarter' chunking?"** The documents are OCR'd scans and printed
+web pages. Headings merge into text and clause numbers appear mid-line, so heading detection and
+sentence-similarity splitting cut in the wrong places. Overlapping windows don't depend on layout.
+I'd revisit this with clean digital documents.
+
+**"How do you stop hallucinations?"** Four layers: (1) answer only above a relevance cut-off,
+otherwise say "not found"; (2) the prompt allows only the numbered sources and requires [n]
+citations; (3) every number in the answer must appear in a cited source; (4) if any check fails,
+fall back to quoting the source sentences. The small model's rejected drafts swapped Punjab's and
+Haryana's brick-kiln counts and changed target dates: the citation check caught them. The number
+check alone wouldn't have caught the swap, because both numbers are in the sources. That's a
+limitation I'd fix with claim-level verification (check each sentence against one passage).
+
+**"How did you evaluate a RAG system?"** Separately at each stage: retrieval with recall@k and MRR
+against hand-marked gold pages; abstention with unanswerable questions, including hard negatives
+that sound covered; answers with citation accuracy, key-fact recall and number support. Because
+retrieval and generation are evaluated separately, I can tell which stage failed.
+
+**"How did you handle scanned PDFs?"** Two had no text and three had a broken OCR layer. I run
+Tesseract once and save a text sidecar that ingestion prefers, strip repeated headers and footers,
+and drop chart-axis noise. Clean text mattered as much as model choice.
+
+**"Why are bulletin numbers written by code, not the LLM?"** The analyst step computes every
+figure; the LLM may only phrase them, must pass a JSON schema, and every number must exist in the
+facts. A small model still produced contradictions and broken Hindi, so the default is a
+deterministic template and the LLM writer is opt-in.
+
+**"What is MCP and why add it?"** Model Context Protocol is a standard way for AI assistants to
+call external tools. Exposing get_risk, explain_cell, daily_bulletin and search_schemes means any
+MCP client can answer "where should Sangrur's teams go today?" with live project data.
+
+**"You compared a foundation model. What happened?"** Chronos-Bolt, zero-shot, beat the rule that
+uses the same information (a cell's own history) but lost to LightGBM (+0.068 PR-AUC, CI above
+zero) because it sees one cell at a time and can't use neighbours, the second-strongest signal.
+
+### Limitations to state first
+
+- The knowledge base is thin on farmer scheme details; some figures come from an unverified summary,
+  and the assistant labels them that way.
+- The abstention cut-off was tuned on the same 50 questions.
+- The 1.5B local model can't follow the citation format; quality answers need a larger model.
+
+## 8. Questions to ask back
 
 - "How do you handle distribution shift between training and production data in your team?"
 - "Do you evaluate models on time-based splits?"
