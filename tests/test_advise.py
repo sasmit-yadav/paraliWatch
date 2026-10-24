@@ -72,3 +72,16 @@ def test_answer_quotes_sources_without_llm_and_refuses_off_topic(retriever, monk
     off = answer_mod.answer("What is the price of tomatoes in Delhi today?")
     assert off.mode == "not_found"
     assert config.HELPLINE in off.text
+
+
+def test_printed_web_page_headers_and_footers_are_removed():
+    from parali.advise.ingest import _strip_repeated_lines
+
+    stamp, url = "10/24/26, 11:55 AM Press Release Page", "https://www.pib.gov.in/x?PRID=1"
+    pages = [
+        f"{stamp}\nCAQM met on 06.05.2026.\n{url} 1/2",
+        f"{stamp}\nPunjab recorded 3,729 fire counts.\n{url} 2/2",
+    ]
+    cleaned, found = _strip_repeated_lines(pages)
+    assert found == url
+    assert cleaned == ["CAQM met on 06.05.2026.", "Punjab recorded 3,729 fire counts."]

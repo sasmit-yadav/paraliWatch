@@ -7,6 +7,7 @@ import unicodedata
 
 DEVANAGARI = re.compile(r"[ऀ-ॿ]")
 WORD = re.compile(r"[\wऀ-ॿ]+", re.UNICODE)
+CONTROL = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]")
 HINDI_DIGITS = str.maketrans("०१२३४५६७८९", "0123456789")
 SENTENCE_END = re.compile(r"(?<=[.!?।])\s+")  # । = Hindi full stop (danda)
 
