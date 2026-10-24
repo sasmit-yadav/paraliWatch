@@ -35,8 +35,7 @@ TEST_YEARS = [2025]  # touched once, for the final report
 
 # Data sources (all free)
 FIRMS_ARCHIVE_URL = (
-    "https://firms.modaps.eosdis.nasa.gov/data/country/viirs-snpp/{year}/"
-    "viirs-snpp_{year}_India.csv"
+    "https://firms.modaps.eosdis.nasa.gov/data/country/viirs-snpp/{year}/viirs-snpp_{year}_India.csv"
 )
 FIRMS_AREA_URL = "https://firms.modaps.eosdis.nasa.gov/api/area/csv/{key}/VIIRS_SNPP_NRT/{bbox}/{days}"
 BOUNDARY_URLS = {

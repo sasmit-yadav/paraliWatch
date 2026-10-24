@@ -21,17 +21,37 @@ from parali import config
 
 FEATURES = [
     # the cell's own recent fires
-    "fires_1d", "fires_3d", "fires_7d", "fires_14d", "fires_season", "frp_3d", "days_since_fire",
+    "fires_1d",
+    "fires_3d",
+    "fires_7d",
+    "fires_14d",
+    "fires_season",
+    "frp_3d",
+    "days_since_fire",
     # fires around the cell
-    "ring1_1d", "ring1_3d", "ring1_7d", "ring2_3d",
+    "ring1_1d",
+    "ring1_3d",
+    "ring1_7d",
+    "ring2_3d",
     # wider activity
-    "district_3d", "state_3d", "state_season_vs_last_year",
+    "district_3d",
+    "state_3d",
+    "state_season_vs_last_year",
     # memory of past seasons
-    "last_year_next3", "last_year_week", "last_year_season", "history_rate",
+    "last_year_next3",
+    "last_year_week",
+    "last_year_season",
+    "history_rate",
     # calendar
     "season_day",
     # weather observed up to day t
-    "tmax", "rh", "rain", "rain_3d", "wind", "wind_dir_sin", "wind_dir_cos",
+    "tmax",
+    "rh",
+    "rain",
+    "rain_3d",
+    "wind",
+    "wind_dir_sin",
+    "wind_dir_cos",
 ]
 TARGET = "fire_next3"
 
@@ -204,7 +224,5 @@ def build_panel(fires: pd.DataFrame, weather: pd.DataFrame, grid: pd.DataFrame, 
     for i, year in enumerate(years[1:], start=1):
         earlier = [seasons[y].counts.sum(axis=1) for y in years[:i]]
         history = np.mean(earlier, axis=0)
-        frames.append(
-            build_season(seasons[year], seasons[years[i - 1]], history, grid, weather, a1, a2)
-        )
+        frames.append(build_season(seasons[year], seasons[years[i - 1]], history, grid, weather, a1, a2))
     return pd.concat(frames, ignore_index=True)

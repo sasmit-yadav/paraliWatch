@@ -47,7 +47,7 @@ def fetch_season(points: pd.DataFrame, year: int) -> pd.DataFrame:
         payload = get(config.OPEN_METEO_ARCHIVE_URL, params=params).json()
         if isinstance(payload, dict):
             payload = [payload]
-        for (wlat, wlon), loc in zip(batch[["wlat", "wlon"]].itertuples(index=False), payload):
+        for (wlat, wlon), loc in zip(batch[["wlat", "wlon"]].itertuples(index=False), payload, strict=True):
             daily = pd.DataFrame(loc["daily"])
             daily["wlat"], daily["wlon"] = wlat, wlon
             frames.append(daily)

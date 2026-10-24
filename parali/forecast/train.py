@@ -91,7 +91,9 @@ def run(panel: pd.DataFrame) -> dict:
     trials = {}
     for name, params in candidates.items():
         booster = fit(train, valid, params)
-        score = evaluate(valid.assign(s=booster.predict(valid[FEATURES], num_iteration=booster.best_iteration)), "s")
+        score = evaluate(
+            valid.assign(s=booster.predict(valid[FEATURES], num_iteration=booster.best_iteration)), "s"
+        )
         trials[name] = {"booster": booster, "valid": score}
         log.info("%s: valid PR-AUC %.4f (%d trees)", name, score["pr_auc"], booster.best_iteration)
     best_name = max(trials, key=lambda k: trials[k]["valid"]["pr_auc"])

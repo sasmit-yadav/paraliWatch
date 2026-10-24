@@ -27,6 +27,7 @@ def pct(x: float) -> str:
 def write(results: dict, fire_counts: pd.Series) -> None:
     (config.EVAL_DIR / "metrics.json").write_text(json.dumps(results, indent=2), encoding="utf-8")
     m = results["model"]
+    raw = results["model_uncalibrated"]
     lines = [
         "# Forecast results",
         "",
@@ -46,9 +47,9 @@ def write(results: dict, fire_counts: pd.Series) -> None:
         "",
         "| Method | PR-AUC | ROC-AUC | Precision @10% | Fire capture @10% |",
         "| --- | --- | --- | --- | --- |",
-        f"| **LightGBM model (uncalibrated scores, used for ranking)** | **{fmt(results['model_uncalibrated']['pr_auc'])}** | "
-        f"**{fmt(results['model_uncalibrated']['roc_auc'])}** | **{pct(results['model_uncalibrated']['precision_top10pct'])}** | "
-        f"**{pct(results['model_uncalibrated']['fire_capture_top10pct'])}** |",
+        f"| **LightGBM model (raw scores, used for ranking)** | **{fmt(raw['pr_auc'])}** | "
+        f"**{fmt(raw['roc_auc'])}** | **{pct(raw['precision_top10pct'])}** | "
+        f"**{pct(raw['fire_capture_top10pct'])}** |",
     ]
     for key, label in LABELS.items():
         b = results["baselines"][key]
@@ -81,7 +82,9 @@ def write(results: dict, fire_counts: pd.Series) -> None:
         "| --- | --- | --- | --- |",
     ]
     for state, s in results["by_state"].items():
-        lines.append(f"| {state} | {fmt(s['pr_auc'])} | {pct(s['fire_capture_top10pct'])} | {pct(s['base_rate'])} |")
+        lines.append(
+            f"| {state} | {fmt(s['pr_auc'])} | {pct(s['fire_capture_top10pct'])} | {pct(s['base_rate'])} |"
+        )
     lines += [
         "",
         "Within-state fire capture ranks cells inside each state separately, so it is not directly "

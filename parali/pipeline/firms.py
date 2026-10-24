@@ -37,7 +37,10 @@ def clean(df: pd.DataFrame, cells: set[str], start: date, end: date) -> pd.DataF
     df = df.assign(acq_date=pd.to_datetime(df["acq_date"]).dt.date)
     df = df[(df["acq_date"] >= start) & (df["acq_date"] <= end)]
     df = df.assign(
-        cell=[h3.latlng_to_cell(la, lo, config.H3_RES) for la, lo in zip(df["latitude"], df["longitude"])]
+        cell=[
+            h3.latlng_to_cell(la, lo, config.H3_RES)
+            for la, lo in zip(df["latitude"], df["longitude"], strict=True)
+        ]
     )
     df = df[df["cell"].isin(cells)]
     cols = [c for c in KEEP_COLS if c in df.columns] + ["cell"]
