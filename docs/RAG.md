@@ -133,7 +133,7 @@ Generated from the retrieved passages of each question (`python -m parali.advise
 | Measure | Quotes only (no LLM) | With Qwen2.5-1.5B (local, 4-bit) |
 | --- | --- | --- |
 | Answers citing a correct page (answerable) | 84% | 84% |
-| Key facts present in the answer | 59% (English 61%, Hindi 50%) | 59% |
+| Key facts present in the answer (no graph) | 59% (English 61%, Hindi 50%) | 59% |
 | Wrong "not found" on answerable questions | 1 of 38 | 1 of 38 |
 | Answered an unanswerable question | 3 of 12 | 3 of 12 |
 | LLM answers that passed the guardrails | - | **1 of 37** |
@@ -153,6 +153,31 @@ application process, tractor subsidy under a named scheme, fires on 5 Nov 2025):
 retrieved were about the right scheme or season, so the reranker scored them as relevant. In quote
 mode the user sees the passage and its source, not an invented answer.
 
+### 4.5 Knowledge graph (GraphRAG)
+
+`data/corpus/knowledge_graph.json` holds 20 reviewed facts linking schemes, machines, power
+plants, brick kilns, pellets and penalties. Each fact names its document and page and carries an
+exact quote that is checked against the page text. When a question mentions an entity (in English
+or Hindi, via aliases such as "मेरा पानी मेरी विरासत" or "ईंट भट्टों"), its facts and their
+one-hop neighbours are added to the answer as "Related facts" and to the LLM's context.
+
+| Measure (quote mode) | Without graph | With graph |
+| --- | --- | --- |
+| Key facts present in the answer | 59% | **75%** |
+| English / Hindi | 61% / 50% | 74% / 80% |
+| Citing a correct page | 84% | 84% |
+
+The graph helps most where facts are spread out or conflict: the Mera Pani Meri Virasat question
+now shows both Rs 7,000 (official 2020-21 note) and Rs 8,000 (unverified summary) with their
+sources, and Hindi questions get English facts they would otherwise miss.
+
+**Treat the +16 points as optimistic.** The graph was curated by the same person who wrote the
+evaluation questions, after reading the same documents, so its facts overlap the questions more
+than a graph built independently would. A fair test needs new questions written without seeing the
+graph. Automatic extraction exists (`python -m parali graph`, LLM -> validated triples whose quotes
+must appear in the chunk -> `data/index/graph_extracted.json` for review), but with the 1.5B local
+model it took 1-5 minutes per chunk and was stopped; it is meant for a stronger model.
+
 ## 5. Reproduce
 
 ```bash
@@ -161,6 +186,7 @@ python -m parali index                          # builds data/index from data/co
 python -m parali.advise.evaluate retrieval      # all strategies x models x search modes
 python -m parali.advise.evaluate answers retrieve
 python -m parali.advise.evaluate answers generate   # set PARALI_LLM_* to test an LLM
+PARALI_USE_GRAPH=0 python -m parali.advise.evaluate answers generate   # without the knowledge graph
 ```
 
 ## 6. Limits
