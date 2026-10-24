@@ -1,17 +1,18 @@
 """Embedding and reranking models (ONNX via fastembed: no PyTorch needed, runs on a laptop CPU).
 
-Models download once (to PARALI_MODEL_CACHE, default data/models) and are reused."""
+Models download once (to PARALI_MODEL_CACHE, default ~/.cache/parali/models) and are reused."""
 
 from __future__ import annotations
 
 import os
 from functools import lru_cache
+from pathlib import Path
 
 import numpy as np
 
 from parali import config
 
-CACHE = os.environ.get("PARALI_MODEL_CACHE") or str(config.DATA_DIR / "models")
+CACHE = os.environ.get("PARALI_MODEL_CACHE") or str(Path.home() / ".cache" / "parali" / "models")
 
 
 @lru_cache(maxsize=4)

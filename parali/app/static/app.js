@@ -9,7 +9,7 @@ const BANDS = [
 ];
 // Below 5% the cell is left clear so the map highlights where action is needed.
 
-const state = { dates: [], index: 0, selected: null, metrics: null };
+const state = { dates: [], index: 0, selected: null, metrics: null, bulletin: null, lang: "en" };
 const $ = (id) => document.getElementById(id);
 const pct = (x, digits = 0) => `${(100 * x).toFixed(digits)}%`;
 
@@ -68,6 +68,45 @@ async function loadDay() {
   map.getSource("fires").setData(fires);
   renderTop(top);
   if (state.selected) selectCell(state.selected, false);
+  loadBulletin(d);
+}
+
+async function loadBulletin(d) {
+  try {
+    state.bulletin = await getJSON(`/api/bulletin?date=${d}`);
+  } catch {
+    state.bulletin = null;
+  }
+  renderBulletin();
+}
+
+function esc(text) {
+  return String(text).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+}
+
+function renderBulletin() {
+  const b = state.bulletin;
+  if (!b) { $("b-headline").textContent = "Bulletin unavailable for this date."; return; }
+  const t = b[state.lang];
+  $("b-headline").textContent = t.headline;
+  $("b-summary").textContent = t.summary;
+  $("b-actions").innerHTML = t.actions.map((a) => `<li>${esc(a)}</li>`).join("");
+  $("b-districts").innerHTML = b.districts
+    .map((d) => `<li><span>${esc(d.district)}, ${esc(d.state)} · ${d.fires_last_3d} fires in 3 days (${d.trend})</span><span class="lvl ${d.level}">${d.level}</span></li>`)
+    .join("");
+  $("b-status").textContent = b.status === "approved"
+    ? `Approved by ${b.approved_by}. Written by: ${b.writer === "llm" ? "AI agents" : "agents (template)"}.`
+    : `Draft, waiting for an official's approval. Written by: ${b.writer === "llm" ? "AI agents" : "agents (template)"}.`;
+  $("approve-form").hidden = b.status === "approved";
+}
+
+function setLang(lang) {
+  state.lang = lang;
+  $("lang-en").classList.toggle("active", lang === "en");
+  $("lang-hi").classList.toggle("active", lang === "hi");
+  $("lang-en").setAttribute("aria-pressed", lang === "en");
+  $("lang-hi").setAttribute("aria-pressed", lang === "hi");
+  renderBulletin();
 }
 
 function renderTop(rows) {
@@ -163,4 +202,44 @@ $("close-detail").addEventListener("click", () => {
   state.selected = null;
   $("detail").hidden = true;
   map.setFilter("risk-selected", ["==", ["get", "cell"], ""]);
+});
+
+$("lang-en").addEventListener("click", () => setLang("en"));
+$("lang-hi").addEventListener("click", () => setLang("hi"));
+
+$("approve-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const name = $("approver").value.trim();
+  if (name.length < 2) { $("approver").focus(); return; }
+  const res = await fetch(`/api/bulletin/approve?date=${state.dates[state.index]}`, {
+    method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ official: name }),
+  });
+  if (res.ok) { state.bulletin = await res.json(); renderBulletin(); }
+});
+
+$("ask-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const q = $("ask-input").value.trim();
+  const box = $("ask-answer");
+  if (q.length < 3) return;
+  const btn = e.target.querySelector("button");
+  btn.disabled = true;
+  box.hidden = false;
+  box.textContent = "Searching the documents\u2026";
+  try {
+    const res = await fetch("/api/ask", {
+      method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ question: q }),
+    });
+    const a = await res.json();
+    if (!res.ok) { box.textContent = a.detail || "Something went wrong."; return; }
+    const cites = a.citations
+      .map((c) => `<li>[${c.n}] ${esc(c.title)}, page ${c.page}</li>`)
+      .join("");
+    const modes = { llm: "Written by the AI from the sources below.", extractive: "Quoted from the sources below (no AI model connected).", not_found: "" };
+    box.innerHTML = `<div>${esc(a.text).replace(/\n/g, "<br>")}</div>${cites ? `<ol class="cites">${cites}</ol>` : ""}<div class="mode">${modes[a.mode] || ""}</div>`;
+  } catch {
+    box.textContent = "Could not reach the assistant.";
+  } finally {
+    btn.disabled = false;
+  }
 });

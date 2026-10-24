@@ -49,6 +49,35 @@
         <p class="outcome" id="d-outcome"></p>
       </section>
 
+      <section class="card" id="bulletin-card">
+        <div class="card-head">
+          <h2>Daily bulletin</h2>
+          <div class="seg" role="group" aria-label="Bulletin language">
+            <button id="lang-en" class="seg-btn active" aria-pressed="true">EN</button>
+            <button id="lang-hi" class="seg-btn" aria-pressed="false">हिं</button>
+          </div>
+        </div>
+        <p class="muted small" id="b-status">Written by agents for district officers. Draft until approved.</p>
+        <h3 id="b-headline" class="b-headline"></h3>
+        <p id="b-summary" class="b-summary"></p>
+        <ul id="b-actions" class="b-actions"></ul>
+        <ul id="b-districts" class="b-districts"></ul>
+        <form id="approve-form" class="approve">
+          <input id="approver" type="text" placeholder="Your name to approve" aria-label="Approver name" maxlength="80">
+          <button type="submit" class="btn">Approve</button>
+        </form>
+      </section>
+
+      <section class="card" id="ask-card">
+        <h2>Ask about schemes</h2>
+        <p class="muted small">Answers come only from official documents, with page references. English or Hindi.</p>
+        <form id="ask-form">
+          <textarea id="ask-input" rows="2" maxlength="500" placeholder="e.g. पराली न जलाने पर कितना प्रोत्साहन मिलता है?" aria-label="Your question"></textarea>
+          <button type="submit" class="btn">Ask</button>
+        </form>
+        <div id="ask-answer" class="answer" hidden></div>
+      </section>
+
       <section class="card">
         <h2>Highest risk today</h2>
         <ol class="top-list" id="top-list"></ol>
