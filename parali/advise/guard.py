@@ -19,6 +19,7 @@ INJECTION = re.compile(
     re.IGNORECASE,
 )
 CITATION = re.compile(r"\[(\d+)\]")
+DIGITS = re.compile(r"\d+")
 
 
 def looks_like_injection(text: str) -> bool:
@@ -38,5 +39,7 @@ def unsupported_numbers(answer: str, sources: list[str], question: str = "") -> 
     """Numbers in the answer that appear in neither the cited sources nor the question.
     Citation markers like [2] are ignored."""
     clean = CITATION.sub(" ", answer)
-    allowed = set().union(*(numbers(s) for s in sources), numbers(question)) if sources else numbers(question)
+    texts = [*sources, question]
+    # allow numbers as written ("1,000") and every digit group inside them ("01.11.2026" -> "2026")
+    allowed = set().union(*(numbers(t) for t in texts)) | {d for t in texts for d in DIGITS.findall(t)}
     return {n for n in numbers(clean) if n not in allowed}

@@ -79,7 +79,7 @@ class Retriever:
         return [Hit(self.by_id[cid], d["score"], d) for cid, d in order]
 
     def search(
-        self, query: str, k: int = config.TOP_K, mode: str = "hybrid_rerank", pool: int = 20
+        self, query: str, k: int = config.TOP_K, mode: str = "hybrid_rerank", pool: int = config.RERANK_POOL
     ) -> list[Hit]:
         if mode == "bm25":
             return self.keyword(query, k)

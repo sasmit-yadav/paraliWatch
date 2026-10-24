@@ -77,17 +77,19 @@ EMBED_MODEL = os.environ.get(
     "PARALI_EMBED_MODEL", "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
 )
 RERANK_MODEL = os.environ.get("PARALI_RERANK_MODEL", "BAAI/bge-reranker-v2-m3-int8")
-CHUNK_STRATEGY = os.environ.get("PARALI_CHUNK_STRATEGY", "structure")
+CHUNK_STRATEGY = os.environ.get("PARALI_CHUNK_STRATEGY", "fixed")
 TOP_K = 5
+RERANK_POOL = int(os.environ.get("PARALI_RERANK_POOL", "10"))  # candidates the reranker scores
 
 # Any OpenAI-compatible chat endpoint: Ollama (http://localhost:11434/v1), Groq, Gemini, llama.cpp.
 # With no LLM configured the assistant still works in extractive mode (quotes the sources).
 LLM_BASE_URL = os.environ.get("PARALI_LLM_BASE_URL", "")
 LLM_API_KEY = os.environ.get("PARALI_LLM_API_KEY", "")
 LLM_MODEL = os.environ.get("PARALI_LLM_MODEL", "")
+LLM_TIMEOUT = float(os.environ.get("PARALI_LLM_TIMEOUT", "120"))  # seconds; raise for slow local models
 # Below this reranker score the best passage is treated as "not relevant" and the assistant says it
 # could not find an answer. Tuned on the evaluation set's unanswerable questions (docs/RAG.md).
-MIN_RERANK_SCORE = float(os.environ.get("PARALI_MIN_RERANK_SCORE", "-3.0"))
+MIN_RERANK_SCORE = float(os.environ.get("PARALI_MIN_RERANK_SCORE", "-0.8"))
 HELPLINE = "Kisan Call Centre 1800-180-1551"
 # The bulletin text comes from a template by default. Set PARALI_BULLETIN_LLM=1 to let the LLM
 # write it (recommended only with a strong model; see docs/AGENTS_AND_MCP.md for why).

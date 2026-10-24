@@ -68,7 +68,8 @@ def expand_bilingual(query: str) -> str:
 
 
 def sentences(text: str) -> list[str]:
-    parts = [p.strip() for block in text.split("\n") for p in SENTENCE_END.split(block)]
+    lines = [re.sub(r"^\s*#+\s*", "", ln) for ln in text.split("\n")]  # drop markdown heading marks
+    parts = [p.strip() for block in lines for p in SENTENCE_END.split(block)]
     return [p for p in parts if len(p) > 2]
 
 

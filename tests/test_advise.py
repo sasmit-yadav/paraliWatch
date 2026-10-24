@@ -85,3 +85,9 @@ def test_printed_web_page_headers_and_footers_are_removed():
     cleaned, found = _strip_repeated_lines(pages)
     assert found == url
     assert cleaned == ["CAQM met on 06.05.2026.", "Punjab recorded 3,729 fire counts."]
+
+
+def test_numbers_inside_dates_and_titles_count_as_supported():
+    sources = ["CAQM Direction No. 92\n30% w.e.f. 01.11.2026"]
+    assert guard.unsupported_numbers("Target 30% from 2026 under Direction 92 [1].", sources) == set()
+    assert guard.unsupported_numbers("Target 35% from 2026 [1].", sources) == {"35"}

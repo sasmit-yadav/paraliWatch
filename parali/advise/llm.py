@@ -32,7 +32,7 @@ def chat(
     max_tokens: int = 500,
     json_mode: bool = False,
     purpose: str = "chat",
-    timeout: float = 120.0,
+    timeout: float | None = None,
 ) -> str:
     if not available():
         raise LLMUnavailable("Set PARALI_LLM_BASE_URL and PARALI_LLM_MODEL to use an LLM.")
@@ -48,7 +48,10 @@ def chat(
     start = time.perf_counter()
     try:
         resp = httpx.post(
-            config.LLM_BASE_URL.rstrip("/") + "/chat/completions", json=body, headers=headers, timeout=timeout
+            config.LLM_BASE_URL.rstrip("/") + "/chat/completions",
+            json=body,
+            headers=headers,
+            timeout=timeout or config.LLM_TIMEOUT,
         )
         resp.raise_for_status()
     except httpx.HTTPError as exc:
