@@ -1,0 +1,8 @@
+.git
+.venv
+data/raw
+data/processed
+eval/model_comparison/preds
+**/__pycache__
+.pytest_cache
+.ruff_cache
