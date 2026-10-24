@@ -9,6 +9,7 @@ COPY pyproject.toml uv.lock README.md ./
 RUN uv sync --frozen --no-dev --no-install-project
 COPY parali ./parali
 COPY data/demo ./data/demo
+COPY data/corpus ./data/corpus
 COPY models ./models
 COPY eval ./eval
 RUN uv sync --frozen --no-dev

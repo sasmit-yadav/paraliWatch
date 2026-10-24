@@ -78,7 +78,7 @@ Or with Docker: `docker compose up --build`.
 ```bash
 uv run python -m parali data    # downloads ~330 MB of FIRMS archives, boundaries, weather (~5 min)
 uv run python -m parali train   # trains, evaluates, writes eval/ and data/demo/ (~2 min)
-uv run pytest                   # 30 tests
+uv run pytest                   # 31 tests
 ```
 
 ## How it works
