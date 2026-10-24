@@ -133,16 +133,21 @@ def save_snapshot(pages: list[Page], corpus_dir: Path = config.CORPUS_DIR) -> Pa
 
 
 def load_corpus(corpus_dir: Path = config.CORPUS_DIR) -> list[Page]:
-    """Parse the documents in corpus_dir; with no documents, fall back to the shipped snapshot."""
+    """Parse the documents in corpus_dir. Documents that are only in the shipped snapshot
+    (pages.jsonl), such as PDFs that are not committed to the repository, are taken from it."""
     import json
 
-    has_docs = any(
-        p.suffix.lower() in SUPPORTED and not p.name.endswith(".ocr.txt") for p in corpus_dir.rglob("*")
-    )
+    parsed = _parse_files(corpus_dir)
     snapshot = corpus_dir / SNAPSHOT
-    if not has_docs and snapshot.exists():
-        with open(snapshot, encoding="utf-8") as fh:
-            return [Page(**json.loads(line)) for line in fh if line.strip()]
+    if not snapshot.exists():
+        return parsed
+    have = {p.doc_id for p in parsed}
+    with open(snapshot, encoding="utf-8") as fh:
+        shipped = [Page(**json.loads(line)) for line in fh if line.strip()]
+    return parsed + [p for p in shipped if p.doc_id not in have]
+
+
+def _parse_files(corpus_dir: Path) -> list[Page]:
     meta = _sources(corpus_dir)
     pages: list[Page] = []
     files = [

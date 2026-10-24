@@ -91,3 +91,15 @@ def test_numbers_inside_dates_and_titles_count_as_supported():
     sources = ["CAQM Direction No. 92\n30% w.e.f. 01.11.2026"]
     assert guard.unsupported_numbers("Target 30% from 2026 under Direction 92 [1].", sources) == set()
     assert guard.unsupported_numbers("Target 35% from 2026 [1].", sources) == {"35"}
+
+
+def test_snapshot_supplies_documents_missing_from_the_folder(tmp_path):
+    from parali.advise.ingest import load_corpus, save_snapshot
+
+    pages = load_corpus(FIXTURES)
+    save_snapshot([p for p in pages if p.doc_id == "fixture_machines.txt"], tmp_path)
+    (tmp_path / "extra.txt").write_text(
+        "A separate local note about balers and straw storage sheds.", encoding="utf-8"
+    )
+    loaded = {p.doc_id for p in load_corpus(tmp_path)}
+    assert loaded == {"fixture_machines.txt", "extra.txt"}
