@@ -1,0 +1,8 @@
+TEST FIXTURE - FICTIONAL MACHINERY NOTE FOR AUTOMATED TESTS ONLY.
+
+MACHINERY SUBSIDY
+Individual farmers get 50 percent subsidy on a happy seeder or super seeder.
+Cooperative societies and custom hiring centres get 80 percent subsidy.
+
+DECOMPOSER
+A microbial decomposer spray breaks down straw in the field in about 20 days.

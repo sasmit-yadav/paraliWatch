@@ -45,3 +45,23 @@ def test_bad_inputs_are_rejected(meta):
 def test_dashboard_is_served():
     assert client.get("/").status_code == 200
     assert client.get("/static/app.js").status_code == 200
+
+
+def test_bulletin_endpoint(meta, tmp_path, monkeypatch):
+    from parali import config
+
+    monkeypatch.setattr(config, "BULLETIN_DIR", tmp_path)
+    b = client.get(f"/api/bulletin?date={meta['default_date']}").json()
+    assert b["status"] == "draft" and b["districts"]
+    approved = client.post(
+        f"/api/bulletin/approve?date={meta['default_date']}", json={"official": "Test Officer"}
+    ).json()
+    assert approved["status"] == "approved"
+
+
+def test_profile_roundtrip(tmp_path, monkeypatch):
+    from parali.advise import memory
+
+    monkeypatch.setattr(memory, "DB", tmp_path / "a.db")
+    client.put("/api/profile/farmer1", json={"district": "Karnal", "land_acres": 3, "language": "hi"})
+    assert client.get("/api/profile/farmer1").json()["district"] == "Karnal"
