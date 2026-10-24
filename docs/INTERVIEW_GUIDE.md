@@ -99,7 +99,7 @@ validation PR-AUC from 0.341 to 0.351. All tuning used 2024 only.
 
 ### "How did you handle class imbalance?"
 
-I compared plain training with `scale_pos_weight` (negatives / positives, about 7) on validation.
+I compared plain training with `scale_pos_weight` (negatives / positives, about 4.4 in the training seasons) on validation.
 Weighting won slightly (0.3507 vs 0.3452), so I kept it. Because weighting distorts probabilities,
 I calibrate afterwards.
 
