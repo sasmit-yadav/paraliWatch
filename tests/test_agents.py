@@ -43,3 +43,17 @@ def test_mcp_server_exposes_tools():
         "search_schemes",
     } <= names
     assert "Sangrur" in str(result)
+
+
+def test_bulletin_checks_reject_fluent_but_wrong_text():
+    b = bulletin.generate(DAY, save=False)
+    # an LLM output seen in testing: wrong trend talk, raw cell IDs, no top district
+    bad_en = bulletin.Text(
+        headline="High Fire Risk in Punjab: Urgent Action Needed",
+        summary="Risk is rising. The top cells are 863d16c67ffffff and 863d1689fffffff.",
+        actions=["Act now."],
+    )
+    problems = bulletin.consistency_problems(bad_en, b.hi, b.districts)
+    assert "raw cell IDs in text" in problems
+    assert any("top district" in p for p in problems)
+    assert bulletin.consistency_problems(b.en, b.hi, b.districts) == []  # the template passes

@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import json
 import logging
+import re
 from datetime import date, datetime, timedelta, timezone
 from typing import Literal, TypedDict
 
@@ -180,12 +181,38 @@ WRITER_PROMPT = (
 )
 
 
+CELL_ID = re.compile(r"\b8[0-9a-f]{14}\b")
+UP = re.compile(r"increas|rising|rise|surg|बढ़", re.IGNORECASE)
+DOWN = re.compile(r"decreas|falling|fall|declin|drop|घट", re.IGNORECASE)
+
+
+def consistency_problems(en: Text, hi: Text, focus: list[DistrictAlert]) -> list[str]:
+    """Checks a fluent but wrong bulletin would fail. Numbers are checked separately."""
+    problems = []
+    text_en = " ".join([en.headline, en.summary, *en.actions])
+    text_hi = " ".join([hi.headline, hi.summary, *hi.actions])
+    if focus[0].district.lower() not in (en.headline + " " + en.summary).lower():
+        problems.append("top district missing from English headline/summary")
+    if CELL_ID.search(text_en) or CELL_ID.search(text_hi):
+        problems.append("raw cell IDs in text")
+    trends = {f.trend for f in focus}
+    for text in (text_en, text_hi):
+        if UP.search(text) and "rising" not in trends:
+            problems.append("says fires are rising, but no district is rising")
+        if DOWN.search(text) and "falling" not in trends:
+            problems.append("says fires are falling, but no district is falling")
+    letters = [c for c in text_hi if c.isalpha()]
+    if not letters or sum("\u0900" <= c <= "\u097f" for c in letters) / len(letters) < 0.6:
+        problems.append("Hindi text is not mostly Devanagari")
+    return problems
+
+
 def writer(state: State) -> State:
     d, focus = state["date"], state["focus"]
     facts = json.dumps([f.model_dump() for f in focus], ensure_ascii=False)
     used = "template"
     en, hi = _template(d, focus)
-    if llm.available():
+    if config.BULLETIN_LLM and llm.available():
         try:
             raw = llm.parse_json(
                 llm.chat(
@@ -197,10 +224,13 @@ def writer(state: State) -> State:
             )
             cand_en, cand_hi = Text.model_validate(raw["en"]), Text.model_validate(raw["hi"])
             written = " ".join([cand_en.headline, cand_en.summary, *cand_en.actions])
-            if not guard.unsupported_numbers(written, [facts]):
+            problems = consistency_problems(cand_en, cand_hi, focus)
+            if guard.unsupported_numbers(written, [facts]):
+                problems.append("numbers not in the facts")
+            if not problems:
                 en, hi, used = cand_en, cand_hi, "llm"
             else:
-                log.info("Bulletin LLM output had numbers not in the facts; using template")
+                log.info("Bulletin LLM output rejected (%s); using template", "; ".join(problems))
         except (llm.LLMUnavailable, ValueError, KeyError, ValidationError) as exc:
             log.info("Bulletin LLM unavailable or invalid (%s); using template", exc)
     bulletin = Bulletin(

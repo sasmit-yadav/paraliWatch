@@ -89,3 +89,6 @@ LLM_MODEL = os.environ.get("PARALI_LLM_MODEL", "")
 # could not find an answer. Tuned on the evaluation set's unanswerable questions (docs/RAG.md).
 MIN_RERANK_SCORE = float(os.environ.get("PARALI_MIN_RERANK_SCORE", "-3.0"))
 HELPLINE = "Kisan Call Centre 1800-180-1551"
+# The bulletin text comes from a template by default. Set PARALI_BULLETIN_LLM=1 to let the LLM
+# write it (recommended only with a strong model; see docs/AGENTS_AND_MCP.md for why).
+BULLETIN_LLM = os.environ.get("PARALI_BULLETIN_LLM", "0") == "1"

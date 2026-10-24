@@ -66,7 +66,17 @@ class Answer:
 
 @lru_cache(maxsize=1)
 def retriever() -> Retriever:
-    return Retriever()
+    """Load the index; on first use, build it from data/corpus if documents are there."""
+    try:
+        return Retriever()
+    except FileNotFoundError:
+        from parali.advise import index
+
+        if not any(config.CORPUS_DIR.glob("**/*.*")):
+            raise
+        log.info("No index yet: building it from %s (one-time, about a minute)", config.CORPUS_DIR)
+        index.build()
+        return Retriever()
 
 
 def _rewrite(question: str, profile: Profile | None) -> str:

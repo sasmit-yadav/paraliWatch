@@ -23,6 +23,14 @@ Design choices:
   every number it writes must exist in the analyst's facts (`guard.unsupported_numbers`). If either
   check fails, the bulletin falls back to the template, so a bad model output can never publish a
   wrong figure.
+- **Template by default, LLM by choice.** We ran the writer with a small local model (Qwen2.5-1.5B,
+  4-bit, llama.cpp). Its output passed the schema and number checks, yet the English contradicted
+  the facts ("an expected increase ... a trend of falling fire incidents"), listed raw cell IDs, and
+  the Hindi was largely meaningless (with Marathi words mixed in). Validation is not the same as
+  quality. So the bulletin uses the template unless `PARALI_BULLETIN_LLM=1` is set, and LLM text
+  must also pass `consistency_problems()`: the top district must be named, no raw cell IDs, no
+  "rising/falling" claims the data doesn't support, and the Hindi must be mostly Devanagari. Use a
+  strong model (for example a 70B model through an OpenAI-compatible API) if you enable it.
 - **Human in the loop.** Bulletins are saved as `draft`. `POST /api/bulletin/approve` (or the
   Approve button in the dashboard) records who approved it and when.
 - **Expected fire cells** = the sum of calibrated probabilities over a district's cells: the
