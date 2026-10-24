@@ -33,6 +33,45 @@ def cmd_train(args) -> None:
     logging.info("Model, eval/RESULTS.md and demo files written")
 
 
+def cmd_index(args) -> None:
+    from parali.advise import index
+
+    for strategy in args.strategies:
+        index.build(strategy=strategy)
+
+
+def cmd_graph(args) -> None:
+    from parali.advise import graph, index
+    from parali.advise.ingest import load_corpus
+
+    graph.extract(index.make_chunks(load_corpus(), "structure"))
+
+
+def cmd_ask(args) -> None:
+    import json
+
+    from parali.advise.answer import answer
+
+    print(json.dumps(answer(" ".join(args.question)).to_dict(), ensure_ascii=False, indent=2))
+
+
+def cmd_bulletin(args) -> None:
+    from datetime import date
+
+    from parali.agents import bulletin
+
+    b = bulletin.generate(date.fromisoformat(args.date))
+    print(b.en.headline)
+    print(b.hi.headline)
+    logging.info("Saved to %s", bulletin.path_for(b.date))
+
+
+def cmd_mcp(args) -> None:
+    from parali.agents.mcp_server import main as run_mcp
+
+    run_mcp()
+
+
 def cmd_serve(args) -> None:
     import uvicorn
 
@@ -49,6 +88,14 @@ def main() -> None:
     p_serve = sub.add_parser("serve", help="run the dashboard and API")
     p_serve.add_argument("--host", default="127.0.0.1")
     p_serve.add_argument("--port", type=int, default=8000)
+    p_index = sub.add_parser("index", help="index the documents in data/corpus for the assistant")
+    p_index.add_argument("--strategies", nargs="+", default=[config.CHUNK_STRATEGY])
+    sub.add_parser("graph", help="extract the knowledge graph from the documents (needs an LLM)")
+    p_ask = sub.add_parser("ask", help="ask the assistant a question")
+    p_ask.add_argument("question", nargs="+")
+    p_bul = sub.add_parser("bulletin", help="write the district bulletin for a date")
+    p_bul.add_argument("date")
+    sub.add_parser("mcp", help="run the MCP server over stdio")
     p_all = sub.add_parser("all", help="data + train")
     p_all.add_argument("--force", action="store_true")
     args = parser.parse_args()
@@ -59,6 +106,16 @@ def main() -> None:
         cmd_train(args)
     elif args.command == "serve":
         cmd_serve(args)
+    elif args.command == "index":
+        cmd_index(args)
+    elif args.command == "graph":
+        cmd_graph(args)
+    elif args.command == "ask":
+        cmd_ask(args)
+    elif args.command == "bulletin":
+        cmd_bulletin(args)
+    elif args.command == "mcp":
+        cmd_mcp(args)
     elif args.command == "all":
         cmd_data(args)
         cmd_train(args)

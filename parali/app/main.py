@@ -9,6 +9,7 @@ from functools import lru_cache
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
+from pydantic import BaseModel, Field
 
 from parali import __version__, config
 from parali.app.store import Store
@@ -93,6 +94,70 @@ def districts() -> dict:
 @app.get("/api/district-summary")
 def district_summary(date: str | None = None) -> list[dict]:
     return store.district_summary(_parse_day(date))
+
+
+class Question(BaseModel):
+    question: str = Field(min_length=3, max_length=500)
+    user_id: str | None = Field(default=None, max_length=64)
+
+
+class ProfileIn(BaseModel):
+    district: str | None = Field(default=None, max_length=60)
+    crop: str | None = Field(default=None, max_length=40)
+    land_acres: float | None = Field(default=None, ge=0, le=10_000)
+    language: str | None = Field(default=None, pattern="^(en|hi)$")
+
+
+@app.post("/api/ask")
+def ask(q: Question) -> dict:
+    """Answer a question about schemes and alternatives to burning, with page citations."""
+    from parali.advise import memory
+    from parali.advise.answer import answer
+
+    profile = memory.get(q.user_id) if q.user_id else None
+    try:
+        return answer(q.question, profile).to_dict()
+    except FileNotFoundError as exc:
+        raise HTTPException(503, "Document index not built yet. Run: python -m parali index") from exc
+
+
+@app.get("/api/profile/{user_id}")
+def get_profile(user_id: str) -> dict:
+    from dataclasses import asdict
+
+    from parali.advise import memory
+
+    return asdict(memory.get(user_id))
+
+
+@app.put("/api/profile/{user_id}")
+def put_profile(user_id: str, p: ProfileIn) -> dict:
+    from dataclasses import asdict
+
+    from parali.advise import memory
+
+    return asdict(memory.save(memory.Profile(user_id, **p.model_dump())))
+
+
+@app.get("/api/bulletin")
+def get_bulletin(date: str | None = None) -> dict:
+    """The agent-written district bulletin for a date (generated on first request, saved as draft)."""
+    from parali.agents import bulletin
+
+    d = _parse_day(date)
+    return (bulletin.load(d) or bulletin.generate(d)).model_dump(mode="json")
+
+
+class Approval(BaseModel):
+    official: str = Field(min_length=2, max_length=80)
+
+
+@app.post("/api/bulletin/approve")
+def approve_bulletin(a: Approval, date: str | None = None) -> dict:
+    """Human in the loop: an official approves the draft before it is shared."""
+    from parali.agents import bulletin
+
+    return bulletin.approve(_parse_day(date), a.official).model_dump(mode="json")
 
 
 app.mount("/static", StaticFiles(directory=STATIC), name="static")
