@@ -1,0 +1,19 @@
+{
+  "name": "ensemble_rank_mean",
+  "label": "Ensemble: mean rank of lightgbm_tuned, mlp, xgboost, logreg, random_forest",
+  "fit_seconds": 0.0,
+  "valid": {
+    "pr_auc": 0.3528306240229412,
+    "roc_auc": 0.8490235203206137,
+    "precision_top10pct": 0.30001982946658734,
+    "fire_capture_top10pct": 0.43406471610069275,
+    "base_rate": 0.08600665640057623
+  },
+  "test": {
+    "pr_auc": 0.2656972256366338,
+    "roc_auc": 0.8503844065200288,
+    "precision_top10pct": 0.16294864168153878,
+    "fire_capture_top10pct": 0.3693564236164093,
+    "base_rate": 0.04939148576821817
+  }
+}

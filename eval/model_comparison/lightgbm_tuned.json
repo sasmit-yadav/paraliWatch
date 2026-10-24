@@ -1,0 +1,20 @@
+{
+  "name": "lightgbm_tuned",
+  "label": "LightGBM, tuned (lr 0.02, 15 leaves, min 1000/leaf, class weight)",
+  "fit_seconds": 20.6,
+  "valid": {
+    "pr_auc": 0.3506807222446401,
+    "roc_auc": 0.8478757663702896,
+    "precision_top10pct": 0.2981360301407892,
+    "fire_capture_top10pct": 0.4328334629535675,
+    "base_rate": 0.08600665640057623
+  },
+  "test": {
+    "pr_auc": 0.266194152720007,
+    "roc_auc": 0.8491083042557226,
+    "precision_top10pct": 0.1618084473527662,
+    "fire_capture_top10pct": 0.36759230494499207,
+    "base_rate": 0.04939148576821817
+  },
+  "trees": 263
+}

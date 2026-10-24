@@ -1,0 +1,20 @@
+{
+  "name": "lightgbm_default",
+  "label": "LightGBM, first settings (lr 0.05, 63 leaves)",
+  "fit_seconds": 9.2,
+  "valid": {
+    "pr_auc": 0.3414465706686397,
+    "roc_auc": 0.8458972418209503,
+    "precision_top10pct": 0.2964009518143962,
+    "fire_capture_top10pct": 0.42752960324287415,
+    "base_rate": 0.08600665640057623
+  },
+  "test": {
+    "pr_auc": 0.26009651365120967,
+    "roc_auc": 0.8453207114337065,
+    "precision_top10pct": 0.15982550069403134,
+    "fire_capture_top10pct": 0.363998681306839,
+    "base_rate": 0.04939148576821817
+  },
+  "trees": 25
+}

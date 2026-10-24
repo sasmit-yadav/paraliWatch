@@ -1,0 +1,19 @@
+{
+  "name": "mlp",
+  "label": "Neural network: MLP 64-32 (log counts, standardised)",
+  "fit_seconds": 33.3,
+  "valid": {
+    "pr_auc": 0.3486328009086882,
+    "roc_auc": 0.841533917096796,
+    "precision_top10pct": 0.2893614911758874,
+    "fire_capture_top10pct": 0.413480669260025,
+    "base_rate": 0.08600665640057623
+  },
+  "test": {
+    "pr_auc": 0.2350274422391919,
+    "roc_auc": 0.83544098543553,
+    "precision_top10pct": 0.15481856038072575,
+    "fire_capture_top10pct": 0.353479266166687,
+    "base_rate": 0.04939148576821817
+  }
+}

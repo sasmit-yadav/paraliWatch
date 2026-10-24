@@ -1,0 +1,19 @@
+{
+  "name": "baseline_neighbourhood_3d",
+  "label": "Rule: neighbourhood_3d",
+  "fit_seconds": 0.0,
+  "valid": {
+    "pr_auc": 0.24212342743969714,
+    "roc_auc": 0.7299045914629233,
+    "precision_top10pct": 0.25540352964505253,
+    "fire_capture_top10pct": 0.34973955154418945,
+    "base_rate": 0.08600665640057623
+  },
+  "test": {
+    "pr_auc": 0.19105464932272448,
+    "roc_auc": 0.7475992895824373,
+    "precision_top10pct": 0.1458953004164188,
+    "fire_capture_top10pct": 0.3358379602432251,
+    "base_rate": 0.04939148576821817
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "name": "baseline_persistence_3d",
+  "label": "Rule: persistence_3d",
+  "fit_seconds": 0.0,
+  "valid": {
+    "pr_auc": 0.16658043385816892,
+    "roc_auc": 0.6165877831346298,
+    "precision_top10pct": 0.21187785048582194,
+    "fire_capture_top10pct": 0.2955958843231201,
+    "base_rate": 0.08600665640057623
+  },
+  "test": {
+    "pr_auc": 0.10682032362654671,
+    "roc_auc": 0.6023946966073684,
+    "precision_top10pct": 0.11129288122149514,
+    "fire_capture_top10pct": 0.2567788362503052,
+    "base_rate": 0.04939148576821817
+  }
+}

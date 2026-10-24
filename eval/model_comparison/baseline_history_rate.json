@@ -1,0 +1,19 @@
+{
+  "name": "baseline_history_rate",
+  "label": "Rule: history_rate",
+  "fit_seconds": 0.0,
+  "valid": {
+    "pr_auc": 0.16568190078270137,
+    "roc_auc": 0.7292564130002042,
+    "precision_top10pct": 0.18937140590918106,
+    "fire_capture_top10pct": 0.2845146059989929,
+    "base_rate": 0.08600665640057623
+  },
+  "test": {
+    "pr_auc": 0.08379113837778274,
+    "roc_auc": 0.6919588095890796,
+    "precision_top10pct": 0.09131469363474122,
+    "fire_capture_top10pct": 0.20614178478717804,
+    "base_rate": 0.04939148576821817
+  }
+}

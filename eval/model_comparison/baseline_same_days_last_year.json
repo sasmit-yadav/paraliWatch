@@ -1,0 +1,19 @@
+{
+  "name": "baseline_same_days_last_year",
+  "label": "Rule: same_days_last_year",
+  "fit_seconds": 0.0,
+  "valid": {
+    "pr_auc": 0.23391579391975487,
+    "roc_auc": 0.700216093556413,
+    "precision_top10pct": 0.23572278405710886,
+    "fire_capture_top10pct": 0.3436148464679718,
+    "base_rate": 0.08600665640057623
+  },
+  "test": {
+    "pr_auc": 0.09265394367530566,
+    "roc_auc": 0.6078331697634877,
+    "precision_top10pct": 0.10757485623636724,
+    "fire_capture_top10pct": 0.2331264317035675,
+    "base_rate": 0.04939148576821817
+  }
+}

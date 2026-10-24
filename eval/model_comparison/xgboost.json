@@ -1,0 +1,20 @@
+{
+  "name": "xgboost",
+  "label": "XGBoost (hist, depth 6, class weight)",
+  "fit_seconds": 10.2,
+  "valid": {
+    "pr_auc": 0.3440711144940516,
+    "roc_auc": 0.8459702788324198,
+    "precision_top10pct": 0.2944675788221297,
+    "fire_capture_top10pct": 0.4196684956550598,
+    "base_rate": 0.08600665640057623
+  },
+  "test": {
+    "pr_auc": 0.2578072459613021,
+    "roc_auc": 0.8457581208230942,
+    "precision_top10pct": 0.16101526868927227,
+    "fire_capture_top10pct": 0.3636719882488251,
+    "base_rate": 0.04939148576821817
+  },
+  "trees": 50
+}

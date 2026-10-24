@@ -1,0 +1,19 @@
+{
+  "name": "hist_gb",
+  "label": "Histogram gradient boosting (scikit-learn)",
+  "fit_seconds": 53.5,
+  "valid": {
+    "pr_auc": 0.3367633570177048,
+    "roc_auc": 0.8461527774258935,
+    "precision_top10pct": 0.2927325004957367,
+    "fire_capture_top10pct": 0.4185635447502136,
+    "base_rate": 0.08600665640057623
+  },
+  "test": {
+    "pr_auc": 0.23711763368524413,
+    "roc_auc": 0.8382403188641219,
+    "precision_top10pct": 0.1538270870513583,
+    "fire_capture_top10pct": 0.3481215238571167,
+    "base_rate": 0.04939148576821817
+  }
+}

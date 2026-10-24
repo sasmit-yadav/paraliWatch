@@ -1,0 +1,19 @@
+{
+  "name": "random_forest",
+  "label": "Random forest (200 trees, depth 14, balanced)",
+  "fit_seconds": 51.1,
+  "valid": {
+    "pr_auc": 0.34075062148610025,
+    "roc_auc": 0.8485486520663874,
+    "precision_top10pct": 0.300912155463018,
+    "fire_capture_top10pct": 0.43251776695251465,
+    "base_rate": 0.08600665640057623
+  },
+  "test": {
+    "pr_auc": 0.2684632077012461,
+    "roc_auc": 0.8509056900319846,
+    "precision_top10pct": 0.1623537576839183,
+    "fire_capture_top10pct": 0.36922574043273926,
+    "base_rate": 0.04939148576821817
+  }
+}

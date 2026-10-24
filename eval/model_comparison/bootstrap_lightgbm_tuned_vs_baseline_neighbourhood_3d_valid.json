@@ -1,0 +1,11 @@
+{
+  "a": "lightgbm_tuned",
+  "b": "baseline_neighbourhood_3d",
+  "split": "valid",
+  "mean_diff": 0.1119231494487723,
+  "ci95": [
+    0.06700229823582272,
+    0.15671719643519727
+  ],
+  "share_a_better": 1.0
+}

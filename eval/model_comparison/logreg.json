@@ -1,0 +1,19 @@
+{
+  "name": "logreg",
+  "label": "Logistic regression (log counts, standardised, balanced)",
+  "fit_seconds": 1.8,
+  "valid": {
+    "pr_auc": 0.34334015898460957,
+    "roc_auc": 0.8371766831718144,
+    "precision_top10pct": 0.2906008328375967,
+    "fire_capture_top10pct": 0.42001578211784363,
+    "base_rate": 0.08600665640057623
+  },
+  "test": {
+    "pr_auc": 0.2483616601593199,
+    "roc_auc": 0.8355236557817445,
+    "precision_top10pct": 0.15571088637715647,
+    "fire_capture_top10pct": 0.3512577712535858,
+    "base_rate": 0.04939148576821817
+  }
+}

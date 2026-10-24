@@ -1,0 +1,44 @@
+[
+  {
+    "removed": "none (all features)",
+    "n_features": 26,
+    "valid_pr_auc": 0.3506807222446401,
+    "valid_capture10": 0.4328334629535675
+  },
+  {
+    "removed": "own_cell",
+    "n_features": 19,
+    "valid_pr_auc": 0.3397034865749785,
+    "valid_capture10": 0.4182162582874298
+  },
+  {
+    "removed": "neighbours",
+    "n_features": 22,
+    "valid_pr_auc": 0.3427228168054876,
+    "valid_capture10": 0.42288872599601746
+  },
+  {
+    "removed": "district_state",
+    "n_features": 23,
+    "valid_pr_auc": 0.3506718734418187,
+    "valid_capture10": 0.43479084968566895
+  },
+  {
+    "removed": "past_seasons",
+    "n_features": 22,
+    "valid_pr_auc": 0.32187496497818946,
+    "valid_capture10": 0.4064088463783264
+  },
+  {
+    "removed": "calendar",
+    "n_features": 25,
+    "valid_pr_auc": 0.34630222966072727,
+    "valid_capture10": 0.42734017968177795
+  },
+  {
+    "removed": "weather",
+    "n_features": 19,
+    "valid_pr_auc": 0.3483716374616215,
+    "valid_capture10": 0.42961326241493225
+  }
+]
