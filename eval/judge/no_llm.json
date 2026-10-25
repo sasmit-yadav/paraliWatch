@@ -1,0 +1,545 @@
+{
+  "system": "no_llm",
+  "judge_model": "phi-3.5-mini",
+  "rows": [
+    {
+      "id": "q01",
+      "lang": "en",
+      "mode": "extractive",
+      "answer_words": 207,
+      "facts_found": 1,
+      "facts_total": 1,
+      "cited_gold_page": true,
+      "verdict": {
+        "supported": "yes",
+        "answers": "yes",
+        "reason": "The answer directly addresses the question by stating that biomass pellets can be co-fired with coal in thermal power plants up to a proportion of 5-10%, which is information explicitly mentioned within all three passages."
+      }
+    },
+    {
+      "id": "q02",
+      "lang": "en",
+      "mode": "extractive",
+      "answer_words": 209,
+      "facts_found": 1,
+      "facts_total": 1,
+      "cited_gold_page": true,
+      "verdict": {
+        "supported": "yes",
+        "answers": "yes",
+        "reason": "The answer lists specific directives and mentions the State Government of Punjab, directly addressing which thermal power plants are directed to co-fire paddy straw based pellets."
+      }
+    },
+    {
+      "id": "q03",
+      "lang": "en",
+      "mode": "extractive",
+      "answer_words": 288,
+      "facts_found": 3,
+      "facts_total": 4,
+      "cited_gold_page": true,
+      "verdict": {
+        "supported": "yes",
+        "answers": "yes",
+        "reason": "The answer specifies the yearly target for paddy straw pellet co-firing in brick kilns as 50%, which is directly supported by statement [3] from the passages. It also addresses the question's request for information on annual targets, thus providing a complete response to what was asked."
+      }
+    },
+    {
+      "id": "q04",
+      "lang": "en",
+      "mode": "extractive",
+      "answer_words": 296,
+      "facts_found": 2,
+      "facts_total": 2,
+      "cited_gold_page": true,
+      "verdict": {
+        "supported": "yes",
+        "answers": "yes",
+        "reason": ""
+      }
+    },
+    {
+      "id": "q05",
+      "lang": "en",
+      "mode": "extractive",
+      "answer_words": 169,
+      "facts_found": 1,
+      "facts_total": 1,
+      "cited_gold_page": true,
+      "verdict": {
+        "supported": "yes",
+        "answers": "yes",
+        "reason": "The answer directly states the benchmark price of non-torrefied bio-mass pellets in NCR as mentioned in passage [1]. It also addresses the question by providing this specific information."
+      }
+    },
+    {
+      "id": "q06",
+      "lang": "en",
+      "mode": "extractive",
+      "answer_words": 161,
+      "facts_found": 3,
+      "facts_total": 3,
+      "cited_gold_page": true,
+      "verdict": {
+        "supported": "yes",
+        "answers": "yes",
+        "reason": "The answer specifies the required moisture content (below 14%) and calorific value range (2800-3400 Kceal/Kg) for biomass pellets, directly answering the question's request."
+      }
+    },
+    {
+      "id": "q07",
+      "lang": "en",
+      "mode": "extractive",
+      "answer_words": 214,
+      "facts_found": 1,
+      "facts_total": 1,
+      "cited_gold_page": true,
+      "verdict": {
+        "supported": "yes",
+        "answers": "yes",
+        "reason": "The answer directly states the number of thermal power plants (11) within 300 km of Delhi identified for biomass co-firing, which answers the question accurately."
+      }
+    },
+    {
+      "id": "q08",
+      "lang": "en",
+      "mode": "extractive",
+      "answer_words": 159,
+      "facts_found": 1,
+      "facts_total": 1,
+      "cited_gold_page": true,
+      "verdict": {
+        "supported": "yes",
+        "answers": "yes",
+        "reason": "The answer provides the specific grant amount per acre under the Mera Pani Meri Virasat scheme as stated in passage [1] and directly answers the question."
+      }
+    },
+    {
+      "id": "q09",
+      "lang": "en",
+      "mode": "extractive",
+      "answer_words": 130,
+      "facts_found": 3,
+      "facts_total": 3,
+      "cited_gold_page": true,
+      "verdict": {
+        "supported": "yes",
+        "answers": "yes",
+        "reason": "The answer lists the specific districts in Haryana covered under the crop diversification program, directly answering the question."
+      }
+    },
+    {
+      "id": "q10",
+      "lang": "en",
+      "mode": "extractive",
+      "answer_words": 192,
+      "facts_found": 1,
+      "facts_total": 2,
+      "cited_gold_page": true,
+      "verdict": {
+        "supported": "yes",
+        "answers": "yes",
+        "reason": "The answer lists specific alternative crops promoted under the Mera Pani Meri Virasat scheme, directly referencing information provided in both passages [1] and [2]."
+      }
+    },
+    {
+      "id": "q11",
+      "lang": "en",
+      "mode": "extractive",
+      "answer_words": 220,
+      "facts_found": 1,
+      "facts_total": 1,
+      "cited_gold_page": true,
+      "verdict": {
+        "supported": "yes",
+        "answers": "partly",
+        "reason": "The answer mentions the Centre-State funding share change since 2015-16 but does not provide specific figures or percentages."
+      }
+    },
+    {
+      "id": "q12",
+      "lang": "en",
+      "mode": "extractive",
+      "answer_words": 169,
+      "facts_found": 2,
+      "facts_total": 2,
+      "cited_gold_page": true,
+      "verdict": {
+        "supported": "yes",
+        "answers": "yes",
+        "reason": "The answer provides the specific numbers of fire counts for Punjab and Haryana between 1 April and 6 May 2026, directly referencing data from passages [1] and partially summarizing information across all three dates (from passage [3])."
+      }
+    },
+    {
+      "id": "q13",
+      "lang": "en",
+      "mode": "extractive",
+      "answer_words": 178,
+      "facts_found": 0,
+      "facts_total": 2,
+      "cited_gold_page": true,
+      "verdict": {
+        "supported": "yes",
+        "answers": "yes",
+        "reason": "The answer lists specific hotspot districts (Sangrur, Firozpur and Bathinda in Punjab; Jind, Jhajjar and Sonipat in Haryana; Gautam Buddha Nagar and Meerut in Uttar Pradesh) that presented crop residue strategies to CAQM during the meeting convened on 06.05.2026 as mentioned in both passages [1] and"
+      }
+    },
+    {
+      "id": "q14",
+      "lang": "en",
+      "mode": "extractive",
+      "answer_words": 198,
+      "facts_found": 0,
+      "facts_total": 1,
+      "cited_gold_page": false,
+      "verdict": {
+        "supported": "yes",
+        "answers": "no",
+        "reason": "The answer does not specify a date by which the states had to submit revised stubble burning action plans; it only mentions that CAQM was advised to issue directions for their implementation."
+      }
+    },
+    {
+      "id": "q15",
+      "lang": "en",
+      "mode": "extractive",
+      "answer_words": 133,
+      "facts_found": 0,
+      "facts_total": 1,
+      "cited_gold_page": true,
+      "verdict": {
+        "supported": "yes",
+        "answers": "partly",
+        "reason": "The answer mentions Direction No. 92 and its requirements but does not fully detail what the direction specifically requires regarding paddy straw-based bio-mass pellets/briquettes in brick kilns, nor does it provide specific quantities or targets for implementation as outlined in the passages."
+      }
+    },
+    {
+      "id": "q16",
+      "lang": "en",
+      "mode": "extractive",
+      "answer_words": 144,
+      "facts_found": 0,
+      "facts_total": 1,
+      "cited_gold_page": true,
+      "verdict": {
+        "supported": "partly",
+        "answers": "yes",
+        "reason": "The answer mentions paddy straw-based bio-mass pellets, which is related to ex-situ management of paddy straw as advised by CAQM; however, it does not specifically mention the development of small machines like cutters, rakers, or balers."
+      }
+    },
+    {
+      "id": "q17",
+      "lang": "en",
+      "mode": "extractive",
+      "answer_words": 220,
+      "facts_found": 2,
+      "facts_total": 2,
+      "cited_gold_page": true,
+      "verdict": {
+        "supported": "yes",
+        "answers": "yes",
+        "reason": "The answer lists specific alternative uses of paddy straw as fuel and products, which are directly supported by the passages mentioning their utilization in thermal power plants, waste to energy plants, brick kilns, bio-fuels, pellets/briquettes, particle board, compressed agri-panel, panel furnitur"
+      }
+    },
+    {
+      "id": "q18",
+      "lang": "en",
+      "mode": "extractive",
+      "answer_words": 167,
+      "facts_found": 1,
+      "facts_total": 1,
+      "cited_gold_page": true,
+      "verdict": {
+        "supported": "yes",
+        "answers": "yes",
+        "reason": "The answer provides the specific amount of bio-mass (5 million tonnes per annum) that NTPC plans to use in its plants, directly answering the question."
+      }
+    },
+    {
+      "id": "q19",
+      "lang": "en",
+      "mode": "extractive",
+      "answer_words": 157,
+      "facts_found": 1,
+      "facts_total": 1,
+      "cited_gold_page": true,
+      "verdict": {
+        "supported": "yes",
+        "answers": "yes",
+        "reason": "The answer provides the exact figure of 600 million tonnes, which is mentioned in both passages [1] and [2]. It directly answers the question about India's annual crop residue production."
+      }
+    },
+    {
+      "id": "q20",
+      "lang": "en",
+      "mode": "extractive",
+      "answer_words": 172,
+      "facts_found": 1,
+      "facts_total": 1,
+      "cited_gold_page": true,
+      "verdict": {
+        "supported": "yes",
+        "answers": "yes",
+        "reason": "The answer directly states the annual import cost savings for India due to bio-bitumen technology, which is explicitly mentioned in both passages [1] and [2]."
+      }
+    },
+    {
+      "id": "q21",
+      "lang": "en",
+      "mode": "extractive",
+      "answer_words": 135,
+      "facts_found": 2,
+      "facts_total": 2,
+      "cited_gold_page": true,
+      "verdict": {
+        "supported": "yes",
+        "answers": "yes",
+        "reason": "The answer directly states the institutes that developed the bio-bitumen technology, which is requested in the question."
+      }
+    },
+    {
+      "id": "q22",
+      "lang": "en",
+      "mode": "extractive",
+      "answer_words": 150,
+      "facts_found": 1,
+      "facts_total": 1,
+      "cited_gold_page": true,
+      "verdict": {
+        "supported": "yes",
+        "answers": "yes",
+        "reason": "The answer specifies the frequency (weekly) and starting date for submitting action taken reports, which directly answers the question based on information provided in passages [1] and [2]."
+      }
+    },
+    {
+      "id": "q23",
+      "lang": "en",
+      "mode": "extractive",
+      "answer_words": 117,
+      "facts_found": 2,
+      "facts_total": 2,
+      "cited_gold_page": true,
+      "verdict": {
+        "supported": "yes",
+        "answers": "yes",
+        "reason": "The answer directly addresses the question by explaining why satellites miss some crop residue fires, citing specific reasons from the passages."
+      }
+    },
+    {
+      "id": "q24",
+      "lang": "en",
+      "mode": "extractive",
+      "answer_words": 111,
+      "facts_found": 0,
+      "facts_total": 2,
+      "cited_gold_page": false,
+      "verdict": {
+        "supported": "yes",
+        "answers": "yes",
+        "reason": "The answer specifies the use of satellite remote sensing to monitor residue burning events and mentions specific dates, states involved, and event counts that are directly supported by information in all three passages."
+      }
+    },
+    {
+      "id": "q25",
+      "lang": "en",
+      "mode": "extractive",
+      "answer_words": 255,
+      "facts_found": 1,
+      "facts_total": 2,
+      "cited_gold_page": true,
+      "verdict": {
+        "supported": "yes",
+        "answers": "yes",
+        "reason": "The answer provides the total number of paddy residue burning events detected on 20 September 2026 and specifies how many occurred in Punjab, with all information directly supported by details from the passages."
+      }
+    },
+    {
+      "id": "q26",
+      "lang": "en",
+      "mode": "extractive",
+      "answer_words": 299,
+      "facts_found": 2,
+      "facts_total": 2,
+      "cited_gold_page": true,
+      "verdict": {
+        "supported": "yes",
+        "answers": "yes",
+        "reason": "The answer directly addresses the question by specifying that brick kilns can operate in NCR during March to June, as per the NGT order."
+      }
+    },
+    {
+      "id": "q27",
+      "lang": "hi",
+      "mode": "extractive",
+      "answer_words": 143,
+      "facts_found": 1,
+      "facts_total": 1,
+      "cited_gold_page": true,
+      "verdict": {
+        "supported": "yes",
+        "answers": "yes",
+        "reason": "The answer specifies the exact financial incentive of Rs 8,000 per acre provided under the Mera Pani Meri Virasat Yojana for farmers who switch from water-intensive paddy to alternative crops."
+      }
+    },
+    {
+      "id": "q28",
+      "lang": "hi",
+      "mode": "extractive",
+      "answer_words": 213,
+      "facts_found": 1,
+      "facts_total": 1,
+      "cited_gold_page": true,
+      "verdict": {
+        "supported": "yes",
+        "answers": "yes",
+        "reason": ""
+      }
+    },
+    {
+      "id": "q29",
+      "lang": "hi",
+      "mode": "extractive",
+      "answer_words": 83,
+      "facts_found": 1,
+      "facts_total": 1,
+      "cited_gold_page": true,
+      "verdict": {
+        "supported": "yes",
+        "answers": "yes",
+        "reason": "The answer specifies the target percentage of paddy straw-based bio-mass pellets / briquettes for 2026, directly answering the question."
+      }
+    },
+    {
+      "id": "q30",
+      "lang": "hi",
+      "mode": "extractive",
+      "answer_words": 184,
+      "facts_found": 0,
+      "facts_total": 1,
+      "cited_gold_page": false,
+      "verdict": {
+        "supported": "yes",
+        "answers": "yes",
+        "reason": "The answer provides the total number of residue burning events detected in Punjab between April 1, 2026, and May 5, 2026 (3036), which directly answers the question."
+      }
+    },
+    {
+      "id": "q31",
+      "lang": "hi",
+      "mode": "extractive",
+      "answer_words": 108,
+      "facts_found": 1,
+      "facts_total": 1,
+      "cited_gold_page": true,
+      "verdict": {
+        "supported": "yes",
+        "answers": "yes",
+        "reason": "The answer lists the ten districts identified under Haryana's crop diversification program, directly answering the question."
+      }
+    },
+    {
+      "id": "q32",
+      "lang": "hi",
+      "mode": "extractive",
+      "answer_words": 167,
+      "facts_found": 1,
+      "facts_total": 1,
+      "cited_gold_page": true,
+      "verdict": {
+        "supported": "yes",
+        "answers": "yes",
+        "reason": "The answer specifies the required moisture content for bio-mass pellets, which directly answers the question."
+      }
+    },
+    {
+      "id": "q33",
+      "lang": "hi",
+      "mode": "extractive",
+      "answer_words": 125,
+      "facts_found": 1,
+      "facts_total": 1,
+      "cited_gold_page": false,
+      "verdict": {
+        "supported": "yes",
+        "answers": "yes",
+        "reason": "The answer directly references the development of bio-bitumen technology using agricultural biomass, as stated in the passages. It also addresses Dr. N. Kalaiselvi's role and mentions its applications across various industries without deviation from the provided information."
+      }
+    },
+    {
+      "id": "q34",
+      "lang": "hi",
+      "mode": "extractive",
+      "answer_words": 163,
+      "facts_found": 1,
+      "facts_total": 1,
+      "cited_gold_page": true,
+      "verdict": {
+        "supported": "yes",
+        "answers": "yes",
+        "reason": "The answer provides the exact figure of 600 million tonnes for annual crop residue production in India, which is directly supported by Passage [1]. It also addresses the question about how much can be saved annually on imports through this initiative as mentioned in both passages."
+      }
+    },
+    {
+      "id": "q35",
+      "lang": "en",
+      "mode": "extractive",
+      "answer_words": 128,
+      "facts_found": 1,
+      "facts_total": 1,
+      "cited_gold_page": true,
+      "verdict": {
+        "supported": "yes",
+        "answers": "yes",
+        "reason": "The answer specifies the subsidy percentage for individual farmers on CRM machines, including Happy Seeders."
+      }
+    },
+    {
+      "id": "q36",
+      "lang": "en",
+      "mode": "extractive",
+      "answer_words": 116,
+      "facts_found": 2,
+      "facts_total": 2,
+      "cited_gold_page": true,
+      "verdict": {
+        "supported": "no",
+        "answers": "no",
+        "reason": "The answer does not mention any fines for burning paddy stubble, which is the specific information requested by the question."
+      }
+    },
+    {
+      "id": "q41",
+      "lang": "hi",
+      "mode": "extractive",
+      "answer_words": 134,
+      "facts_found": 1,
+      "facts_total": 1,
+      "cited_gold_page": true,
+      "verdict": {
+        "supported": "yes",
+        "answers": "partly",
+        "reason": "The answer mentions the subsidy rate for CRM machines but does not specify that it is a 50% or an 80% subsidy, which directly answers the question about Happy Seeder (Super Seeder) specifics."
+      }
+    }
+  ],
+  "meta": {
+    "judged": 37,
+    "unparseable": 0,
+    "supported": {
+      "yes": 35,
+      "partly": 1,
+      "no": 1
+    },
+    "answers": {
+      "yes": 32,
+      "partly": 3,
+      "no": 2
+    },
+    "relevance_vs_fact_check": {
+      "agreement": 0.838,
+      "cohen_kappa": 0.184,
+      "judge_yes_but_no_fact": 5,
+      "judge_no_but_fact_found": 1
+    },
+    "length_bias_corr": 0.076
+  }
+}
