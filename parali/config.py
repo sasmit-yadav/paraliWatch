@@ -80,6 +80,9 @@ RERANK_MODEL = os.environ.get("PARALI_RERANK_MODEL", "BAAI/bge-reranker-v2-m3-in
 CHUNK_STRATEGY = os.environ.get("PARALI_CHUNK_STRATEGY", "fixed")
 TOP_K = 5
 RERANK_POOL = int(os.environ.get("PARALI_RERANK_POOL", "10"))  # candidates the reranker scores
+# Longest (question + passage) the reranker reads, in tokens. Without a cap one long passage pads
+# every pair in the batch to its length; 90% of passages are under 330 tokens.
+RERANK_MAX_TOKENS = int(os.environ.get("PARALI_RERANK_MAX_TOKENS", "320"))
 
 # Any OpenAI-compatible chat endpoint: Ollama (http://localhost:11434/v1), Groq, Gemini, llama.cpp.
 # With no LLM configured the assistant still works in extractive mode (quotes the sources).

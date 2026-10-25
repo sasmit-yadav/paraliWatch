@@ -33,7 +33,10 @@ def embed(texts: list[str], model: str = config.EMBED_MODEL, kind: str = "passag
 def _reranker(name: str):
     from fastembed.rerank.cross_encoder import TextCrossEncoder
 
-    return TextCrossEncoder(model_name=name, cache_dir=CACHE)
+    model = TextCrossEncoder(model_name=name, cache_dir=CACHE)
+    if config.RERANK_MAX_TOKENS > 0:  # see config.RERANK_MAX_TOKENS: cap padding, ~2-3x faster
+        model.model.tokenizer.enable_truncation(max_length=config.RERANK_MAX_TOKENS)
+    return model
 
 
 def rerank(query: str, texts: list[str], model: str = config.RERANK_MODEL) -> np.ndarray:

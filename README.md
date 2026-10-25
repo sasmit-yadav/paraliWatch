@@ -59,8 +59,9 @@ uv sync
 uv run python -m parali serve
 ```
 
-Open http://127.0.0.1:8000 (API docs at http://127.0.0.1:8000/docs). The first question to the
-assistant downloads two small models (~800 MB, once) and builds the document index (~1 minute).
+Open http://127.0.0.1:8000 (API docs at http://127.0.0.1:8000/docs). On the very first start the
+app downloads its two search models (~1 GB, once) and indexes the documents in the background;
+after that it is ready a few seconds after starting, and answers take a few seconds.
 
 Optional: connect any OpenAI-compatible LLM for written answers (otherwise the assistant quotes
 the documents):

@@ -83,6 +83,16 @@ class Store:
         return self.forecast[self.forecast["date"] == d]
 
     def risk_geojson(self, d: date, min_prob: float = 0.0) -> dict:
+        key = (d, min_prob)
+        if key not in self._risk_cache:  # built once per day: 2,455 hexagons
+            self._risk_cache[key] = self._risk_geojson(d, min_prob)
+        return self._risk_cache[key]
+
+    @cached_property
+    def _risk_cache(self) -> dict:
+        return {}
+
+    def _risk_geojson(self, d: date, min_prob: float = 0.0) -> dict:
         day = self.day(d)
         day = day[day["prob"] >= min_prob]
         features = []

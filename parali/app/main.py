@@ -3,11 +3,13 @@
 from __future__ import annotations
 
 import json
+from collections import OrderedDict
 from contextlib import asynccontextmanager
 from datetime import date
 from functools import lru_cache
 
 from fastapi import FastAPI, HTTPException, Query, Request
+from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
@@ -19,19 +21,19 @@ STATIC = config.ROOT / "parali" / "app" / "static"
 
 
 def _warm_up() -> None:
-    """PARALI_WARMUP=1: load the document index and models in the background at start-up, so the
-    first question doesn't wait for a model download (useful on a hosted demo)."""
+    """Load the document index and models in the background at start-up (on by default; set
+    PARALI_WARMUP=0 to skip), so the first question is as fast as any other."""
     import os
     import threading
 
-    if os.environ.get("PARALI_WARMUP", "0") != "1":
+    if os.environ.get("PARALI_WARMUP", "1") != "1":
         return
 
     def load() -> None:
         try:
-            from parali.advise.answer import answer
+            from parali.advise.answer import warm_up
 
-            answer("warm-up: crop residue incentive", use_llm=False)
+            warm_up()
         except Exception:  # the app still works; the first real question will load them
             pass
 
@@ -51,6 +53,29 @@ app = FastAPI(
     lifespan=lifespan,
 )
 store = Store()
+# Compress JSON: one day's risk map is ~500 KB of GeoJSON and shrinks about 8x.
+app.add_middleware(GZipMiddleware, minimum_size=1000)
+
+# The demo season never changes while the app runs, so browsers may reuse these responses.
+CACHEABLE = (
+    "/static/",
+    "/api/meta",
+    "/api/risk",
+    "/api/fires",
+    "/api/top",
+    "/api/season",
+    "/api/districts",
+    "/api/cell/",
+    "/api/district-summary",
+)
+
+
+@app.middleware("http")
+async def cache_headers(request: Request, call_next):
+    response = await call_next(request)
+    if request.method == "GET" and response.status_code == 200 and request.url.path.startswith(CACHEABLE):
+        response.headers.setdefault("Cache-Control", "public, max-age=3600")
+    return response
 
 
 def _parse_day(value: str | None) -> date:
@@ -143,6 +168,9 @@ class ProfileIn(BaseModel):
     language: str | None = Field(default=None, pattern="^(en|hi)$")
 
 
+ANSWER_CACHE: OrderedDict = OrderedDict()  # recent answers, keyed by normalised question + profile + LLM
+
+
 @app.post("/api/ask")
 def ask(q: Question) -> dict:
     """Answer a question about schemes and alternatives to burning, with page citations."""
@@ -151,12 +179,21 @@ def ask(q: Question) -> dict:
     from parali.ops import feedback, trace
 
     profile = memory.get(q.user_id) if q.user_id else None
+    key = (" ".join(q.question.lower().split()), repr(profile), config.LLM_MODEL)
     try:
         with trace.start("ask", question=q.question[:200]) as tr:
-            out = answer(q.question, profile).to_dict()
+            if key in ANSWER_CACHE:  # the same question again: answer instantly
+                ANSWER_CACHE.move_to_end(key)
+                out = {**ANSWER_CACHE[key], "cached": True}
+                trace.annotate(mode=out["mode"], cached=True)
+            else:
+                out = answer(q.question, profile).to_dict()
+                ANSWER_CACHE[key] = out
+                while len(ANSWER_CACHE) > 256:
+                    ANSWER_CACHE.popitem(last=False)
     except FileNotFoundError as exc:
         raise HTTPException(503, "Document index not built yet. Run: python -m parali index") from exc
-    out["trace_id"] = tr.trace_id
+    out = {**out, "trace_id": tr.trace_id}
     try:
         feedback.record_answer(tr.trace_id, out)
     except Exception:  # feedback storage must never break an answer
@@ -175,7 +212,8 @@ def assistant_status() -> dict:
     from parali.advise import embed
 
     loaded = (
-        embed._embedder.cache_info().currsize > 0
+        not answer_mod.WARMING.is_set()
+        and embed._embedder.cache_info().currsize > 0
         and embed._reranker.cache_info().currsize > 0
         and answer_mod.retriever.cache_info().currsize > 0
     )

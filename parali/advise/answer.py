@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import logging
 import re
+import threading
 from dataclasses import asdict, dataclass, field
 from functools import lru_cache
 
@@ -124,6 +125,43 @@ BOILERPLATE = re.compile(
 )
 
 
+# Sentence embeddings are computed once and kept: the same passages come back for many
+# questions, and warm_up() precomputes every sentence in the index at start-up.
+_SENTENCE_VECTORS: dict[str, np.ndarray] = {}
+
+
+def sentence_vectors(texts: list[str]) -> np.ndarray:
+    missing = [t for t in dict.fromkeys(texts) if t not in _SENTENCE_VECTORS]
+    if missing:
+        for t, v in zip(missing, embed(missing, kind="passage"), strict=True):
+            _SENTENCE_VECTORS[t] = v
+    return np.stack([_SENTENCE_VECTORS[t] for t in texts])
+
+
+WARMING = threading.Event()  # set while warm_up() runs
+
+
+def warm_up() -> None:
+    """Load the index and both models and precompute sentence vectors, so the first real
+    question is as fast as any other. Called in the background when the app starts."""
+    WARMING.set()
+    try:
+        r = retriever()
+        r.search("crop residue incentive")  # loads the embedding model and the reranker
+        path = config.INDEX_DIR / f"sentences__{config.EMBED_MODEL.split('/')[-1]}.npz"
+        if path.exists():  # computed on an earlier start
+            saved = np.load(path, allow_pickle=False)
+            _SENTENCE_VECTORS.update(zip(saved["texts"].tolist(), saved["vectors"], strict=True))
+        texts = [s for c in r.chunks for s in sentences(c.text) if not BOILERPLATE.search(s)]
+        before = len(_SENTENCE_VECTORS)
+        sentence_vectors(texts)
+        if len(_SENTENCE_VECTORS) > before:  # save, so the next start skips this step
+            keys = list(_SENTENCE_VECTORS)
+            np.savez(path, texts=np.array(keys), vectors=np.stack([_SENTENCE_VECTORS[k] for k in keys]))
+    finally:
+        WARMING.clear()
+
+
 def _extractive(question: str, hits: list[Hit], max_sentences: int = 5) -> tuple[str, list[int]]:
     """No LLM: quote the sentences closest in meaning to the question, each with its source."""
     # Chunks overlap by 40 words, so the same sentence can come from two passages: keep the first.
@@ -139,7 +177,7 @@ def _extractive(question: str, hits: list[Hit], max_sentences: int = 5) -> tuple
     if not candidates:
         return "", []
     q = embed([question], kind="query")[0]
-    vecs = embed([s for _, s in candidates], kind="passage")
+    vecs = sentence_vectors([s for _, s in candidates])
     sims = vecs @ q / (np.linalg.norm(vecs, axis=1) * np.linalg.norm(q) + 1e-9)
     best = sorted(np.argsort(-sims)[:max_sentences])
     used, lines = [], []

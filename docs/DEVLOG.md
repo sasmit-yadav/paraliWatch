@@ -2,6 +2,17 @@
 
 Decisions and findings, newest first. Each entry says what changed and why.
 
+## 2026-10-25 (evening): speed
+
+- Warm-up at start-up is now on by default and also precomputes (and saves) the vectors of every
+  sentence in the index: later starts are ready in ~9 s, and no question waits for a model load.
+- Quote picking 0.7-1.2 s -> 0.07 s (sentence vectors reused).
+- Reranker capped at 320 tokens per pair: same recall@1 (0.95), worst case 8.5 s -> 2.5 s.
+  256 tokens and smaller rerank pools were faster but lost accuracy, so they were rejected.
+- Repeated questions answered from a cache in milliseconds; map data gzip-compressed (517 -> 77
+  KB per day), cache headers, and the next two days prefetched in the browser.
+- `/api/assistant/status` reports "ready" only after warm-up has finished.
+
 ## 2026-10-25 (later): dashboard redesign and final polish
 
 - New dark "control room" design (inspired by NVIDIA's product pages: black, one lime accent,

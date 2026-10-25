@@ -21,6 +21,23 @@ async function getJSON(url) {
   return res.json();
 }
 
+// Day data (map, fires, top cells) is kept in memory and the next day is fetched ahead,
+// so stepping and playing through the season don't wait for the network.
+const dayCache = new Map();
+function dayData(d) {
+  if (!dayCache.has(d)) {
+    const p = Promise.all([
+      getJSON(`/api/risk?date=${d}&min_prob=0.05`),
+      getJSON(`/api/fires?date=${d}`),
+      getJSON(`/api/top?date=${d}&n=10`),
+    ]);
+    p.catch(() => dayCache.delete(d));
+    dayCache.set(d, p);
+    if (dayCache.size > 40) dayCache.delete(dayCache.keys().next().value);
+  }
+  return dayCache.get(d);
+}
+
 const map = new maplibregl.Map({
   container: "map",
   style: {
@@ -66,11 +83,9 @@ async function loadDay() {
   });
   $("date-range").value = state.index;
   renderTimeline();
-  const [risk, fires, top] = await Promise.all([
-    getJSON(`/api/risk?date=${d}&min_prob=0.05`),
-    getJSON(`/api/fires?date=${d}`),
-    getJSON(`/api/top?date=${d}&n=10`),
-  ]);
+  const [risk, fires, top] = await dayData(d);
+  if (state.dates[state.index] !== d) return; // the user already moved on
+  for (const k of [1, 2]) if (state.dates[state.index + k]) dayData(state.dates[state.index + k]);
   map.getSource("risk").setData(risk);
   map.getSource("fires").setData(fires);
   renderTop(top);

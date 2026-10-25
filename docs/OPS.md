@@ -133,7 +133,7 @@ guardrails decided.
 
 **What we found** (2-core CPU): the reranker dominates warm latency, about 5 s per question for
 10 candidate passages, against under 0.1 s for hybrid search. The first question after start-up
-also pays for index building and model download, which is why `PARALI_WARMUP=1` exists (section 6).
+also paid for index building and model loading; warm-up (on by default, `PARALI_WARMUP=0` turns it off) now does that at start-up (section 7).
 
 ---
 
@@ -209,7 +209,27 @@ still apply.
 
 ---
 
-## 7. What is not done (and would be next)
+## 7. Speed
+
+Measured on a 2-core cloud machine (a normal laptop is faster). Each change was checked against
+the evaluation so nothing got faster by getting worse.
+
+| What | Before | After | How |
+| --- | --- | --- | --- |
+| First question after the app starts | 56 s (models loaded on demand) | answered at normal speed once warm-up finishes: 9 s after start (75 s on the very first start) | Warm-up on by default: index, both models and every sentence vector load in the background at start-up; sentence vectors are saved to disk |
+| Picking the quotes for an answer | 0.7-1.2 s | 0.07 s | Sentence vectors computed once and reused |
+| Reranking 10 passages | 3.3 s average, up to 8.5 s when one passage is long | 2.9 s average, 2.5 s worst case | Reranker reads at most 320 tokens per pair, so one long passage no longer pads the whole batch. Recall@1 unchanged (0.95); 256 tokens was faster but dropped it to 0.87, so it was rejected |
+| Asking the same question again | full answer time | 4 ms | Cache of the last 256 answers (keyed by question, profile and LLM) |
+| One day's risk map download | 517 KB | 77 KB | GZip compression |
+| Stepping / playing through the season | a request per day | instant | The browser keeps day data and fetches the next two days ahead; responses carry cache headers |
+
+Also tried and rejected: a smaller rerank pool (8 or 6 passages instead of 10) is 20-40% faster
+but recall@1 fell from 0.95 to 0.89 / 0.87.
+
+The remaining cost is the reranker itself (a 568M-parameter multilingual model, needed for
+Hindi). On a GPU, or with an LLM-free cached answer, answers are effectively instant.
+
+## 8. What is not done (and would be next)
 
 - **Alerts.** Drift and latency are reports, not notifications. Next would be a scheduled job
   (cron or GitHub Actions) running `python -m parali drift` weekly during the season and posting
