@@ -1,6 +1,6 @@
 [project]
 name = "parali-watch"
-version = "0.3.0"
+version = "0.4.0"
 description = "Forecasting crop-residue fires in Punjab and Haryana, with explanations and tools for officials and farmers."
 readme = "README.md"
 requires-python = ">=3.10"
