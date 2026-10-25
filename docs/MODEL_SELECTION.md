@@ -250,3 +250,21 @@ Answers passing the citation and number guardrails (37 answerable questions): Qw
 0/37, 1.5B base 1/37, **0.5B + LoRA 19/37**. But the fine-tuned answers carry fewer key facts than
 plain quotes (fact recall 0.61 vs 0.79), so quote mode stays the default. Details:
 [FINE_TUNING.md](FINE_TUNING.md).
+
+## 14. Preference tuning: SFT vs SFT + DPO (Phase 4)
+
+| Qwen2.5-0.5B variant | Guardrail-passing answers | Wrong refusals | Correct refusals (3 near-miss unanswerable) | Key facts vs quotes on same questions |
+| --- | --- | --- | --- | --- |
+| LoRA (SFT) | 19 / 37 | 17 | 3 / 3 | 12 vs 20 |
+| LoRA + DPO | 37 / 37 | 0 | 0 / 3 | 26 vs 38 |
+
+DPO removed the failure it was given pairs for and overshot on the opposite one. Neither replaces
+quote mode as the default. Details: [FINE_TUNING.md, section 5](FINE_TUNING.md).
+
+## 15. Choosing the judge model (Phase 4)
+
+Phi-3.5-mini (3.8B, MIT) was chosen over a bigger Qwen because a judge from the *same family* as
+the answering models tends to favour its own style, and because it fits in memory next to nothing
+else on a 2-core, 6 GB machine. Meta-evaluation: 95% of verbatim quotes judged supported
+(faithfulness usable), relevance agreement with the key-fact check kappa 0.18-0.53 (not usable as
+the headline metric). Details: [RAG.md, section 5](RAG.md).

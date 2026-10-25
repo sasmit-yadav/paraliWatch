@@ -2,6 +2,37 @@
 
 Decisions and findings, newest first. Each entry says what changed and why.
 
+## 2026-10-25: Phase 4, operations, evaluation with a judge, preference tuning, deployment
+
+**Docker, verified for the first time**
+- Built and ran the image: dashboard, forecast API and cited answers work (1.4 GB).
+- Docker Hub rate-limited the base image pull: the base image is now a build argument.
+- Running as a non-root user (as Hugging Face Spaces do) failed: libraries cache models under
+  `HOME`, which was `/`. Set `HOME`, `HF_HOME` and the model cache inside a writable `/app/data`;
+  re-tested as user 1000 with warm-up, first answer in 9 s.
+
+**MLflow**
+- Backfilled 30 runs into 5 experiments; the production LightGBM model is registered as
+  `parali-forecast` with alias `champion`; loaded back, predictions are identical.
+- Champion/challenger on the validation season only (unit-tested).
+
+**Drift**
+- PSI per feature: 14 of 26 features drifted majorly in 2025 (season fire counts down >80%),
+  score PSI 0.62. Yet lift 5.4x (validation 4.1x) and predicted fire rate within 10%: the action
+  is "investigate the data source", not retrain.
+- First version compared each week with the whole training season and flagged the normal rise
+  of the season as drift; now each week is compared with the same weeks of past seasons. Then
+  2024 week 1 reads 0.08 (stable) and 2025 week 1 already 0.83: an early warning before any
+  outcome is known.
+
+**Tracing and feedback**
+- OpenTelemetry-style spans for every answer; the reranker is the slow step (~5 s on 2 cores).
+- The first down-voted answer in testing exposed quotes cut at "w.e.f."; abbreviations no longer
+  end a sentence; quote-mode fact recall without the graph 64% -> 68%.
+
+**Lesson (again): one heavy job at a time.** A container test running next to the judge model
+pushed the machine out of memory and killed the judge mid-run; it was re-run afterwards.
+
 ## 2026-10-24 (evening): Phase 3, burn-scar segmentation, voice input, LoRA
 
 **Burn scars**

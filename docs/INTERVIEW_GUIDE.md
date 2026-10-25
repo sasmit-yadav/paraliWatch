@@ -349,7 +349,94 @@ examples at 2,304 tokens.
 - The fine-tuned model is a format experiment, not the default: its answers carry fewer key facts
   than plain quotes, and it was evaluated on only 37 questions.
 
-## 9. Questions to ask back
+## 9. Phase 4: running it like a product, judging answers, preference tuning
+
+### Pitch addition (20 seconds)
+
+> Then I made it operable. Every training run and model is tracked in MLflow with a
+> champion/challenger rule, drift is monitored per season and per week, every answer is traced
+> step by step, and users' thumbs-downs become new test cases (the first one exposed a real bug).
+> I verified the Docker image as a non-root user, which exposed another bug, and packaged a
+> one-command public demo. On the LLM side I added an LLM-as-judge with a check on how far the
+> judge can be trusted, and DPO preference tuning, which fixed the small model's wrong refusals
+> but overshot, a clear lesson about what preference data really specifies.
+
+### Numbers to remember
+
+| What | Value |
+| --- | --- |
+| MLflow | 30 runs in 5 experiments; registered model with `champion` alias |
+| 2025 drift | 14 of 26 features major (PSI > 0.25), score PSI 0.62, yet lift 5.4x and calibration within 10% |
+| Early warning | Weekly score PSI 0.83 in the first week of 2025 (2024: 0.08) |
+| Slowest step per answer | Reranker, ~5 s on 2 CPU cores |
+| Feedback-found bug | Quotes cut at "w.e.f."; fix raised quote-mode fact recall 64% -> 68% |
+| DPO | Guardrail-passing answers 19 -> 37 of 37, wrong refusals 17 -> 0, correct refusals 3 -> 0 of 3 |
+| LLM judge (Phi-3.5-mini) on verbatim quotes | 35 of 37 called supported (faithfulness verdicts usable) |
+| Judge vs key-fact check, relevance | Kappa 0.18-0.53; too lenient on fluent answers (13 misses on DPO answers) |
+
+### Questions and answers
+
+**"Your inputs drifted massively. Why didn't you retrain?"** Because drift is a symptom, not a
+verdict. I tie actions to impact: retrain only if lift falls more than 25% below validation,
+recalibrate if predicted rates are off by more than 30%. In 2025 the fire counts fell by 80%+ but
+fell everywhere together, so the ranking held (lift 5.4x vs 4.1x on validation) and probabilities
+were within 10%. The action is to investigate the satellite data source, which matches the
+daytime-detection drop found in Phase 1. Retraining on a drift alarm alone would have been busywork.
+
+**"How do you detect drift before you have labels?"** Prediction drift. Score PSI needs no
+outcomes. I compare each week with the same weeks of past seasons, because comparing October
+with the whole season flags the normal start of burning as drift (my first version did exactly
+that). With that fix, 2025 is flagged in its first week.
+
+**"What is a champion/challenger rule and why only validation?"** A new model version becomes
+the served one only if it beats the current one on the validation season. The test season is
+for the final report; choosing with it would leak it into model selection.
+
+**"Why build your own tracer instead of using a library?"** It's about 150 lines, needs no service
+to run, and uses OpenTelemetry's field names, so moving to Jaeger or Langfuse later only changes
+the exporter. It showed the reranker is the bottleneck, which is where optimisation should go
+(a smaller reranker, or caching).
+
+**"Give an example of the feedback loop working."** The first down-voted answer began with a
+broken quote, "...for a period of one-year w.e.f. [1]". The splitter treated the full stop in
+"w.e.f." as a sentence end. That abbreviation is all over Indian government notices. Fixing it
+improved quote-mode fact recall from 64% to 68%, and the case is now a unit test.
+
+**"How do you know an LLM judge is right?"** You measure it like any model. I graded answers with
+Phi-3.5-mini, deliberately a different model family from the Qwen answer models to avoid
+self-preference, and compared its verdicts with labels I trust: quote-mode answers are copied
+word for word, so a good judge must call them supported, and "answers the question" was compared
+with the key-fact check using Cohen's kappa. Result: it called 35 of 37 verbatim quotes
+supported, so its faithfulness verdicts are usable. But on relevance kappa was only 0.18-0.53, and
+it was most often fooled by fluent answers that missed the fact. Once it even claimed an answer
+stated a grant amount that wasn't there. So it's a screening tool; the fact check stays the metric.
+
+**"What is DPO and what happened?"** Direct Preference Optimisation trains on pairs (better
+answer, worse answer for the same prompt) against a frozen reference model, with no reward model.
+I built pairs to stop wrong refusals: grounded answer over "not found" when the passages answer,
+and the reverse when they are off-topic, balanced 1:1. Wrong refusals went from 17 to 0 and every
+answer passed the guardrails. But it also stopped refusing the 3 unanswerable questions it used to
+refuse correctly, because my refusal pairs used obviously off-topic passages while real failures
+are near misses. The pairs are the specification: next time, hard negatives.
+
+**"DPO on a CPU?"** The DPO gradient factorises into a weight times the difference of two
+gradients. I compute the weight without gradients, then back-propagate the chosen and rejected
+answers one at a time, so memory equals plain fine-tuning. A unit test shows it equals the
+autograd gradient of the DPO loss.
+
+**"What broke when you tested Docker properly?"** Running as a non-root user, as Hugging Face
+Spaces do, made model downloads fail: libraries write caches under HOME, which was `/`. Setting
+HOME and the cache paths inside a writable folder fixed it. Tests that only run as root would
+never have caught it.
+
+### Limitations to state first
+
+- The Hugging Face Space and CI need the owner's accounts to go live; both are scripted and
+  tested locally.
+- The judge is a 3.8B model on 4-bit weights; it is a screening tool, not ground truth.
+- DPO and LoRA used 60-80 synthetic pairs; the effects are clear but the sample is small.
+
+## 10. Questions to ask back
 
 - "How do you handle distribution shift between training and production data in your team?"
 - "Do you evaluate models on time-based splits?"

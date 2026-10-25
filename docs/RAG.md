@@ -184,7 +184,58 @@ graph. Automatic extraction exists (`python -m parali graph`, LLM -> validated t
 must appear in the chunk -> `data/index/graph_extracted.json` for review), but with the 1.5B local
 model it took 1-5 minutes per chunk and was stopped; it is meant for a stronger model.
 
-## 5. Reproduce
+## 5. A second opinion: LLM-as-judge (Phase 4)
+
+**What.** An *LLM-as-judge* is a second language model asked to grade answers the way a person
+would. Here it gives two verdicts per answer:
+- **Supported** (faithfulness): is every statement backed by the cited passages?
+- **Answers** (relevance): does it give what the question asks for?
+
+**Why.** The key-fact check is precise but narrow: it only knows the few strings written in
+`questions.jsonl`. A judge can read meaning. But a judge is itself a model that makes mistakes,
+so it has to be evaluated before it is trusted. This is called **meta-evaluation**.
+
+**How** (`parali/advise/judge.py`):
+- The judge is **Phi-3.5-mini** (3.8B, Microsoft, MIT licence), run locally with llama.cpp. It is
+  deliberately from a different model family than the Qwen answer models, because models tend to
+  prefer text written in their own style (self-preference bias).
+- Fixed prompt; temperature 0; a strict three-line reply format parsed with a regular expression
+  (with one retry). All 111 judgments parsed.
+- Two meta-checks against labels we already trust:
+  1. **Faithfulness sanity check.** Quote-mode answers are copied word for word from the passages,
+     so they *are* supported. A trustworthy judge must say so.
+  2. **Relevance agreement.** Compare "answers yes/partly" with "contains at least one key fact",
+     using raw agreement and **Cohen's kappa** (agreement corrected for chance: 0 = chance,
+     up to 0.2 slight, 0.2-0.4 fair, 0.4-0.6 moderate, 1 = perfect).
+- Length bias: correlation between answer length and a "yes".
+
+**Results** (`eval/judge/REPORT.md`; 37 answerable questions per system):
+
+| System | Supported (yes / partly / no) | Answers (yes / partly / no) | Agreement with fact check | Kappa | Judge "yes" but no key fact |
+| --- | --- | --- | --- | --- | --- |
+| Quotes (no LLM) | 35 / 1 / 1 | 32 / 3 / 2 | 84% | 0.18 | 5 |
+| Qwen 0.5B + LoRA | 34 / 1 / 2 | 27 / 4 / 6 | 84% | 0.53 | 5 |
+| Qwen 0.5B + LoRA + DPO | 34 / 2 / 1 | 23 / 7 / 7 | 62% | 0.26 | 13 |
+
+**What we learned about the judge:**
+1. **Faithfulness verdicts are usable.** It called 35 of 37 verbatim quotes supported (95%), so
+   it rarely calls a faithful answer unfaithful.
+2. **Relevance verdicts are not reliable enough to replace the fact check.** Agreement beyond
+   chance is only slight to moderate (kappa 0.18-0.53), and the errors are one-sided: the judge says "answers the
+   question" when the key fact is missing far more often than the reverse (5-13 times vs once).
+   Reading those cases shows why. Asked about the Mera Pani Meri Virasat grant per acre, the
+   judge wrote that "the answer directly states the grant amount" when the answer contained no
+   amount at all. The judge hallucinated its own justification.
+3. **It is fooled most by fluent answers.** Its errors peak on the DPO model (13), whose answers
+   read smoothly but often miss the fact. Those are exactly the answers you'd want a judge to
+   catch.
+4. Its ranking still points the same way as the fact check: quotes > LoRA > DPO on "answers".
+
+**Decision.** Use the small judge as a **screening tool**, flagging answers it calls unsupported
+for a human to read, and keep the fact check as the headline metric. A judge for decisions would
+need a much larger model, calibrated against a few hundred human-graded answers (roadmap).
+
+## 6. Reproduce
 
 ```bash
 python -m parali ocr                            # only if you add scanned PDFs (needs Tesseract)
@@ -193,9 +244,12 @@ python -m parali.advise.evaluate retrieval      # all strategies x models x sear
 python -m parali.advise.evaluate answers retrieve
 python -m parali.advise.evaluate answers generate   # set PARALI_LLM_* to test an LLM
 PARALI_USE_GRAPH=0 python -m parali.advise.evaluate answers generate   # without the knowledge graph
+# LLM-as-judge: serve Phi-3.5-mini (GGUF) with llama.cpp on port 8081, then
+PARALI_LLM_BASE_URL=http://localhost:8081/v1 PARALI_LLM_MODEL=phi-3.5-mini \
+  python -m parali.advise.judge no_llm qwen2.5-0.5b-lora qwen2.5-0.5b-lora-dpo
 ```
 
-## 6. Limits
+## 7. Limits
 
 - 50 questions is enough to compare setups and catch failures, not to quote tight percentages.
 - Hindi questions are answered from English documents; in quote mode the quotes are English.

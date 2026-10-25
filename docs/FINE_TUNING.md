@@ -107,7 +107,89 @@ documented experiment (`models/answer_lora/`, not committed; rebuild with the co
 3. Hindi targets in Hindi (now they are English quotes with a Hindi preface), and fewer negatives
    for Hindi.
 
-## 4. Reproduce
+## 4. A judge model's view
+
+The answers were also graded by an LLM judge (Phi-3.5-mini, a different model family), see
+[RAG, section 5](RAG.md). It agrees with the direction of the results above: it says
+"answers the question" for 32 of 37 quote answers, 27 of 37 for LoRA (with quote fallbacks) and
+23 of 37 for LoRA + DPO. But it is too lenient on fluent answers that miss the key fact (13 such
+cases for DPO), so the fact check stays the headline metric.
+
+## 5. Preference tuning with DPO (Phase 4)
+
+**The problem it targets.** The LoRA model's most common failure was refusing questions its
+passages did answer (17 of 37). It did refuse correctly, though: for the 3 unanswerable
+questions whose passages slipped past the retrieval cut-off, it said "not found" every time.
+The goal was to keep the good refusals and remove the wrong ones.
+
+**What DPO is.** Direct Preference Optimisation (Rafailov et al., 2023) trains on *pairs* of
+answers to the same prompt: a preferred one (chosen) and a worse one (rejected). It raises the
+probability of the chosen answer relative to the rejected one, measured against a frozen copy of
+the starting model (the reference) so the model can't drift far from what it already knows:
+
+```
+loss = -log sigmoid( beta * [ (log p(chosen) - log ref(chosen)) - (log p(rejected) - log ref(rejected)) ] )
+```
+
+Unlike RLHF there is no separate reward model and no reinforcement-learning loop; the preference
+data *is* the reward signal. `beta` (0.1 here) sets how far the model may move from the reference.
+
+**Pairs, built automatically from the SFT prompts** (`python -m parali.tune.dpo pairs`):
+
+| Prompt type | Chosen | Rejected | Pairs |
+| --- | --- | --- | --- |
+| Passages answer the question | the grounded, cited answer | "I could not find this..." | 68 |
+| Passages are about something else | "I could not find this..." | quotes from those passages, cited as if they answered | 12 |
+
+69 of the 80 fit the 2,304-token limit. They were **balanced 1:1** for training (30 answer pairs;
+the 10 refusal pairs each used three times), so the model sees both directions equally.
+
+**Training.** It starts from the SFT model (its LoRA merged into the base) with a fresh LoRA
+adapter; the reference is that SFT model with the new adapter switched off. Settings: 1 epoch,
+60 pairs, effective batch 4, learning rate 5e-5. It took 53 minutes on 2 CPU cores.
+
+Memory: the DPO gradient factorises as `-beta * w * (grad log p(chosen) - grad log p(rejected))`
+with `w = sigmoid(-beta * margin)`. The code computes `w` without gradients, then back-propagates
+the chosen and the rejected answer one after the other, so only one sequence's activations are in
+memory at a time. A unit test checks this gives exactly the gradient of the DPO loss.
+Sanity check: the first step's loss is 0.6931 = ln 2, as it must be when the model equals the
+reference. Training loss fell to 0.08, and the model preferred the chosen answer in 100% of the
+last 8 pairs.
+
+**Results** (same 50 questions, same retrieved passages, same guardrails):
+
+| | LoRA (SFT) | **LoRA + DPO** |
+| --- | --- | --- |
+| LLM answers accepted by the guardrails | 19 / 37 | **37 / 37** |
+| Wrongly refused (relevant passages retrieved) | 17 | **0** |
+| Rejected for missing citation / unsupported number | 0 / 1 | 0 / 0 |
+| Accepted answers citing a gold page | 17 / 19 | 35 / 37 |
+| Hindi questions answered by the LLM | 1 / 10 | 9 / 10 |
+| Correct refusals on the 3 unanswerable questions that passed retrieval | **3 / 3** | 0 / 3 |
+| Key facts: LLM answers vs quoting the same passages (no graph) | 12 vs 20 | 26 vs 38 |
+| Answers repeating a sentence | 4 | 1 |
+
+What it did:
+1. **It fixed the targeted failure completely.** No more wrong refusals, every answer passes the
+   citation and number checks, and Hindi questions now get answers.
+2. **It overshot.** It also stopped refusing when it should: the 3 unanswerable questions it used
+   to refuse correctly are now answered from unrelated passages. The refusal pairs were "obviously
+   off-topic passages"; the evaluation's unanswerable questions have *near-miss* passages (right
+   scheme, wrong year or state). DPO learned "refuse only when it is obvious". The fix is
+   **hard negatives**: refusal pairs whose passages look relevant but don't contain the answer.
+3. **Content is still capped by the teacher.** Its answers carry about two-thirds of the key facts
+   that quoting the same passages gives (26 vs 38), because both SFT targets and DPO's chosen
+   answers are quotes chosen by the embedding ranker.
+
+**Decision:** the default stays quote mode. This experiment shows preference tuning moves exactly
+the behaviour you build pairs for, and *only* that behaviour, in both directions. The pairs are
+the specification.
+
+Reproduce: `python -m parali.tune.dpo pairs && python -m parali.tune.dpo train`, then serve with
+both adapters (`... serve Qwen/Qwen2.5-0.5B-Instruct models/answer_lora,models/answer_dpo 8082`)
+and run the same evaluation with `PARALI_LLM_MODEL=qwen2.5-0.5b-lora-dpo`.
+
+## 6. Reproduce (SFT)
 
 ```bash
 uv sync --group tune

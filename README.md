@@ -29,6 +29,9 @@ How the model was chosen (7 model families, bootstrap tests, ablation):
 
 ## What's inside
 
+New to the project? Start with the [learning guide](docs/LEARNING_GUIDE.md): every AI concept
+used here, in plain words, with the file that implements it and the result it produced.
+
 | Part | What it does | Details |
 | --- | --- | --- |
 | Forecast | LightGBM risk per ~36 km2 cell for the next 3 days, calibrated, with SHAP reasons | [Model selection](docs/MODEL_SELECTION.md) |
@@ -39,7 +42,10 @@ How the model was chosen (7 model families, bootstrap tests, ablation):
 | Foundation-model check | Chronos-Bolt zero-shot vs the tuned model | [Model selection, section 10](docs/MODEL_SELECTION.md) |
 | Burn-scar segmentation | Prithvi-EO-2.0 (NASA/IBM) fine-tuned vs U-Net on HLS Burn Scars: 0.758 vs 0.700 IoU; Punjab transfer tested honestly | [Burn scars](docs/BURN_SCARS.md) |
 | Voice input | Speak a question (Hindi or English), Whisper small transcribes it (WER 0.57 on FLEURS Hindi), the answer is read aloud | [Voice](docs/VOICE.md) |
-| Fine-tuned small LLM | LoRA on Qwen2.5-0.5B with synthetic, guardrail-verified data: cited answers 0/37 -> 19/37 (kept as an experiment) | [Fine-tuning](docs/FINE_TUNING.md) |
+| Fine-tuned small LLM | LoRA on Qwen2.5-0.5B with synthetic, guardrail-verified data (cited answers 0/37 -> 19/37), then DPO (37/37, no wrong refusals, but it stopped refusing when it should); kept as experiments | [Fine-tuning](docs/FINE_TUNING.md) |
+| LLM-as-judge | Phi-3.5-mini grades faithfulness and relevance; meta-evaluated against trusted labels (useful for faithfulness, too lenient on relevance) | [RAG, section 5](docs/RAG.md) |
+| Operations | MLflow tracking + model registry (champion/challenger), drift monitoring, request tracing, user feedback loop | [Operations](docs/OPS.md) |
+| Deployment | Verified Docker image; one-command Hugging Face Space deploy | [Operations, sections 5-6](docs/OPS.md) |
 
 ## Quick start
 
@@ -87,6 +93,17 @@ uv sync --group tune             # LoRA fine-tuning: python -m parali.tune.data 
 See [Burn scars](docs/BURN_SCARS.md), [Voice](docs/VOICE.md) and [Fine-tuning](docs/FINE_TUNING.md)
 for data downloads and exact commands.
 
+### Operations (Phase 4)
+
+```bash
+uv run python -m parali drift 2024 2025       # drift report -> eval/drift/REPORT.md
+uv sync --group ops && uv run python -m parali track   # load all experiments into MLflow
+uv run mlflow ui --backend-store-uri sqlite:///data/ops/mlflow.db
+PARALI_TRACKING=1 uv run python -m parali train        # log + register a new model (champion only if better)
+curl http://127.0.0.1:8000/api/ops/summary            # latency per step and user feedback
+bash deploy/huggingface/deploy.sh <hf-user>/<space>   # public demo (see docs/OPS.md)
+```
+
 ### Rebuild everything from the raw data
 
 ```bash
@@ -116,19 +133,25 @@ Architecture: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
   night detections rose, so some burning may be happening when the satellite is not overhead.
 - The 2025 test season was much quieter than the training seasons.
 - Weather adds little today because only observed weather is used; forecast weather is planned.
+- The burn-scar model is accurate on NASA's US data but does not transfer to post-harvest Punjab
+  without local labels; it is documented, not shown on the map.
+- Small local LLMs (0.5B-1.5B) can be taught the citation format but not good content; without a
+  larger model the assistant quotes the documents.
 
 ## Roadmap
 
-Done: phase 1 (data, forecast, model comparison, dashboard) and phase 2 (document assistant,
-bulletin agents, MCP server, foundation-model comparison). Next: burn-scar detection from
-satellite images, Hindi voice and a fine-tuned small model, then MLOps. See
-[`docs/ROADMAP.md`](docs/ROADMAP.md) and the [development log](docs/DEVLOG.md).
+Done: phase 1 (data, forecast, model comparison, dashboard), phase 2 (document assistant,
+bulletin agents, MCP server, foundation-model comparison), phase 3 (burn-scar segmentation,
+voice, LoRA fine-tuning) and phase 4 (tracking, registry, drift, tracing, feedback, LLM-as-judge,
+DPO, deployment). Open follow-ups are in [`docs/ROADMAP.md`](docs/ROADMAP.md); decisions and
+findings in the [development log](docs/DEVLOG.md).
 
 ## Data credits
 
 NASA FIRMS (VIIRS S-NPP) · Open-Meteo / Copernicus ERA5 · geoBoundaries · OpenStreetMap
 contributors (basemap) · Commission for Air Quality Management · Press Information Bureau ·
-Agriculture Department Haryana · ICAR-IARI CREAMS.
+Agriculture Department Haryana · ICAR-IARI CREAMS · NASA/IBM Prithvi-EO-2.0 and HLS Burn Scars ·
+Copernicus Sentinel-2 · Google FLEURS · Qwen2.5 and Phi-3.5 model weights.
 
 ## Licence
 
