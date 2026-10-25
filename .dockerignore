@@ -6,3 +6,6 @@ eval/model_comparison/preds
 **/__pycache__
 .pytest_cache
 .ruff_cache
+models/answer_lora
+models/burn_scars
+data/tune
