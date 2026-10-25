@@ -2,7 +2,7 @@
 with a LoRA adapter. Lets the normal answer pipeline and evaluation use the fine-tuned model
 unchanged (PARALI_LLM_BASE_URL=http://localhost:8082/v1).
 
-Usage: python -m parali.tune.serve [base_model] [adapter_dir|none] [port]
+Usage: python -m parali.tune.serve [base_model] [adapter_dir[,adapter_dir...]|none] [port]
 """
 
 from __future__ import annotations
@@ -30,10 +30,11 @@ def create_app(base: str, adapter: str | None) -> FastAPI:
     torch.set_num_threads(os.cpu_count() or 2)
     tok = AutoTokenizer.from_pretrained(base)
     model = AutoModelForCausalLM.from_pretrained(base, torch_dtype=torch.float32)
-    if adapter:
+    if adapter:  # one adapter, or several applied in order ("sft_dir,dpo_dir")
         from peft import PeftModel
 
-        model = PeftModel.from_pretrained(model, adapter).merge_and_unload()
+        for path in adapter.split(","):
+            model = PeftModel.from_pretrained(model, path).merge_and_unload()
     model.eval()
     name = base + ("+lora" if adapter else "")
     app = FastAPI()

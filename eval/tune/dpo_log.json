@@ -1,0 +1,131 @@
+{
+  "start_from": "SFT LoRA merged into Qwen/Qwen2.5-0.5B-Instruct",
+  "pairs": 60,
+  "epochs": 1,
+  "beta": 0.1,
+  "lr": 5e-05,
+  "effective_batch": 4,
+  "train_minutes": 52.5,
+  "curve": [
+    {
+      "step": 1,
+      "epoch": 1,
+      "loss": 0.6931,
+      "reward_margin": 0.0,
+      "pref_accuracy": 0.0,
+      "minutes": 3.3
+    },
+    {
+      "step": 2,
+      "epoch": 1,
+      "loss": 0.551,
+      "reward_margin": 3.196,
+      "pref_accuracy": 1.0,
+      "minutes": 6.2
+    },
+    {
+      "step": 3,
+      "epoch": 1,
+      "loss": 0.4137,
+      "reward_margin": 8.737,
+      "pref_accuracy": 0.75,
+      "minutes": 9.1
+    },
+    {
+      "step": 4,
+      "epoch": 1,
+      "loss": 0.7857,
+      "reward_margin": -0.599,
+      "pref_accuracy": 0.25,
+      "minutes": 13.3
+    },
+    {
+      "step": 5,
+      "epoch": 1,
+      "loss": 0.4364,
+      "reward_margin": 9.769,
+      "pref_accuracy": 0.75,
+      "minutes": 18.1
+    },
+    {
+      "step": 6,
+      "epoch": 1,
+      "loss": 0.4539,
+      "reward_margin": 11.701,
+      "pref_accuracy": 0.75,
+      "minutes": 22.3
+    },
+    {
+      "step": 7,
+      "epoch": 1,
+      "loss": 0.3065,
+      "reward_margin": 16.814,
+      "pref_accuracy": 1.0,
+      "minutes": 25.8
+    },
+    {
+      "step": 8,
+      "epoch": 1,
+      "loss": 0.3925,
+      "reward_margin": 10.359,
+      "pref_accuracy": 1.0,
+      "minutes": 28.8
+    },
+    {
+      "step": 9,
+      "epoch": 1,
+      "loss": 0.409,
+      "reward_margin": 9.037,
+      "pref_accuracy": 1.0,
+      "minutes": 32.1
+    },
+    {
+      "step": 10,
+      "epoch": 1,
+      "loss": 0.1719,
+      "reward_margin": 20.593,
+      "pref_accuracy": 1.0,
+      "minutes": 35.9
+    },
+    {
+      "step": 11,
+      "epoch": 1,
+      "loss": 0.5305,
+      "reward_margin": 7.04,
+      "pref_accuracy": 0.5,
+      "minutes": 39.1
+    },
+    {
+      "step": 12,
+      "epoch": 1,
+      "loss": 0.1947,
+      "reward_margin": 17.982,
+      "pref_accuracy": 1.0,
+      "minutes": 41.1
+    },
+    {
+      "step": 13,
+      "epoch": 1,
+      "loss": 0.2625,
+      "reward_margin": 16.207,
+      "pref_accuracy": 1.0,
+      "minutes": 45.1
+    },
+    {
+      "step": 14,
+      "epoch": 1,
+      "loss": 0.1168,
+      "reward_margin": 21.456,
+      "pref_accuracy": 1.0,
+      "minutes": 49.2
+    },
+    {
+      "step": 15,
+      "epoch": 1,
+      "loss": 0.0817,
+      "reward_margin": 28.642,
+      "pref_accuracy": 1.0,
+      "minutes": 52.5
+    }
+  ]
+}

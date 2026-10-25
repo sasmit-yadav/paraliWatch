@@ -75,3 +75,27 @@ def test_llm_refusal_is_detected_not_treated_as_answer():
     assert _declined(NOT_FOUND["en"].format(helpline=config.HELPLINE))
     assert _declined(NOT_FOUND["hi"].format(helpline=config.HELPLINE))
     assert not _declined("The incentive is Rs 1,000 per acre [2].")
+
+
+def test_two_pass_dpo_gradient_equals_the_dpo_loss_gradient():
+    torch = pytest.importorskip("torch")
+    from parali.tune.dpo import BETA, dpo_weight
+
+    theta = torch.tensor([0.3, -0.2], requires_grad=True)
+    a, b = torch.tensor([1.0, 2.0]), torch.tensor([-1.5, 0.5])
+    ref_c, ref_r = 0.1, -0.4
+
+    def logp_c():
+        return (theta * a).sum()
+
+    def logp_r():
+        return (theta * b).sum()
+
+    # reference: autograd through the full DPO loss
+    loss = -torch.nn.functional.logsigmoid(BETA * ((logp_c() - ref_c) - (logp_r() - ref_r)))
+    (expected,) = torch.autograd.grad(loss, theta)
+    # two-pass version used in training: weight first, then one backward per answer
+    _, w = dpo_weight(float(logp_c()), float(logp_r()), ref_c, ref_r)
+    (-BETA * w * logp_c()).backward()
+    (BETA * w * logp_r()).backward()
+    assert torch.allclose(theta.grad, expected, atol=1e-6)
