@@ -164,6 +164,28 @@ def ask(q: Question) -> dict:
     return out
 
 
+@app.get("/api/assistant/status")
+def assistant_status() -> dict:
+    """Is the assistant ready to answer quickly? The first question after a fresh install
+    downloads the search models (~1 GB, once) and builds the document index; the first question
+    after a restart only loads them. The dashboard uses this to tell the user what is happening."""
+    from pathlib import Path
+
+    from parali.advise import answer as answer_mod
+    from parali.advise import embed
+
+    loaded = (
+        embed._embedder.cache_info().currsize > 0
+        and embed._reranker.cache_info().currsize > 0
+        and answer_mod.retriever.cache_info().currsize > 0
+    )
+    cache = Path(embed.CACHE)
+    downloaded = cache.exists() and sum(1 for _ in cache.rglob("*.onnx")) >= 2
+    indexed = any(config.INDEX_DIR.glob("*.chunks.jsonl"))
+    stage = "ready" if loaded else ("loading" if downloaded and indexed else "first_run")
+    return {"ready": loaded, "stage": stage, "models_downloaded": downloaded, "index_built": indexed}
+
+
 class Feedback(BaseModel):
     trace_id: str = Field(min_length=8, max_length=64)
     rating: int = Field(ge=-1, le=1)

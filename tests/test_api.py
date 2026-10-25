@@ -72,3 +72,9 @@ def test_season_timeline_covers_every_forecast_day(meta):
     assert [r["date"] for r in rows] == meta["dates"]
     assert all(r["fires"] >= 0 and r["expected_cells"] >= 0 for r in rows)
     assert sum(r["fires"] for r in rows) > 0
+
+
+def test_assistant_status_reports_a_known_stage():
+    s = client.get("/api/assistant/status").json()
+    assert s["stage"] in {"ready", "loading", "first_run"}
+    assert s["ready"] == (s["stage"] == "ready")

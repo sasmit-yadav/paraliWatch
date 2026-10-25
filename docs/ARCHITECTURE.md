@@ -60,6 +60,7 @@ Open-Meteo ──┘   (download, clean,     (fires, weather, grid,       (featu
 | `GET /api/district-summary?date=` | Expected fire cells and high-risk cells per district |
 | `GET /api/districts` | District boundaries |
 | `POST /api/ask` | Cited answer from the documents (`{"question": ..., "user_id": ...}`) |
+| `GET /api/assistant/status` | `ready`, or what the first question will wait for: `loading` (models into memory, ~30-60 s) or `first_run` (one-time ~1 GB download and indexing) |
 | `POST /api/transcribe` | Speech to text (raw audio body; `?language=hi|en` optional). Needs `uv sync --group voice` |
 | `GET/PUT /api/profile/{user_id}` | Farmer profile used to personalise answers |
 | `GET /api/bulletin?date=` | Agent-written district bulletin (EN + HI), created as a draft |
@@ -99,6 +100,9 @@ type and thin rules. It is a general look, not a copy: no logos, no brand assets
   season one day per second; the arrow keys step through days.
 - **Three tabs instead of one long column:** Risk (selected cell with its reasons, top cells),
   Bulletin, Assistant. Clicking a cell on the map opens its details on the Risk tab.
+- **Waiting is explained.** While an answer is prepared, a live timer runs; on the first
+  question the page says whether it is loading the models (~30-60 s) or doing the one-time
+  download and indexing (minutes), and every answer shows how long it took.
 - **Answers are shown as cited statements:** each quote or sentence in its own block with its
   source number, then the reviewed knowledge-graph facts, then the source list.
 - **Headline numbers in the header** (fire capture at the top 10% of cells, PR-AUC, each against

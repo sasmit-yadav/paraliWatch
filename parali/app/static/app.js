@@ -406,6 +406,29 @@ function feedbackRow(traceId) {
   return row;
 }
 
+// While an answer is being prepared: a live timer, and on the first question an explanation of
+// the one-time setup (model download / loading), from /api/assistant/status.
+const fmtTime = (s) => (s < 60 ? `${s} s` : `${Math.floor(s / 60)} min ${String(s % 60).padStart(2, "0")} s`);
+const SETUP_NOTES = {
+  first_run: "First question on this computer: downloading the search models (about 1 GB, only once) and indexing " +
+    "the documents. This usually takes 3 to 10 minutes depending on your internet. You can keep using the map meanwhile.",
+  loading: "First question since the app started: loading the search models into memory (about 30 to 60 seconds).",
+};
+async function showProgress(box) {
+  let stage = "ready";
+  try { stage = (await getJSON("/api/assistant/status")).stage; } catch { /* status is optional */ }
+  const start = Date.now();
+  box.innerHTML = `<div class="progress" role="status" aria-live="polite">
+      <div class="progress-line"><span class="spinner" aria-hidden="true"></span>
+        <span>Searching the documents\u2026 <b class="elapsed">0 s</b></span></div>
+      <div class="progress-bar" aria-hidden="true"><i></i></div>
+      ${SETUP_NOTES[stage] ? `<p class="progress-note">${SETUP_NOTES[stage]}</p>` : ""}
+    </div>`;
+  const el = box.querySelector(".elapsed");
+  const timer = setInterval(() => { el.textContent = fmtTime(Math.round((Date.now() - start) / 1000)); }, 1000);
+  return () => { clearInterval(timer); return Math.max(1, Math.round((Date.now() - start) / 1000)); };
+}
+
 // Answer text -> one block per cited statement ("... [2]"), plus the knowledge-graph facts.
 function answerHtml(text) {
   const [main, facts] = text.split(/\n\nRelated facts:\n/);
@@ -437,18 +460,19 @@ $("ask-form").addEventListener("submit", async (e) => {
   const btn = e.target.querySelector("button");
   btn.disabled = true;
   box.hidden = false;
-  box.textContent = "Searching the documents\u2026";
+  const stopProgress = await showProgress(box);
   try {
     const res = await fetch("/api/ask", {
       method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ question: q }),
     });
     const a = await res.json();
+    const seconds = stopProgress();
     if (!res.ok) { box.textContent = a.detail || "Something went wrong."; return; }
     const cites = a.citations
       .map((c) => `<li>[${c.n}] ${esc(c.title)}, page ${c.page}</li>`)
       .join("");
     const modes = { llm: "Written by the AI from the sources below.", extractive: "Quoted from the sources below (no AI model connected).", not_found: "" };
-    box.innerHTML = `${answerHtml(a.text)}${cites ? `<p class="eyebrow cites-head">Sources</p><ol class="cites">${cites}</ol>` : ""}<div class="mode">${modes[a.mode] || ""}</div>`;
+    box.innerHTML = `${answerHtml(a.text)}${cites ? `<p class="eyebrow cites-head">Sources</p><ol class="cites">${cites}</ol>` : ""}<div class="mode">${modes[a.mode] || ""}${modes[a.mode] ? " · " : ""}Answered in ${fmtTime(seconds)}</div>`;
     if ("speechSynthesis" in window) {
       const listen = document.createElement("button");
       listen.type = "button";
@@ -461,6 +485,7 @@ $("ask-form").addEventListener("submit", async (e) => {
     state.voiceAsk = false;
     if (a.trace_id) box.appendChild(feedbackRow(a.trace_id));
   } catch {
+    stopProgress();
     box.textContent = "Could not reach the assistant.";
   } finally {
     btn.disabled = false;
