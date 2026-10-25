@@ -23,3 +23,16 @@ def test_champion_only_moves_when_validation_improves(tmp_path, monkeypatch):
     assert client.get_model_version_by_alias(config.FORECAST_MODEL_NAME, "champion").version == v1
     assert tracking.promote_if_better(v3, 0.31)
     assert client.get_model_version_by_alias(config.FORECAST_MODEL_NAME, "champion").version == v3
+
+
+def test_psi_flags_shift_and_ignores_identical_data():
+    import numpy as np
+
+    from parali.ops.drift import PSI_MAJOR, ks, psi
+
+    rng = np.random.default_rng(0)
+    ref = rng.poisson(0.3, 50_000).astype(float)  # mostly zeros, like fire counts
+    same = rng.poisson(0.3, 50_000).astype(float)
+    fewer = rng.poisson(0.05, 50_000).astype(float)  # fires collapse
+    assert psi(ref, same) < 0.01 and ks(ref, same) < 0.02
+    assert psi(ref, fewer) > PSI_MAJOR

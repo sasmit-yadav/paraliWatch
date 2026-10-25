@@ -1,0 +1,344 @@
+{
+  "season": 2024,
+  "reference_seasons": [
+    2020,
+    2021,
+    2022,
+    2023
+  ],
+  "rows": 201310,
+  "features": [
+    {
+      "feature": "state_season_vs_last_year",
+      "psi": 1.6994,
+      "ks": 0.3796,
+      "level": "major",
+      "ref_mean": 1.1123,
+      "cur_mean": 0.8535
+    },
+    {
+      "feature": "state_3d",
+      "psi": 0.9613,
+      "ks": 0.2965,
+      "level": "major",
+      "ref_mean": 1156.156,
+      "cur_mean": 200.1789
+    },
+    {
+      "feature": "fires_season",
+      "psi": 0.9011,
+      "ks": 0.1995,
+      "level": "major",
+      "ref_mean": 11.7643,
+      "cur_mean": 1.9481
+    },
+    {
+      "feature": "last_year_season",
+      "psi": 0.3287,
+      "ks": 0.1675,
+      "level": "major",
+      "ref_mean": 26.4862,
+      "cur_mean": 13.4884
+    },
+    {
+      "feature": "ring1_7d",
+      "psi": 0.3241,
+      "ks": 0.1287,
+      "level": "major",
+      "ref_mean": 12.449,
+      "cur_mean": 2.1335
+    },
+    {
+      "feature": "fires_14d",
+      "psi": 0.3088,
+      "ks": 0.1283,
+      "level": "major",
+      "ref_mean": 4.2001,
+      "cur_mean": 0.727
+    },
+    {
+      "feature": "district_3d",
+      "psi": 0.2972,
+      "ks": 0.1506,
+      "level": "major",
+      "ref_mean": 62.316,
+      "cur_mean": 10.8752
+    },
+    {
+      "feature": "ring2_3d",
+      "psi": 0.2741,
+      "ks": 0.1348,
+      "level": "major",
+      "ref_mean": 10.5124,
+      "cur_mean": 1.8027
+    },
+    {
+      "feature": "wind",
+      "psi": 0.2663,
+      "ks": 0.2077,
+      "level": "major",
+      "ref_mean": 11.8963,
+      "cur_mean": 10.8591
+    },
+    {
+      "feature": "ring1_3d",
+      "psi": 0.223,
+      "ks": 0.1218,
+      "level": "moderate",
+      "ref_mean": 5.3355,
+      "cur_mean": 0.9173
+    },
+    {
+      "feature": "rh",
+      "psi": 0.2033,
+      "ks": 0.0796,
+      "level": "moderate",
+      "ref_mean": 65.7358,
+      "cur_mean": 66.6766
+    },
+    {
+      "feature": "fires_7d",
+      "psi": 0.1824,
+      "ks": 0.1079,
+      "level": "moderate",
+      "ref_mean": 2.1086,
+      "cur_mean": 0.3661
+    },
+    {
+      "feature": "tmax",
+      "psi": 0.1741,
+      "ks": 0.1803,
+      "level": "moderate",
+      "ref_mean": 28.237,
+      "cur_mean": 29.1894
+    },
+    {
+      "feature": "ring1_1d",
+      "psi": 0.1576,
+      "ks": 0.109,
+      "level": "moderate",
+      "ref_mean": 1.7805,
+      "cur_mean": 0.3057
+    },
+    {
+      "feature": "rain_3d",
+      "psi": 0.1545,
+      "ks": 0.133,
+      "level": "moderate",
+      "ref_mean": 2.8111,
+      "cur_mean": 0.4612
+    },
+    {
+      "feature": "frp_3d",
+      "psi": 0.1256,
+      "ks": 0.0981,
+      "level": "moderate",
+      "ref_mean": 6.3937,
+      "cur_mean": 0.7971
+    },
+    {
+      "feature": "fires_3d",
+      "psi": 0.1134,
+      "ks": 0.0966,
+      "level": "moderate",
+      "ref_mean": 0.9039,
+      "cur_mean": 0.1574
+    },
+    {
+      "feature": "days_since_fire",
+      "psi": 0.0874,
+      "ks": 0.1022,
+      "level": "stable",
+      "ref_mean": 19.7466,
+      "cur_mean": 22.6811
+    },
+    {
+      "feature": "fires_1d",
+      "psi": 0.0813,
+      "ks": 0.0691,
+      "level": "stable",
+      "ref_mean": 0.2998,
+      "cur_mean": 0.0524
+    },
+    {
+      "feature": "wind_dir_cos",
+      "psi": 0.068,
+      "ks": 0.1056,
+      "level": "stable",
+      "ref_mean": 0.4039,
+      "cur_mean": 0.2772
+    },
+    {
+      "feature": "rain",
+      "psi": 0.0679,
+      "ks": 0.0831,
+      "level": "stable",
+      "ref_mean": 0.9105,
+      "cur_mean": 0.1535
+    },
+    {
+      "feature": "wind_dir_sin",
+      "psi": 0.0421,
+      "ks": 0.0562,
+      "level": "stable",
+      "ref_mean": -0.1396,
+      "cur_mean": -0.0994
+    },
+    {
+      "feature": "last_year_week",
+      "psi": 0.0218,
+      "ks": 0.049,
+      "level": "stable",
+      "ref_mean": 2.252,
+      "cur_mean": 1.1489
+    },
+    {
+      "feature": "last_year_next3",
+      "psi": 0.0179,
+      "ks": 0.0428,
+      "level": "stable",
+      "ref_mean": 0.9641,
+      "cur_mean": 0.493
+    },
+    {
+      "feature": "history_rate",
+      "psi": 0.0152,
+      "ks": 0.065,
+      "level": "stable",
+      "ref_mean": 25.2569,
+      "cur_mean": 23.8678
+    },
+    {
+      "feature": "season_day",
+      "psi": 0.0,
+      "ks": 0.0018,
+      "level": "stable",
+      "ref_mean": 47.4625,
+      "cur_mean": 47.5
+    }
+  ],
+  "prediction": {
+    "psi": 0.1774,
+    "ref_mean_score": 0.3111,
+    "cur_mean_score": 0.2555,
+    "level": "moderate"
+  },
+  "labels": {
+    "fire_rate_reference": 0.1837,
+    "fire_rate_current": 0.086,
+    "ratio": 0.468
+  },
+  "performance": {
+    "pr_auc": 0.3507,
+    "lift_over_base_rate": 4.08,
+    "validation_lift": 4.08
+  },
+  "calibration": {
+    "mean_predicted_probability": 0.086,
+    "actual_fire_rate": 0.086,
+    "ratio": 1.0
+  },
+  "weekly": [
+    {
+      "week_start": "2024-09-22",
+      "score_psi_vs_same_weeks": 0.0781,
+      "fire_rate": 0.0139,
+      "pr_auc": 0.1133,
+      "lift": 8.15
+    },
+    {
+      "week_start": "2024-09-29",
+      "score_psi_vs_same_weeks": 0.0718,
+      "fire_rate": 0.028,
+      "pr_auc": 0.104,
+      "lift": 3.71
+    },
+    {
+      "week_start": "2024-10-06",
+      "score_psi_vs_same_weeks": 0.1669,
+      "fire_rate": 0.0743,
+      "pr_auc": 0.2815,
+      "lift": 3.79
+    },
+    {
+      "week_start": "2024-10-13",
+      "score_psi_vs_same_weeks": 0.5433,
+      "fire_rate": 0.0733,
+      "pr_auc": 0.2507,
+      "lift": 3.42
+    },
+    {
+      "week_start": "2024-10-20",
+      "score_psi_vs_same_weeks": 1.1469,
+      "fire_rate": 0.0962,
+      "pr_auc": 0.3414,
+      "lift": 3.55
+    },
+    {
+      "week_start": "2024-10-27",
+      "score_psi_vs_same_weeks": 0.942,
+      "fire_rate": 0.1679,
+      "pr_auc": 0.3912,
+      "lift": 2.33
+    },
+    {
+      "week_start": "2024-11-03",
+      "score_psi_vs_same_weeks": 1.1106,
+      "fire_rate": 0.1569,
+      "pr_auc": 0.4118,
+      "lift": 2.62
+    },
+    {
+      "week_start": "2024-11-10",
+      "score_psi_vs_same_weeks": 0.5129,
+      "fire_rate": 0.16,
+      "pr_auc": 0.4098,
+      "lift": 2.56
+    },
+    {
+      "week_start": "2024-11-17",
+      "score_psi_vs_same_weeks": 0.0088,
+      "fire_rate": 0.1531,
+      "pr_auc": 0.4246,
+      "lift": 2.77
+    },
+    {
+      "week_start": "2024-11-24",
+      "score_psi_vs_same_weeks": 0.3363,
+      "fire_rate": 0.0431,
+      "pr_auc": 0.1465,
+      "lift": 3.4
+    },
+    {
+      "week_start": "2024-12-01",
+      "score_psi_vs_same_weeks": 0.3454,
+      "fire_rate": 0.0241,
+      "pr_auc": 0.1107,
+      "lift": 4.6
+    },
+    {
+      "week_start": "2024-12-08",
+      "score_psi_vs_same_weeks": 0.417,
+      "fire_rate": 0.0235,
+      "pr_auc": 0.0743,
+      "lift": 3.17
+    }
+  ],
+  "alerts": {
+    "major_feature_drift": [
+      "state_season_vs_last_year",
+      "state_3d",
+      "fires_season",
+      "last_year_season",
+      "ring1_7d",
+      "fires_14d",
+      "district_3d",
+      "ring2_3d",
+      "wind"
+    ],
+    "prediction_drift": "moderate",
+    "actions": [
+      "investigate: inputs moved but ranking and calibration still hold"
+    ]
+  }
+}

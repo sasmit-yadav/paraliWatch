@@ -1,4 +1,4 @@
-"""Command line: python -m parali <data|train|serve|all>"""
+"""Command line: python -m parali <command>; run `python -m parali --help` for the list."""
 
 from __future__ import annotations
 
@@ -60,6 +60,21 @@ def cmd_graph(args) -> None:
     graph.extract(index.make_chunks(load_corpus(), "structure"))
 
 
+def cmd_drift(args) -> None:
+    from parali.ops import drift
+
+    drift.run(args.seasons or [2024, 2025])
+    logging.info("Report written to %s", drift.OUT / "REPORT.md")
+
+
+def cmd_track(args) -> None:
+    import json
+
+    from parali.ops import tracking
+
+    print(json.dumps(tracking.backfill(force=args.force), indent=2))
+
+
 def cmd_ask(args) -> None:
     import json
 
@@ -114,6 +129,10 @@ def main() -> None:
     p_bul = sub.add_parser("bulletin", help="write the district bulletin for a date")
     p_bul.add_argument("date")
     sub.add_parser("mcp", help="run the MCP server over stdio")
+    p_drift = sub.add_parser("drift", help="drift report: new seasons vs the training seasons")
+    p_drift.add_argument("seasons", nargs="*", type=int)
+    p_track = sub.add_parser("track", help="log all recorded experiments to MLflow (needs the 'ops' group)")
+    p_track.add_argument("--force", action="store_true", help="log again even if already done")
     p_all = sub.add_parser("all", help="data + train")
     p_all.add_argument("--force", action="store_true")
     args = parser.parse_args()
@@ -138,6 +157,10 @@ def main() -> None:
         cmd_bulletin(args)
     elif args.command == "mcp":
         cmd_mcp(args)
+    elif args.command == "drift":
+        cmd_drift(args)
+    elif args.command == "track":
+        cmd_track(args)
     elif args.command == "all":
         cmd_data(args)
         cmd_train(args)
