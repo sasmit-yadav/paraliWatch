@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from contextlib import asynccontextmanager
 from datetime import date
 from functools import lru_cache
 
@@ -16,10 +17,37 @@ from parali.app.store import Store
 
 STATIC = config.ROOT / "parali" / "app" / "static"
 
+def _warm_up() -> None:
+    """PARALI_WARMUP=1: load the document index and models in the background at start-up, so the
+    first question doesn't wait for a model download (useful on a hosted demo)."""
+    import os
+    import threading
+
+    if os.environ.get("PARALI_WARMUP", "0") != "1":
+        return
+
+    def load() -> None:
+        try:
+            from parali.advise.answer import answer
+
+            answer("warm-up: crop residue incentive", use_llm=False)
+        except Exception:  # the app still works; the first real question will load them
+            pass
+
+    threading.Thread(target=load, daemon=True).start()
+
+
+@asynccontextmanager
+async def lifespan(_: FastAPI):
+    _warm_up()
+    yield
+
+
 app = FastAPI(
     title="Parali Watch API",
     version=__version__,
     description="Next-3-day crop-residue fire risk for Punjab and Haryana, with reasons.",
+    lifespan=lifespan,
 )
 store = Store()
 

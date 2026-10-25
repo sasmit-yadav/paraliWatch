@@ -14,6 +14,10 @@ COPY data/corpus ./data/corpus
 COPY models ./models
 COPY eval ./eval
 RUN uv sync --frozen --no-dev
+# writable at run time even as a non-root user (hosted platforms): index, traces, feedback, model
+# caches. HOME matters too: libraries write caches and lock files under it.
+ENV PARALI_MODEL_CACHE=/app/data/models HF_HOME=/app/data/models/hf HOME=/app/data/home
+RUN mkdir -p data/index data/ops data/models/hf data/home && chmod -R a+rwX data
 
 ENV PATH="/opt/venv/bin:$PATH"
 EXPOSE 8000
