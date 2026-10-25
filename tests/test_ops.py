@@ -36,3 +36,52 @@ def test_psi_flags_shift_and_ignores_identical_data():
     fewer = rng.poisson(0.05, 50_000).astype(float)  # fires collapse
     assert psi(ref, same) < 0.01 and ks(ref, same) < 0.02
     assert psi(ref, fewer) > PSI_MAJOR
+
+
+def test_spans_nest_and_are_written(tmp_path, monkeypatch):
+    from parali.ops import trace
+
+    monkeypatch.setattr(trace, "TRACE_FILE", tmp_path / "t.jsonl")
+    with trace.span("outside"):  # no open trace: a no-op
+        pass
+    with trace.start("ask", question="q") as t:
+        with trace.span("retrieve"):
+            with trace.span("rerank", candidates=10):
+                trace.annotate(best=1.5)
+        trace.annotate(mode="extractive")
+    saved = trace.find(t.trace_id)
+    names = [s["name"] for s in saved["spans"]]
+    assert names == ["ask", "retrieve", "rerank"]
+    ask, retrieve, rerank = saved["spans"]
+    assert retrieve["parent_id"] == ask["span_id"] and rerank["parent_id"] == retrieve["span_id"]
+    assert rerank["attributes"] == {"candidates": 10, "best": 1.5} and ask["attributes"]["mode"] == "extractive"
+    assert trace.summary([saved])["answer_modes"] == {"extractive": 1}
+
+
+def test_feedback_loop_turns_down_votes_into_eval_candidates(tmp_path, monkeypatch):
+    import json
+
+    from parali.ops import feedback
+
+    monkeypatch.setattr(feedback, "DB", tmp_path / "f.db")
+    monkeypatch.setattr(feedback, "CANDIDATES", tmp_path / "c.jsonl")
+    ans = {"question": "Subsidy for balers?", "text": "...", "mode": "extractive", "language": "en",
+           "citations": [{"n": 1, "doc_id": "d.pdf", "page": 2}]}
+    feedback.record_answer("abc12345", ans)
+    assert not feedback.add("unknown1", -1)
+    assert feedback.add("abc12345", -1, "wrong scheme")
+    assert feedback.summary()["down"] == 1
+    assert feedback.export_candidates() == 1 and feedback.export_candidates() == 0  # no duplicates
+    row = json.loads((tmp_path / "c.jsonl").read_text())
+    assert row["question"] == "Subsidy for balers?" and row["user_comment"] == "wrong scheme"
+
+
+def test_feedback_api_rejects_unknown_trace():
+    from fastapi.testclient import TestClient
+
+    from parali.app.main import app
+
+    client = TestClient(app)
+    assert client.post("/api/feedback", json={"trace_id": "nope12345", "rating": 1}).status_code == 404
+    assert client.post("/api/feedback", json={"trace_id": "nope12345", "rating": 0}).status_code == 422
+    assert client.get("/api/ops/summary").status_code == 200

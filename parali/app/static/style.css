@@ -91,6 +91,9 @@ input[type="range"] { width: 100%; margin: 10px 0 6px; accent-color: var(--accen
 .ask-actions .btn { flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 5px; min-height: 28px; }
 .btn-ghost { background: transparent; color: var(--accent); border: 1px solid var(--accent); }
 .btn-ghost.recording { background: #dc2626; border-color: #dc2626; color: #fff; }
+.answer .feedback { display: flex; align-items: center; gap: 6px; margin-top: 8px; font-size: 12px; color: var(--muted); }
+.answer .feedback .fb { border: 1px solid var(--line); background: transparent; border-radius: 6px; padding: 1px 7px; cursor: pointer; font-size: 13px; }
+.answer .feedback .fb:disabled { opacity: 0.5; cursor: default; }
 .answer .listen { margin-top: 6px; font-size: 12px; padding: 3px 10px; min-height: 0; }
 .answer { margin-top: 10px; font-size: 13px; line-height: 1.5; }
 .answer .cites { margin: 8px 0 0; padding-left: 18px; font-size: 12px; color: var(--muted); }

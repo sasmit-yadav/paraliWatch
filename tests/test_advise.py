@@ -103,3 +103,10 @@ def test_snapshot_supplies_documents_missing_from_the_folder(tmp_path):
     )
     loaded = {p.doc_id for p in load_corpus(tmp_path)}
     assert loaded == {"fixture_machines.txt", "extra.txt"}
+
+
+def test_sentences_do_not_break_at_abbreviations():
+    from parali.advise.text import sentences
+
+    s = sentences("Benchmark price w.e.f. 01.09.2023. Pellets need moisture below 14%. See No. 92.")
+    assert s == ["Benchmark price w.e.f. 01.09.2023.", "Pellets need moisture below 14%.", "See No. 92."]

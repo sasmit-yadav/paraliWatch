@@ -70,11 +70,30 @@ def expand_bilingual(query: str) -> str:
 CLAUSE_END = re.compile(r"(?<=[;:])\s+|\s+(?=\(?[ivx]{1,4}\)\s)")  # "; " ":" and "(ii) " clause breaks
 
 
+# A full stop after these is not the end of a sentence ("w.e.f. 01.09.2023", "No. 92", "Rs. 1,000").
+ABBREVIATION_END = re.compile(
+    r"(?:\b(?:w\.e\.f|i\.e|e\.g|viz|etc|vs|No|Nos|Rs|Sh|Smt|Dr|Govt|Dept|Ltd|Co|St|approx|Annex|Para|Sec)\.|"
+    r"\b[A-Z]\.)$",
+    re.IGNORECASE,
+)
+
+
+def _split_sentences(block: str) -> list[str]:
+    parts = SENTENCE_END.split(block)
+    merged: list[str] = []
+    for p in parts:
+        if merged and ABBREVIATION_END.search(merged[-1].strip()):
+            merged[-1] = f"{merged[-1]} {p}"
+        else:
+            merged.append(p)
+    return merged
+
+
 def sentences(text: str, max_words: int = 40) -> list[str]:
     """Sentences, with long ones (common in legal notices and OCR text) split at clause breaks."""
     lines = [re.sub(r"^\s*#+\s*", "", ln) for ln in text.split("\n")]  # drop markdown heading marks
     out = []
-    for part in (p.strip() for block in lines for p in SENTENCE_END.split(block)):
+    for part in (p.strip() for block in lines for p in _split_sentences(block)):
         if len(part.split()) > max_words:
             out.extend(c.strip() for c in CLAUSE_END.split(part))
         else:

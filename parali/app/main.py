@@ -114,11 +114,56 @@ def ask(q: Question) -> dict:
     from parali.advise import memory
     from parali.advise.answer import answer
 
+    from parali.ops import feedback, trace
+
     profile = memory.get(q.user_id) if q.user_id else None
     try:
-        return answer(q.question, profile).to_dict()
+        with trace.start("ask", question=q.question[:200]) as tr:
+            out = answer(q.question, profile).to_dict()
     except FileNotFoundError as exc:
         raise HTTPException(503, "Document index not built yet. Run: python -m parali index") from exc
+    out["trace_id"] = tr.trace_id
+    try:
+        feedback.record_answer(tr.trace_id, out)
+    except Exception:  # feedback storage must never break an answer
+        pass
+    return out
+
+
+class Feedback(BaseModel):
+    trace_id: str = Field(min_length=8, max_length=64)
+    rating: int = Field(ge=-1, le=1)
+    comment: str | None = Field(default=None, max_length=1000)
+
+
+@app.post("/api/feedback")
+def post_feedback(f: Feedback) -> dict:
+    """Thumbs up (+1) or down (-1) on an answer, identified by the trace_id /api/ask returned."""
+    from parali.ops import feedback
+
+    if f.rating == 0:
+        raise HTTPException(422, "rating must be +1 or -1")
+    if not feedback.add(f.trace_id, f.rating, f.comment):
+        raise HTTPException(404, "Unknown trace_id")
+    return {"ok": True}
+
+
+@app.get("/api/ops/summary")
+def ops_summary(last: int = Query(500, ge=1, le=10_000)) -> dict:
+    """Latency per answer step (p50/p95) over recent traces, answer modes, and user feedback."""
+    from parali.ops import feedback, trace
+
+    return {"tracing": trace.summary(trace.load(last)), "feedback": feedback.summary()}
+
+
+@app.get("/api/ops/trace/{trace_id}")
+def get_trace(trace_id: str) -> dict:
+    from parali.ops import trace
+
+    t = trace.find(trace_id)
+    if t is None:
+        raise HTTPException(404, "Unknown trace_id")
+    return t
 
 
 MAX_AUDIO_BYTES = 5_000_000  # about 5 minutes of compressed speech

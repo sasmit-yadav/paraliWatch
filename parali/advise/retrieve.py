@@ -17,6 +17,7 @@ from parali.advise.chunking import Chunk
 from parali.advise.embed import embed, rerank
 from parali.advise.index import table_name
 from parali.advise.text import expand_bilingual, tokens
+from parali.ops import trace
 
 MODES = ("bm25", "dense", "hybrid", "hybrid_rerank")
 
@@ -85,10 +86,12 @@ class Retriever:
             return self.keyword(query, k)
         if mode == "dense":
             return self.dense(query, k)
-        candidates = self.hybrid(query, pool)
+        with trace.span("hybrid_search", pool=pool):
+            candidates = self.hybrid(query, pool)
         if mode == "hybrid":
             return candidates[:k]
-        scores = rerank(query, [h.chunk.text for h in candidates], self.rerank_model)
+        with trace.span("rerank", candidates=len(candidates)):
+            scores = rerank(query, [h.chunk.text for h in candidates], self.rerank_model)
         for hit, s in zip(candidates, scores, strict=True):
             hit.detail["rerank"] = float(s)
             hit.score = float(s)

@@ -19,6 +19,7 @@ from parali.advise.embed import embed
 from parali.advise.memory import Profile
 from parali.advise.retrieve import Hit, Retriever
 from parali.advise.text import is_hindi, sentences
+from parali.ops import trace
 
 log = logging.getLogger(__name__)
 
@@ -100,18 +101,18 @@ def retrieve(question: str, profile: Profile | None = None, use_llm: bool = True
     """Agentic retrieval: search; if the best passage looks irrelevant, rewrite the query once and
     search again; keep whichever attempt found more relevant passages."""
     r = retriever()
-    trace = {"queries": [question]}
+    steps = {"queries": [question]}
     hits = r.search(question)
     best = hits[0].score if hits else float("-inf")
     if best < config.MIN_RERANK_SCORE + 2 and use_llm and llm.available():
         rewritten = _rewrite(question, profile)
         if rewritten and rewritten.lower() != question.lower():
-            trace["queries"].append(rewritten)
+            steps["queries"].append(rewritten)
             retry = r.search(rewritten)
             if retry and retry[0].score > best:
                 hits, best = retry, retry[0].score
-    trace["best_score"] = round(best, 3)
-    return hits, trace
+    steps["best_score"] = round(best, 3)
+    return hits, steps
 
 
 def _extractive(question: str, hits: list[Hit], max_sentences: int = 5) -> tuple[str, list[int]]:
@@ -141,10 +142,17 @@ def _extractive(question: str, hits: list[Hit], max_sentences: int = 5) -> tuple
 
 def answer(question: str, profile: Profile | None = None, use_llm: bool = True) -> Answer:
     question = question.strip()
-    checks = {"injection_suspected": guard.looks_like_injection(question)}
-    hits, trace = retrieve(question, profile, use_llm)
-    checks.update(trace)
-    return compose(question, hits, checks, profile, use_llm)
+    with trace.span("guard_input"):
+        checks = {"injection_suspected": guard.looks_like_injection(question)}
+        trace.annotate(injection_suspected=checks["injection_suspected"])
+    with trace.span("retrieve"):
+        hits, steps = retrieve(question, profile, use_llm)
+        trace.annotate(queries=len(steps["queries"]), best_score=steps["best_score"],
+                       top=[f"{h.chunk.doc_id}#p{h.chunk.page}" for h in hits[:3]])
+    checks.update(steps)
+    a = compose(question, hits, checks, profile, use_llm)
+    trace.annotate(mode=a.mode, language=a.language, citations=len(a.citations))
+    return a
 
 
 class _Fallback(Exception):
@@ -180,7 +188,9 @@ def compose(
 
     from parali.advise import graph  # optional knowledge-graph facts
 
-    facts = graph.facts_for(question) if config.USE_GRAPH else []
+    with trace.span("graph_facts"):
+        facts = graph.facts_for(question) if config.USE_GRAPH else []
+        trace.annotate(facts=len(facts))
     sources = [h.chunk for h in relevant]
     blocks = [f"[{i}] {c.title}, page {c.page}:\n{c.text}" for i, c in enumerate(sources, start=1)]
     if facts:
@@ -189,7 +199,8 @@ def compose(
     text, mode, used = "", "extractive", []
     if use_llm and llm.available():
         try:
-            text = llm.chat(build_messages(question, blocks, lang, profile), max_tokens=400, purpose="answer")
+            with trace.span("llm", model=config.LLM_MODEL):
+                text = llm.chat(build_messages(question, blocks, lang, profile), max_tokens=400, purpose="answer")
             mode = "llm"
             if _declined(text):
                 # The model says the passages don't answer it, but retrieval found relevant ones:
@@ -201,9 +212,11 @@ def compose(
             cited_texts = [f"{sources[i - 1].title}\n{sources[i - 1].text}" for i in used] or [
                 f"{c.title}\n{c.text}" for c in sources
             ]
-            bad = guard.unsupported_numbers(text, cited_texts + facts, question)
-            checks["unsupported_numbers"] = sorted(bad)
-            checks["has_citation"] = bool(used)
+            with trace.span("guard_output"):
+                bad = guard.unsupported_numbers(text, cited_texts + facts, question)
+                checks["unsupported_numbers"] = sorted(bad)
+                checks["has_citation"] = bool(used)
+                trace.annotate(unsupported_numbers=len(bad), has_citation=bool(used))
             if bad or not used:
                 checks["rejected_llm_text"] = text[:400]
                 log.info("LLM answer failed checks (%s); falling back to quotes", checks)
@@ -213,7 +226,8 @@ def compose(
         except llm.LLMUnavailable as exc:
             checks["llm_error"] = str(exc)
     if mode == "extractive":
-        text, used = _extractive(question, relevant)
+        with trace.span("quote_sources"):
+            text, used = _extractive(question, relevant)
         if lang == "hi":
             text = "दस्तावेज़ों से संबंधित अंश (अंग्रेज़ी में):\n" + text
         if facts:  # reviewed facts linked to what was asked; each names its own source page

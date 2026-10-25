@@ -266,6 +266,26 @@ $("mic").addEventListener("click", async () => {
   $("mic-label").textContent = "Stop";
 });
 
+// Thumbs up / down on an answer. Ratings go into the feedback loop (see docs/OPS.md).
+function feedbackRow(traceId) {
+  const row = document.createElement("div");
+  row.className = "feedback";
+  row.innerHTML = `<span>Was this useful?</span>
+    <button type="button" class="fb" data-r="1" aria-label="Useful">&#128077;</button>
+    <button type="button" class="fb" data-r="-1" aria-label="Not useful">&#128078;</button>`;
+  row.querySelectorAll(".fb").forEach((b) => b.addEventListener("click", async () => {
+    row.querySelectorAll(".fb").forEach((x) => (x.disabled = true));
+    try {
+      const res = await fetch("/api/feedback", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ trace_id: traceId, rating: Number(b.dataset.r) }),
+      });
+      row.querySelector("span").textContent = res.ok ? "Thanks for the feedback." : "Could not save feedback.";
+    } catch { row.querySelector("span").textContent = "Could not save feedback."; }
+  }));
+  return row;
+}
+
 $("ask-form").addEventListener("submit", async (e) => {
   e.preventDefault();
   const q = $("ask-input").value.trim();
@@ -296,6 +316,7 @@ $("ask-form").addEventListener("submit", async (e) => {
       if (state.voiceAsk) speak(a.text);  // asked by voice -> answer by voice
     }
     state.voiceAsk = false;
+    if (a.trace_id) box.appendChild(feedbackRow(a.trace_id));
   } catch {
     box.textContent = "Could not reach the assistant.";
   } finally {
