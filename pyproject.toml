@@ -55,3 +55,7 @@ line-length = 110
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP"]
+
+[tool.ruff.lint.per-file-ignores]
+# vendored from the official Prithvi-EO-2.0 release (only the timm imports were replaced)
+"parali/detect/prithvi_mae.py" = ["B", "E501"]

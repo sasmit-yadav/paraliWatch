@@ -26,7 +26,7 @@ class Grid:
     height: int
 
     @classmethod
-    def for_bbox(cls, bbox: tuple[float, float, float, float], crs: str = UTM43, res: float = RES) -> "Grid":
+    def for_bbox(cls, bbox: tuple[float, float, float, float], crs: str = UTM43, res: float = RES) -> Grid:
         from rasterio.transform import from_origin
         from rasterio.warp import transform_bounds
 
@@ -47,10 +47,16 @@ def search(bbox, start: str, end: str, max_cloud: float = 10.0, max_nodata: floa
     """Scenes over the area, clearest first per day, keeping only ones that cover the tile fully."""
     from pystac_client import Client
 
-    items = Client.open(STAC_URL).search(
-        collections=["sentinel-2-l2a"], bbox=bbox, datetime=f"{start}/{end}",
-        query={"eo:cloud_cover": {"lt": max_cloud}},
-    ).items()
+    items = (
+        Client.open(STAC_URL)
+        .search(
+            collections=["sentinel-2-l2a"],
+            bbox=bbox,
+            datetime=f"{start}/{end}",
+            query={"eo:cloud_cover": {"lt": max_cloud}},
+        )
+        .items()
+    )
     keep = [i for i in items if (i.properties.get("s2:nodata_pixel_percentage") or 0) <= max_nodata]
     return sorted(keep, key=lambda i: i.datetime)
 
@@ -60,10 +66,17 @@ def _read(href: str, grid: Grid, resampling) -> np.ndarray:
     from rasterio.vrt import WarpedVRT
 
     with rasterio.Env(GDAL_DISABLE_READDIR_ON_OPEN="EMPTY_DIR", AWS_NO_SIGN_REQUEST="YES"):
-        with rasterio.open(href) as src, WarpedVRT(
-            src, crs=grid.crs, transform=grid.transform, width=grid.width, height=grid.height,
-            resampling=resampling,
-        ) as vrt:
+        with (
+            rasterio.open(href) as src,
+            WarpedVRT(
+                src,
+                crs=grid.crs,
+                transform=grid.transform,
+                width=grid.width,
+                height=grid.height,
+                resampling=resampling,
+            ) as vrt,
+        ):
             return vrt.read(1)
 
 
@@ -78,7 +91,9 @@ def read_scene(item, grid: Grid) -> tuple[np.ndarray, np.ndarray]:
         baseline = float(item.properties.get("s2:processing_baseline", "0") or 0)
         offset = 1000.0 if baseline >= 4.0 else 0.0
     bands = [
-        np.clip((_read(item.assets[b].href, grid, Resampling.average).astype(np.float32) - offset) / 10000.0, 0, 1)
+        np.clip(
+            (_read(item.assets[b].href, grid, Resampling.average).astype(np.float32) - offset) / 10000.0, 0, 1
+        )
         for b in BANDS
     ]
     scl = _read(item.assets["scl"].href, grid, Resampling.nearest)

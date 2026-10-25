@@ -19,7 +19,6 @@ import json
 import os
 import sys
 import time
-from pathlib import Path
 
 import numpy as np
 import rasterio
@@ -58,8 +57,8 @@ def batches(images: np.ndarray, masks: np.ndarray, rng: np.random.Generator):
         xs, ys = [], []
         for i in idx:
             r, c = rng.integers(0, 512 - CROP + 1, 2)
-            x = images[i, :, r:r + CROP, c:c + CROP].astype(np.float32)
-            y = masks[i, r:r + CROP, c:c + CROP].astype(np.int64)
+            x = images[i, :, r : r + CROP, c : c + CROP].astype(np.float32)
+            y = masks[i, r : r + CROP, c : c + CROP].astype(np.int64)
             k = int(rng.integers(0, 4))
             x, y = np.rot90(x, k, (1, 2)), np.rot90(y, k)
             if rng.random() < 0.5:
@@ -98,9 +97,9 @@ def evaluate(model: torch.nn.Module, images: np.ndarray, masks: np.ndarray) -> d
     tp = fp = fn = tn = 0
     per_scene_iou = []
     for i in range(0, len(images), 4):
-        x = torch.from_numpy(images[i:i + 4].astype(np.float32))
+        x = torch.from_numpy(images[i : i + 4].astype(np.float32))
         pred = model(normalise(x)).argmax(1).numpy()
-        for p, y in zip(pred, masks[i:i + 4]):
+        for p, y in zip(pred, masks[i : i + 4], strict=True):
             v = y >= 0
             p, y = p[v] == 1, y[v] == 1
             a, b, c = int((p & y).sum()), int((p & ~y).sum()), int((~p & y).sum())
@@ -180,7 +179,10 @@ def main() -> None:
     train = load_split(os.path.join(data_dir, "training"))
     valid = load_split(os.path.join(data_dir, "validation"))
     burn_share = float((train[1] == 1).sum() / (train[1] >= 0).sum())
-    print(f"train {len(train[0])} scenes, valid {len(valid[0])} scenes, burn pixels {burn_share:.1%}", flush=True)
+    print(
+        f"train {len(train[0])} scenes, valid {len(valid[0])} scenes, burn pixels {burn_share:.1%}",
+        flush=True,
+    )
     for run in runs:
         if (OUT / f"{run}.json").exists():
             print("skip", run, "(done)")

@@ -48,7 +48,7 @@ def candidate_chunks() -> list:
         f = embed([c.text for c in free], kind="passage")
         g /= np.linalg.norm(g, axis=1, keepdims=True)
         f /= np.linalg.norm(f, axis=1, keepdims=True)
-        free = [c for c, s in zip(free, (f @ g.T).max(1)) if s < 0.9]
+        free = [c for c, s in zip(free, (f @ g.T).max(1), strict=True) if s < 0.9]
     return free
 
 
@@ -59,22 +59,33 @@ def generate_questions(text: str, n: int) -> list[str]:
         "Each question must be answerable from the passage alone. One question per line, no numbering.\n\n"
         f"Passage:\n{text}"
     )
-    out = llm.chat([{"role": "user", "content": prompt}], temperature=0.7, max_tokens=200, purpose="doc2query")
+    out = llm.chat(
+        [{"role": "user", "content": prompt}], temperature=0.7, max_tokens=200, purpose="doc2query"
+    )
     qs = [re.sub(r"^\s*(\d+[.)]|[-*])\s*", "", line).strip() for line in out.splitlines()]
     return [q for q in qs if q.endswith("?") and 6 <= len(q.split()) <= 30][:n]
 
 
 def to_hindi(question: str) -> str | None:
     out = llm.chat(
-        [{"role": "user", "content": f"Translate this question into simple Hindi (Devanagari). Output only the "
-          f"translation.\n{question}"}],
-        temperature=0.2, max_tokens=120, purpose="translate",
+        [
+            {
+                "role": "user",
+                "content": f"Translate this question into simple Hindi (Devanagari). Output only the "
+                f"translation.\n{question}",
+            }
+        ],
+        temperature=0.2,
+        max_tokens=120,
+        purpose="translate",
     )
     return out.strip() if re.search(r"[ऀ-ॿ]", out) else None
 
 
 def blocks_for(hits) -> list[str]:
-    return [f"[{i}] {h.chunk.title}, page {h.chunk.page}:\n{h.chunk.text}" for i, h in enumerate(hits, start=1)]
+    return [
+        f"[{i}] {h.chunk.title}, page {h.chunk.page}:\n{h.chunk.text}" for i, h in enumerate(hits, start=1)
+    ]
 
 
 def select() -> None:
@@ -103,7 +114,7 @@ def questions(per_chunk: int = 5) -> None:
         try:
             qs = generate_questions(by_id[cid].text, per_chunk)
         except llm.LLMUnavailable as exc:
-            raise SystemExit(f"doc2query needs an LLM endpoint: {exc}")
+            raise SystemExit(f"doc2query needs an LLM endpoint: {exc}") from exc
         for q in qs:
             item = {"chunk_id": cid, "question": q, "english": q}
             if rng.random() < 0.3:  # a share of Hindi questions, like real users
@@ -122,8 +133,12 @@ def build() -> None:
     items = [json.loads(line) for line in open(OUT / "questions.jsonl", encoding="utf-8") if line.strip()]
     chunk_ids = json.loads((OUT / "chunks.json").read_text())
     rows = []
-    stats = {"generated": len(items), "hindi": sum(i["question"] != i["english"] for i in items),
-             "kept_round_trip": 0, "negatives": 0}
+    stats = {
+        "generated": len(items),
+        "hindi": sum(i["question"] != i["english"] for i in items),
+        "kept_round_trip": 0,
+        "negatives": 0,
+    }
     for item in items:
         q, cid = item["question"], item["chunk_id"]
         doc_id = r.by_id[cid].doc_id
@@ -135,17 +150,34 @@ def build() -> None:
         text, _ = _extractive(q, hits, max_sentences=3)
         if lang == "hi":
             text = "दस्तावेज़ों से संबंधित अंश (अंग्रेज़ी में):\n" + text
-        rows.append({"kind": "answer", "lang": lang, "source_chunk": cid,
-                     "messages": build_messages(q, blocks_for(hits), lang)
-                     + [{"role": "assistant", "content": text}]})
+        rows.append(
+            {
+                "kind": "answer",
+                "lang": lang,
+                "source_chunk": cid,
+                "messages": build_messages(q, blocks_for(hits), lang)
+                + [{"role": "assistant", "content": text}],
+            }
+        )
         # negative: same question, passages from another topic that the reranker judges irrelevant
         if rng.random() < 0.35:
             other = r.by_id[rng.choice(chunk_ids)]
             others = [h for h in r.search(other.text[:300]) if h.chunk.doc_id != doc_id][:3]
-            if others and max(rerank(q, [h.chunk.text for h in others], r.rerank_model)) < config.MIN_RERANK_SCORE:
-                rows.append({"kind": "not_found", "lang": lang, "source_chunk": cid,
-                             "messages": build_messages(q, blocks_for(others), lang)
-                             + [{"role": "assistant", "content": NOT_FOUND[lang].format(helpline=config.HELPLINE)}]})
+            if (
+                others
+                and max(rerank(q, [h.chunk.text for h in others], r.rerank_model)) < config.MIN_RERANK_SCORE
+            ):
+                rows.append(
+                    {
+                        "kind": "not_found",
+                        "lang": lang,
+                        "source_chunk": cid,
+                        "messages": build_messages(q, blocks_for(others), lang)
+                        + [
+                            {"role": "assistant", "content": NOT_FOUND[lang].format(helpline=config.HELPLINE)}
+                        ],
+                    }
+                )
                 stats["negatives"] += 1
     rng.shuffle(rows)
     with open(OUT / "train.jsonl", "w", encoding="utf-8") as fh:

@@ -6,7 +6,8 @@ to the same prompt, a preferred one ("chosen") and a worse one ("rejected"), and
 model's probabilities towards the first and away from the second, while a frozen copy of the
 starting model (the "reference") keeps it from drifting too far. No reward model is needed.
 
-    loss = -log sigmoid( beta * [ (log p(chosen) - log ref(chosen)) - (log p(rejected) - log ref(rejected)) ] )
+    margin = (log p(chosen) - log ref(chosen)) - (log p(rejected) - log ref(rejected))
+    loss   = -log sigmoid(beta * margin)
 
 Preference pairs, built from the same training prompts as the SFT data (evaluation pages still
 held out), no extra labelling:
@@ -73,7 +74,9 @@ def build_pairs() -> dict:
                 continue
             chosen, rejected = refusal, " ".join(f"{q} [1]" for q in quotes)
             stats["refusal_vs_wrong_answer"] += 1
-        out.append({"kind": r["kind"], "lang": r["lang"], "prompt": prompt, "chosen": chosen, "rejected": rejected})
+        out.append(
+            {"kind": r["kind"], "lang": r["lang"], "prompt": prompt, "chosen": chosen, "rejected": rejected}
+        )
     PAIRS.write_text("\n".join(json.dumps(o, ensure_ascii=False) for o in out) + "\n", encoding="utf-8")
     stats["pairs"] = len(out)
     return stats
@@ -107,8 +110,13 @@ def train(epochs: int = 1, accum: int = 4) -> None:
     sft = PeftModel.from_pretrained(base, str(SFT_ADAPTER)).merge_and_unload()  # start from the SFT model
     sft.gradient_checkpointing_enable()
     sft.enable_input_require_grads()
-    lora = LoraConfig(r=16, lora_alpha=32, lora_dropout=0.0, task_type="CAUSAL_LM",
-                      target_modules=["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"])
+    lora = LoraConfig(
+        r=16,
+        lora_alpha=32,
+        lora_dropout=0.0,
+        task_type="CAUSAL_LM",
+        target_modules=["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"],
+    )
     model = get_peft_model(sft, lora)
 
     data = []
@@ -130,7 +138,10 @@ def train(epochs: int = 1, accum: int = 4) -> None:
     model.eval()
     with torch.no_grad(), model.disable_adapter():
         for d in data:
-            d["ref_c"], d["ref_r"] = float(answer_logprob(model, d["c"])), float(answer_logprob(model, d["r"]))
+            d["ref_c"], d["ref_r"] = (
+                float(answer_logprob(model, d["c"])),
+                float(answer_logprob(model, d["r"])),
+            )
     print("reference log-probs done", flush=True)
 
     opt = torch.optim.AdamW([p for p in model.parameters() if p.requires_grad], lr=LR, weight_decay=0.0)
@@ -151,20 +162,36 @@ def train(epochs: int = 1, accum: int = 4) -> None:
                 opt.step()
                 opt.zero_grad()
                 step += 1
-                log.append({"step": step, "epoch": epoch + 1,
-                            "loss": round(sum(x["loss"] for x in window) / len(window), 4),
-                            "reward_margin": round(sum(x["margin"] for x in window) / len(window), 3),
-                            "pref_accuracy": round(sum(x["correct"] for x in window) / len(window), 3),
-                            "minutes": round((time.time() - start) / 60, 1)})
+                log.append(
+                    {
+                        "step": step,
+                        "epoch": epoch + 1,
+                        "loss": round(sum(x["loss"] for x in window) / len(window), 4),
+                        "reward_margin": round(sum(x["margin"] for x in window) / len(window), 3),
+                        "pref_accuracy": round(sum(x["correct"] for x in window) / len(window), 3),
+                        "minutes": round((time.time() - start) / 60, 1),
+                    }
+                )
                 window = []
                 print(log[-1], flush=True)
     DPO_ADAPTER.mkdir(parents=True, exist_ok=True)
     model.save_pretrained(DPO_ADAPTER)
     LOG_DIR.mkdir(parents=True, exist_ok=True)
-    (LOG_DIR / "dpo_log.json").write_text(json.dumps({
-        "start_from": "SFT LoRA merged into " + BASE, "pairs": len(data), "epochs": epochs, "beta": BETA, "lr": LR,
-        "effective_batch": accum, "train_minutes": round((time.time() - start) / 60, 1), "curve": log,
-    }, indent=2))
+    (LOG_DIR / "dpo_log.json").write_text(
+        json.dumps(
+            {
+                "start_from": "SFT LoRA merged into " + BASE,
+                "pairs": len(data),
+                "epochs": epochs,
+                "beta": BETA,
+                "lr": LR,
+                "effective_batch": accum,
+                "train_minutes": round((time.time() - start) / 60, 1),
+                "curve": log,
+            },
+            indent=2,
+        )
+    )
 
 
 if __name__ == "__main__":

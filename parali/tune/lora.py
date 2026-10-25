@@ -34,7 +34,7 @@ def encode(tok, messages: list[dict]) -> dict | None:
     ids = tok(full, add_special_tokens=False)["input_ids"]
     if len(ids) > MAX_TOKENS:
         return None
-    labels = [-100] * len(p_ids) + ids[len(p_ids):]
+    labels = [-100] * len(p_ids) + ids[len(p_ids) :]
     return {"input_ids": torch.tensor([ids]), "labels": torch.tensor([labels])}
 
 
@@ -65,7 +65,10 @@ def main() -> None:
     model.gradient_checkpointing_enable()
     model.enable_input_require_grads()
     lora = LoraConfig(
-        r=16, lora_alpha=32, lora_dropout=0.05, task_type="CAUSAL_LM",
+        r=16,
+        lora_alpha=32,
+        lora_dropout=0.05,
+        task_type="CAUSAL_LM",
         target_modules=["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"],
     )
     model = get_peft_model(model, lora)
@@ -96,19 +99,40 @@ def main() -> None:
                 opt.zero_grad()
                 step += 1
                 if step % 5 == 0:
-                    log.append({"step": step, "epoch": epoch + 1, "loss": round(sum(running) / len(running), 4),
-                                "minutes": round((time.time() - start) / 60, 1)})
+                    log.append(
+                        {
+                            "step": step,
+                            "epoch": epoch + 1,
+                            "loss": round(sum(running) / len(running), 4),
+                            "minutes": round((time.time() - start) / 60, 1),
+                        }
+                    )
                     running = []
                     print(log[-1], flush=True)
     ADAPTER_DIR.mkdir(parents=True, exist_ok=True)
     model.save_pretrained(ADAPTER_DIR)
     LOG_DIR.mkdir(parents=True, exist_ok=True)
-    (LOG_DIR / "train_log.json").write_text(json.dumps({
-        "base": base, "examples": len(examples), "epochs": epochs, "effective_batch": accum,
-        "lora": {"r": 16, "alpha": 32, "dropout": 0.05, "targets": lora.target_modules and sorted(lora.target_modules)},
-        "trainable_params": trainable, "total_params": total,
-        "train_minutes": round((time.time() - start) / 60, 1), "loss_curve": log,
-    }, indent=2))
+    (LOG_DIR / "train_log.json").write_text(
+        json.dumps(
+            {
+                "base": base,
+                "examples": len(examples),
+                "epochs": epochs,
+                "effective_batch": accum,
+                "lora": {
+                    "r": 16,
+                    "alpha": 32,
+                    "dropout": 0.05,
+                    "targets": lora.target_modules and sorted(lora.target_modules),
+                },
+                "trainable_params": trainable,
+                "total_params": total,
+                "train_minutes": round((time.time() - start) / 60, 1),
+                "loss_curve": log,
+            },
+            indent=2,
+        )
+    )
 
 
 if __name__ == "__main__":

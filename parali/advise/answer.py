@@ -147,8 +147,11 @@ def answer(question: str, profile: Profile | None = None, use_llm: bool = True) 
         trace.annotate(injection_suspected=checks["injection_suspected"])
     with trace.span("retrieve"):
         hits, steps = retrieve(question, profile, use_llm)
-        trace.annotate(queries=len(steps["queries"]), best_score=steps["best_score"],
-                       top=[f"{h.chunk.doc_id}#p{h.chunk.page}" for h in hits[:3]])
+        trace.annotate(
+            queries=len(steps["queries"]),
+            best_score=steps["best_score"],
+            top=[f"{h.chunk.doc_id}#p{h.chunk.page}" for h in hits[:3]],
+        )
     checks.update(steps)
     a = compose(question, hits, checks, profile, use_llm)
     trace.annotate(mode=a.mode, language=a.language, citations=len(a.citations))
@@ -162,8 +165,10 @@ class _Fallback(Exception):
 def _declined(text: str) -> bool:
     """Did the LLM answer with the 'not found' message instead of an answer?"""
     t = text.strip().lower()
-    return t.startswith(NOT_FOUND["en"][:30].lower()) or t.startswith(NOT_FOUND["hi"][:20]) or (
-        "could not find" in t[:80] and "[" not in t
+    return (
+        t.startswith(NOT_FOUND["en"][:30].lower())
+        or t.startswith(NOT_FOUND["hi"][:20])
+        or ("could not find" in t[:80] and "[" not in t)
     )
 
 
@@ -200,7 +205,9 @@ def compose(
     if use_llm and llm.available():
         try:
             with trace.span("llm", model=config.LLM_MODEL):
-                text = llm.chat(build_messages(question, blocks, lang, profile), max_tokens=400, purpose="answer")
+                text = llm.chat(
+                    build_messages(question, blocks, lang, profile), max_tokens=400, purpose="answer"
+                )
             mode = "llm"
             if _declined(text):
                 # The model says the passages don't answer it, but retrieval found relevant ones:

@@ -142,8 +142,11 @@ def summary(traces: list[dict]) -> dict:
             if s["name"] == "ask" and "mode" in s["attributes"]:
                 modes[s["attributes"]["mode"]] = modes.get(s["attributes"]["mode"], 0) + 1
     steps = {
-        name: {"count": len(v), "p50_ms": round(float(np.percentile(v, 50)), 1),
-               "p95_ms": round(float(np.percentile(v, 95)), 1)}
+        name: {
+            "count": len(v),
+            "p50_ms": round(float(np.percentile(v, 50)), 1),
+            "p95_ms": round(float(np.percentile(v, 95)), 1),
+        }
         for name, v in sorted(by_step.items())
     }
     return {"traces": len(traces), "steps": steps, "answer_modes": modes}

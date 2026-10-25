@@ -54,7 +54,9 @@ def test_spans_nest_and_are_written(tmp_path, monkeypatch):
     assert names == ["ask", "retrieve", "rerank"]
     ask, retrieve, rerank = saved["spans"]
     assert retrieve["parent_id"] == ask["span_id"] and rerank["parent_id"] == retrieve["span_id"]
-    assert rerank["attributes"] == {"candidates": 10, "best": 1.5} and ask["attributes"]["mode"] == "extractive"
+    assert (
+        rerank["attributes"] == {"candidates": 10, "best": 1.5} and ask["attributes"]["mode"] == "extractive"
+    )
     assert trace.summary([saved])["answer_modes"] == {"extractive": 1}
 
 
@@ -65,8 +67,13 @@ def test_feedback_loop_turns_down_votes_into_eval_candidates(tmp_path, monkeypat
 
     monkeypatch.setattr(feedback, "DB", tmp_path / "f.db")
     monkeypatch.setattr(feedback, "CANDIDATES", tmp_path / "c.jsonl")
-    ans = {"question": "Subsidy for balers?", "text": "...", "mode": "extractive", "language": "en",
-           "citations": [{"n": 1, "doc_id": "d.pdf", "page": 2}]}
+    ans = {
+        "question": "Subsidy for balers?",
+        "text": "...",
+        "mode": "extractive",
+        "language": "en",
+        "citations": [{"n": 1, "doc_id": "d.pdf", "page": 2}],
+    }
     feedback.record_answer("abc12345", ans)
     assert not feedback.add("unknown1", -1)
     assert feedback.add("abc12345", -1, "wrong scheme")

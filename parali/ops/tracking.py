@@ -69,7 +69,9 @@ def log_forecast(meta: dict, valid_metrics: dict, test_metrics: dict, tags: dict
         mlflow.log_metrics(_flat("valid", valid_metrics))
         mlflow.log_metrics(_flat("test", test_metrics))
         booster = lgb.Booster(model_file=str(config.MODELS_DIR / "forecast.txt"))
-        info = mlflow.lightgbm.log_model(booster, name="model", registered_model_name=config.FORECAST_MODEL_NAME)
+        info = mlflow.lightgbm.log_model(
+            booster, name="model", registered_model_name=config.FORECAST_MODEL_NAME
+        )
         for f in ("calibrator.joblib", "meta.json"):
             mlflow.log_artifact(str(config.MODELS_DIR / f), artifact_path="extras")
         version = info.registered_model_version
@@ -92,7 +94,9 @@ def promote_if_better(version: int | str, valid_pr_auc: float, min_gain: float =
         return True
     if valid_pr_auc > champ_score + min_gain:
         client.set_registered_model_alias(name, "champion", str(version))
-        log.info("version %s promoted to champion (valid PR-AUC %.4f > %.4f)", version, valid_pr_auc, champ_score)
+        log.info(
+            "version %s promoted to champion (valid PR-AUC %.4f > %.4f)", version, valid_pr_auc, champ_score
+        )
         return True
     client.set_model_version_tag(name, str(version), "status", "challenger-rejected")
     log.info("version %s kept as challenger (%.4f <= champion %.4f)", version, valid_pr_auc, champ_score)
@@ -161,7 +165,9 @@ def backfill(force: bool = False) -> dict:
         for name, r in _read(asr).items():
             with mlflow.start_run(run_name=f"whisper-{name}"):
                 mlflow.log_params({"model": name, "utterances": r["utterances"]})
-                mlflow.log_metrics({"wer": r["wer"], "cer": r["cer"], "real_time_factor": r["real_time_factor"]})
+                mlflow.log_metrics(
+                    {"wer": r["wer"], "cer": r["cer"], "real_time_factor": r["real_time_factor"]}
+                )
         counts["speech-to-text"] = len(_read(asr))
 
     # 5. answer LLM: base vs LoRA (and the LoRA training curve)
@@ -171,11 +177,19 @@ def backfill(force: bool = False) -> dict:
         s = _read(f)["summary"]
         with mlflow.start_run(run_name=f.stem.removeprefix("answer_results_")):
             mlflow.log_param("llm_model", s.get("llm_model") or "none (quotes)")
-            mlflow.log_metrics({k: float(v) for k, v in s.items() if isinstance(v, (int, float)) and v is not None})
+            mlflow.log_metrics(
+                {k: float(v) for k, v in s.items() if isinstance(v, (int, float)) and v is not None}
+            )
             if "lora" in f.stem and (EVAL / "tune" / "train_log.json").exists():
                 t = _read(EVAL / "tune" / "train_log.json")
-                mlflow.log_params({"lora_r": t["lora"]["r"], "lora_alpha": t["lora"]["alpha"], "epochs": t["epochs"],
-                                   "train_examples": t["examples"]})
+                mlflow.log_params(
+                    {
+                        "lora_r": t["lora"]["r"],
+                        "lora_alpha": t["lora"]["alpha"],
+                        "epochs": t["epochs"],
+                        "train_examples": t["examples"],
+                    }
+                )
                 for step in t["loss_curve"]:
                     mlflow.log_metric("train_loss", step["loss"], step=step["step"])
         n += 1

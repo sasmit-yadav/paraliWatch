@@ -110,3 +110,16 @@ def test_sentences_do_not_break_at_abbreviations():
 
     s = sentences("Benchmark price w.e.f. 01.09.2023. Pellets need moisture below 14%. See No. 92.")
     assert s == ["Benchmark price w.e.f. 01.09.2023.", "Pellets need moisture below 14%.", "See No. 92."]
+
+
+def test_judge_reply_parsing_and_kappa():
+    from parali.advise.judge import kappa, parse
+
+    assert parse("SUPPORTED: Yes.\nANSWERS: partly\nREASON: only the moisture limit") == {
+        "supported": "yes",
+        "answers": "partly",
+        "reason": "only the moisture limit",
+    }
+    assert parse("I think it is fine") is None  # wrong format -> retried, never guessed
+    assert kappa([1, 1, 0, 0], [1, 1, 0, 0]) == 1.0
+    assert kappa([1, 0, 1, 0], [1, 1, 0, 0]) == 0.0  # agreement no better than chance

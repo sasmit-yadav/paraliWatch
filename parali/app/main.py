@@ -17,6 +17,7 @@ from parali.app.store import Store
 
 STATIC = config.ROOT / "parali" / "app" / "static"
 
+
 def _warm_up() -> None:
     """PARALI_WARMUP=1: load the document index and models in the background at start-up, so the
     first question doesn't wait for a model download (useful on a hosted demo)."""
@@ -141,7 +142,6 @@ def ask(q: Question) -> dict:
     """Answer a question about schemes and alternatives to burning, with page citations."""
     from parali.advise import memory
     from parali.advise.answer import answer
-
     from parali.ops import feedback, trace
 
     profile = memory.get(q.user_id) if q.user_id else None
@@ -208,7 +208,9 @@ async def transcribe(request: Request, language: str | None = Query(None, patter
     import importlib.util
 
     if importlib.util.find_spec("faster_whisper") is None:
-        raise HTTPException(501, "Voice input needs the optional 'voice' dependencies (uv sync --group voice)")
+        raise HTTPException(
+            501, "Voice input needs the optional 'voice' dependencies (uv sync --group voice)"
+        )
     from parali.voice.asr import transcribe as run
 
     try:

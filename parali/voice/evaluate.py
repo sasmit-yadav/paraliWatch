@@ -58,7 +58,7 @@ def run(model_name: str, utts: list[dict], language: str = "hi") -> dict:
         "wer": round(jiwer.wer(refs, hyps), 4),
         "cer": round(jiwer.cer(refs, hyps), 4),
         "real_time_factor": round(elapsed / audio_s, 3),
-        "examples": [{"ref": r, "hyp": h} for r, h in list(zip(refs, hyps))[:5]],
+        "examples": [{"ref": r, "hyp": h} for r, h in list(zip(refs, hyps, strict=True))[:5]],
     }
 
 

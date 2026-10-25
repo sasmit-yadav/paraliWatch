@@ -10,7 +10,8 @@ validation. Design:
   far more often than random points do ("enrichment").
 - The same check is run for short-interval dNBR, the classic remote-sensing baseline.
 
-Usage: python -m parali.detect.punjab <run_name> [pre_day post_day]   (e.g. prithvi_finetune 2025-11-09 2025-11-12)
+Usage: python -m parali.detect.punjab <run_name> [pre_day post_day]
+  e.g. python -m parali.detect.punjab prithvi_finetune 2025-11-09 2025-11-12
 Writes eval/burn_scars/punjab_tile_<pre>_<post>.json and docs/images/burn_scars_punjab_<pre>_<post>.png.
 """
 
@@ -56,10 +57,10 @@ def predict(model, img: np.ndarray, tile: int = 512, overlap: int = 64) -> np.nd
     cols = sorted({min(c, max(w - tile, 0)) for c in range(0, w, step)})
     for r in rows:
         for c in cols:
-            x = torch.from_numpy(img[None, :, r:r + tile, c:c + tile].copy())
+            x = torch.from_numpy(img[None, :, r : r + tile, c : c + tile].copy())
             p = model(normalise(x)).softmax(1)[0, 1].numpy()
-            prob[r:r + tile, c:c + tile] += p
-            count[r:r + tile, c:c + tile] += 1
+            prob[r : r + tile, c : c + tile] += p
+            count[r : r + tile, c : c + tile] += 1
     return prob / np.maximum(count, 1)
 
 
@@ -126,7 +127,9 @@ def main() -> None:
         "near_pixels_m": NEAR_PIXELS * 20,
         "model": enrichment(pred, ok, rows, cols, rng),
         "dnbr_threshold": {"threshold": DNBR_THRESHOLD, **enrichment(dnbr_mask, ok, rows, cols, rng)},
-        "agreement_model_vs_dnbr_iou": round(float((pred & dnbr_mask).sum() / max((pred | dnbr_mask).sum(), 1)), 4),
+        "agreement_model_vs_dnbr_iou": round(
+            float((pred & dnbr_mask).sum() / max((pred | dnbr_mask).sum(), 1)), 4
+        ),
         "note": "Indicative only: no pixel labels exist for Punjab. Enrichment > 1 means VIIRS fires between "
         "the two dates fall near newly predicted scars more often than random points do.",
     }
@@ -149,20 +152,29 @@ def _figure(post, pred, dnbr_mask, ok, rows, cols, result) -> None:
         f"Model: new scars since {result['pre_scene'].split('_')[2]} ({result['model']['area_share']:.1%})",
         f"dNBR > {DNBR_THRESHOLD} over the same days ({result['dnbr_threshold']['area_share']:.1%})",
     ]
-    for ax, title, mask in zip(axes, titles, [None, pred, dnbr_mask]):
+    for ax, title, mask in zip(axes, titles, [None, pred, dnbr_mask], strict=True):
         ax.imshow(rgb)
         if mask is not None:
             over = np.zeros((*mask.shape, 4))
             over[mask] = (0.86, 0.15, 0.1, 0.65)
             over[~ok] = (0.5, 0.5, 0.5, 0.5)
             ax.imshow(over)
-            ax.scatter(cols, rows, s=9, facecolors="none", edgecolors="yellow", linewidths=0.8,
-                       label="VIIRS fire between image dates")
+            ax.scatter(
+                cols,
+                rows,
+                s=9,
+                facecolors="none",
+                edgecolors="yellow",
+                linewidths=0.8,
+                label="VIIRS fire between image dates",
+            )
         ax.set_title(title, fontsize=11)
         ax.axis("off")
     axes[1].legend(loc="lower left", fontsize=8, framealpha=0.8)
-    fig.suptitle("Burn-scar mapping, Tarn Taran / Amritsar, Punjab (indicative, not validated with local labels)",
-                 fontsize=12)
+    fig.suptitle(
+        "Burn-scar mapping, Tarn Taran / Amritsar, Punjab (indicative, not validated with local labels)",
+        fontsize=12,
+    )
     fig.tight_layout()
     days = f"{result['pre_scene'].split('_')[2]}_{result['post_scene'].split('_')[2]}"
     path = ROOT / "docs" / "images" / f"burn_scars_punjab_{days}.png"

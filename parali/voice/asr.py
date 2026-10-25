@@ -31,4 +31,8 @@ def transcribe(audio: bytes | str, language: str | None = None, model: str = ASR
         source, language=language, beam_size=5, vad_filter=True, condition_on_previous_text=False
     )
     text = " ".join(s.text.strip() for s in segments).strip()
-    return {"text": text, "language": info.language, "language_probability": round(info.language_probability, 3)}
+    return {
+        "text": text,
+        "language": info.language,
+        "language_probability": round(info.language_probability, 3),
+    }

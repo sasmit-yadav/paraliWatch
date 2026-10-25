@@ -45,16 +45,22 @@ def create_app(base: str, adapter: str | None) -> FastAPI:
 
     @app.post("/v1/chat/completions")
     def chat(req: ChatRequest) -> dict:
-        ids = tok.apply_chat_template(req.messages, add_generation_prompt=True, return_tensors="pt", return_dict=True)
+        ids = tok.apply_chat_template(
+            req.messages, add_generation_prompt=True, return_tensors="pt", return_dict=True
+        )
         with torch.no_grad():
             # greedy decoding; a mild repetition penalty stops small models repeating a quoted sentence
-            out = model.generate(**ids, max_new_tokens=req.max_tokens, do_sample=False, repetition_penalty=1.1)
-        new = out[0, ids["input_ids"].shape[1]:]
+            out = model.generate(
+                **ids, max_new_tokens=req.max_tokens, do_sample=False, repetition_penalty=1.1
+            )
+        new = out[0, ids["input_ids"].shape[1] :]
         text = tok.decode(new, skip_special_tokens=True)
         return {
             "id": f"chatcmpl-{int(time.time() * 1000)}",
             "model": name,
-            "choices": [{"index": 0, "message": {"role": "assistant", "content": text}, "finish_reason": "stop"}],
+            "choices": [
+                {"index": 0, "message": {"role": "assistant", "content": text}, "finish_reason": "stop"}
+            ],
             "usage": {"prompt_tokens": int(ids["input_ids"].shape[1]), "completion_tokens": int(len(new))},
         }
 

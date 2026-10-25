@@ -31,8 +31,8 @@ def per_scene_counts(model, images, masks) -> np.ndarray:
     model.eval()
     rows = []
     for i in range(0, len(images), 4):
-        pred = model(normalise(torch.from_numpy(images[i:i + 4].astype(np.float32)))).argmax(1).numpy()
-        for p, y in zip(pred, masks[i:i + 4]):
+        pred = model(normalise(torch.from_numpy(images[i : i + 4].astype(np.float32)))).argmax(1).numpy()
+        for p, y in zip(pred, masks[i : i + 4], strict=True):
             v = y >= 0
             p, y = p[v] == 1, y[v] == 1
             rows.append([(p & y).sum(), (p & ~y).sum(), (~p & y).sum()])
