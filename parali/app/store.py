@@ -61,6 +61,24 @@ class Store:
         totals = self.forecast.groupby("date")["fires_next3_count"].sum()
         return totals.idxmax()
 
+    @cached_property
+    def season(self) -> list[dict]:
+        """One row per day: fires detected that day, expected fire cells (sum of probabilities)
+        and cells at high risk (>= 20%). Feeds the season timeline above the map."""
+        per_day = self.forecast.groupby("date").agg(
+            expected=("prob", "sum"), high=("prob", lambda p: int((p >= 0.2).sum()))
+        )
+        fires = self.fires.groupby("acq_date").size()
+        return [
+            {
+                "date": d.isoformat(),
+                "fires": int(fires.get(d, 0)),
+                "expected_cells": round(float(row.expected), 1),
+                "high_risk_cells": int(row.high),
+            }
+            for d, row in per_day.iterrows()
+        ]
+
     def day(self, d: date) -> pd.DataFrame:
         return self.forecast[self.forecast["date"] == d]
 

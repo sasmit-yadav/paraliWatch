@@ -102,6 +102,12 @@ def fires(date: str | None = None, days: int = Query(1, ge=1, le=7)) -> dict:
     return store.fires_geojson(_parse_day(date), days)
 
 
+@app.get("/api/season")
+def season() -> list[dict]:
+    """Per-day totals for the whole season: fires detected, expected fire cells, high-risk cells."""
+    return store.season
+
+
 @app.get("/api/top")
 def top(date: str | None = None, n: int = Query(10, ge=1, le=100)) -> list[dict]:
     return store.top(_parse_day(date), n)

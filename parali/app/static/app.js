@@ -1,15 +1,17 @@
 "use strict";
 
 // Probability bands for the map (calibrated probability of a fire in the next 3 days).
+// One orange hue, brighter = higher risk (validated as an ordinal ramp on the dark map).
 const BANDS = [
-  { min: 0.35, color: "#7f1d1d", label: "35% or more" },
-  { min: 0.20, color: "#c2410c", label: "20 to 35%" },
-  { min: 0.10, color: "#f97316", label: "10 to 20%" },
-  { min: 0.05, color: "#fde68a", label: "5 to 10%" },
+  { min: 0.35, color: "#ffb36b", label: "35% or more" },
+  { min: 0.20, color: "#ec7a2e", label: "20 to 35%" },
+  { min: 0.10, color: "#c2541a", label: "10 to 20%" },
+  { min: 0.05, color: "#8a3a12", label: "5 to 10%" },
 ];
+const ACCENT = "#76b900";
 // Below 5% the cell is left clear so the map highlights where action is needed.
 
-const state = { dates: [], index: 0, selected: null, metrics: null, bulletin: null, lang: "en" };
+const state = { dates: [], index: 0, selected: null, metrics: null, bulletin: null, lang: "en", season: [], timer: null };
 const $ = (id) => document.getElementById(id);
 const pct = (x, digits = 0) => `${(100 * x).toFixed(digits)}%`;
 
@@ -32,7 +34,11 @@ const map = new maplibregl.Map({
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
       },
     },
-    layers: [{ id: "base", type: "raster", source: "base", paint: { "raster-saturation": -0.85, "raster-opacity": 0.85 } }],
+    // OpenStreetMap tiles turned into a dark basemap: grey, brightness inverted, low contrast
+    layers: [{
+      id: "base", type: "raster", source: "base",
+      paint: { "raster-saturation": -1, "raster-brightness-min": 0.86, "raster-brightness-max": 0.04, "raster-contrast": 0.15 },
+    }],
   },
   center: [75.7, 30.3],
   zoom: 6.4,
@@ -59,6 +65,7 @@ async function loadDay() {
     weekday: "short", day: "numeric", month: "short", year: "numeric",
   });
   $("date-range").value = state.index;
+  renderTimeline();
   const [risk, fires, top] = await Promise.all([
     getJSON(`/api/risk?date=${d}&min_prob=0.05`),
     getJSON(`/api/fires?date=${d}`),
@@ -94,6 +101,7 @@ function renderBulletin() {
   $("b-districts").innerHTML = b.districts
     .map((d) => `<li><span>${esc(d.district)}, ${esc(d.state)} · ${d.fires_last_3d} fires in 3 days (${d.trend})</span><span class="lvl ${d.level}">${d.level}</span></li>`)
     .join("");
+  $("b-status").classList.toggle("approved", b.status === "approved");
   $("b-status").textContent = b.status === "approved"
     ? `Approved by ${b.approved_by}. Written by: ${b.writer === "llm" ? "AI agents" : "agents (template)"}.`
     : `Draft, waiting for an official's approval. Written by: ${b.writer === "llm" ? "AI agents" : "agents (template)"}.`;
@@ -113,20 +121,25 @@ function renderTop(rows) {
   $("top-list").innerHTML = rows
     .map(
       (r, i) => `<li><button data-cell="${r.cell}" data-lon="${r.lon}" data-lat="${r.lat}">
-        <span>${i + 1}. ${r.district}, ${r.state}</span><span class="pct">${pct(r.prob)}</span></button></li>`
+        <span class="rank">${String(i + 1).padStart(2, "0")}</span>
+        <span>${esc(r.district)}, ${esc(r.state)}</span><span class="pct">${pct(r.prob)}</span></button></li>`
     )
     .join("");
   $("top-list").querySelectorAll("button").forEach((btn) =>
     btn.addEventListener("click", () => {
-      map.flyTo({ center: [Number(btn.dataset.lon), Number(btn.dataset.lat)], zoom: 8.5 });
+      map.flyTo({ center: [Number(btn.dataset.lon), Number(btn.dataset.lat)], zoom: 7.6 });
       selectCell(btn.dataset.cell, true);
     })
   );
 }
 
+function highlight(cell) {
+  for (const id of ["risk-selected", "risk-selected-halo"]) map.setFilter(id, ["==", ["get", "cell"], cell]);
+}
+
 async function selectCell(cell, scroll) {
   state.selected = cell;
-  map.setFilter("risk-selected", ["==", ["get", "cell"], cell]);
+  highlight(cell);
   const d = state.dates[state.index];
   let info;
   try {
@@ -134,6 +147,7 @@ async function selectCell(cell, scroll) {
   } catch {
     return;
   }
+  showTab("risk");
   $("detail").hidden = false;
   $("d-district").textContent = `${info.district}, ${info.state}`;
   $("d-meta").textContent = `Cell ${info.cell} · ${info.lat.toFixed(3)}, ${info.lon.toFixed(3)}`;
@@ -169,12 +183,13 @@ map.on("load", async () => {
   map.addSource("fires", { type: "geojson", data: { type: "FeatureCollection", features: [] } });
   map.addSource("districts", { type: "geojson", data: "/api/districts" });
 
-  map.addLayer({ id: "risk-fill", type: "fill", source: "risk", paint: { "fill-color": fillColor(), "fill-opacity": 0.62, "fill-outline-color": "rgba(255,255,255,0.35)" } });
-  map.addLayer({ id: "districts-line", type: "line", source: "districts", paint: { "line-color": "#57534e", "line-width": 0.7, "line-opacity": 0.6 } });
-  map.addLayer({ id: "risk-selected", type: "line", source: "risk", filter: ["==", ["get", "cell"], ""], paint: { "line-color": "#111827", "line-width": 2.5 } });
+  map.addLayer({ id: "risk-fill", type: "fill", source: "risk", paint: { "fill-color": fillColor(), "fill-opacity": 0.82, "fill-outline-color": "rgba(0,0,0,0.45)" } });
+  map.addLayer({ id: "districts-line", type: "line", source: "districts", paint: { "line-color": "#8a8a8a", "line-width": 0.6, "line-opacity": 0.55 } });
+  map.addLayer({ id: "risk-selected-halo", type: "line", source: "risk", filter: ["==", ["get", "cell"], ""], paint: { "line-color": ACCENT, "line-width": 9, "line-opacity": 0.3, "line-blur": 3 } });
+  map.addLayer({ id: "risk-selected", type: "line", source: "risk", filter: ["==", ["get", "cell"], ""], paint: { "line-color": ACCENT, "line-width": 3 } });
   map.addLayer({
     id: "fires", type: "circle", source: "fires",
-    paint: { "circle-radius": 3.2, "circle-color": "#7f1d1d", "circle-stroke-color": "#ffffff", "circle-stroke-width": 1 },
+    paint: { "circle-radius": 2.8, "circle-color": "#ffffff", "circle-stroke-color": "#ff5a36", "circle-stroke-width": 1.2 },
   });
 
   map.on("click", "risk-fill", (e) => selectCell(e.features[0].properties.cell, true));
@@ -182,26 +197,131 @@ map.on("load", async () => {
   map.on("mouseleave", "risk-fill", () => (map.getCanvas().style.cursor = ""));
 
   const meta = await getJSON("/api/meta");
+  if (meta.bbox) map.fitBounds([[meta.bbox[0], meta.bbox[1]], [meta.bbox[2], meta.bbox[3]]], { padding: 24, duration: 0 });
   state.dates = meta.dates;
   state.index = Math.max(0, meta.dates.indexOf(meta.default_date));
   $("date-range").max = meta.dates.length - 1;
   if (meta.metrics && meta.metrics.test) {
     const m = meta.metrics.test;
+    const rule = meta.metrics.best_rule;
     $("metrics-line").textContent =
-      `On the unseen 2025 season, the 10% of cells ranked highest each day held ${pct(m.fire_capture_top10pct)} ` +
-      `of the next 3 days' fires (best simple rule: ${pct(meta.metrics.best_rule.fire_capture_top10pct)}).`;
+      `On the unseen 2025 season, the 10% of cells ranked highest each day held ${pct(m.fire_capture_top10pct, 1)} ` +
+      `of the next 3 days' fires (best simple rule: ${pct(rule.fire_capture_top10pct, 1)}).`;
+    $("kpi-capture").textContent = pct(m.fire_capture_top10pct, 1);
+    $("kpi-capture-rule").textContent = `best rule ${pct(rule.fire_capture_top10pct, 1)}`;
+    $("kpi-prauc").textContent = m.pr_auc.toFixed(3);
+    $("kpi-prauc-rule").textContent = `best rule ${rule.pr_auc.toFixed(3)}`;
   }
+  try { state.season = await getJSON("/api/season"); } catch { state.season = []; }
   await loadDay();
 });
 
 $("date-range").addEventListener("input", (e) => { state.index = Number(e.target.value); loadDay(); });
-$("prev-day").addEventListener("click", () => { if (state.index > 0) { state.index--; loadDay(); } });
-$("next-day").addEventListener("click", () => { if (state.index < state.dates.length - 1) { state.index++; loadDay(); } });
+function step(delta) {
+  const next = state.index + delta;
+  if (next < 0 || next > state.dates.length - 1) return false;
+  state.index = next;
+  loadDay();
+  return true;
+}
+$("prev-day").addEventListener("click", () => step(-1));
+$("next-day").addEventListener("click", () => step(1));
+// arrow keys move through the season unless the user is typing
+document.addEventListener("keydown", (e) => {
+  if (e.target.closest("input, textarea, select") || e.altKey || e.ctrlKey || e.metaKey) return;
+  if (e.key === "ArrowLeft") step(-1);
+  if (e.key === "ArrowRight") step(1);
+});
+
+// Play the season: one day per second, stops at the last day.
+const PLAY = '<path d="M7 5v14l12-7z" fill="currentColor"/>';
+const PAUSE = '<path d="M7 5h4v14H7zM13 5h4v14h-4z" fill="currentColor"/>';
+function setPlaying(on) {
+  clearInterval(state.timer);
+  state.timer = on ? setInterval(() => { if (!step(1)) setPlaying(false); }, 1000) : null;
+  $("play").classList.toggle("playing", on);
+  $("play-icon").innerHTML = on ? PAUSE : PLAY;
+  $("play").setAttribute("aria-label", on ? "Pause" : "Play the season");
+}
+$("play").addEventListener("click", () => {
+  if (!state.timer && state.index >= state.dates.length - 1) state.index = 0;
+  setPlaying(!state.timer);
+});
+
+// Season timeline: fires detected per day, the selected day in the accent colour.
+function renderTimeline() {
+  const svg = $("timeline");
+  const rows = state.season;
+  if (!rows.length) { svg.innerHTML = ""; return; }
+  const w = svg.clientWidth || 600, h = 46, top = 2, axis = 12;
+  const max = Math.max(...rows.map((r) => r.fires), 1);
+  const bw = w / rows.length, gap = Math.min(2, bw * 0.25);
+  const ticks = [];
+  rows.forEach((r, i) => {
+    if (r.date.endsWith("-01")) ticks.push(`<text class="tick" x="${i * bw}" y="${h}">${new Date(r.date + "T00:00:00").toLocaleDateString("en-IN", { month: "short" })}</text>`);
+  });
+  svg.setAttribute("viewBox", `0 0 ${w} ${h}`);
+  svg.innerHTML =
+    rows.map((r, i) => {
+      const bh = Math.max(1, ((h - axis - top) * r.fires) / max);
+      const cls = i === state.index ? "bar current" : r.fires ? "bar fire" : "bar";
+      return `<rect class="${cls}" data-i="${i}" x="${i * bw + gap / 2}" y="${h - axis - bh}" width="${Math.max(1, bw - gap)}" height="${bh}" rx="1"></rect>`;
+    }).join("") +
+    `<line class="base" x1="0" x2="${w}" y1="${h - axis + 0.5}" y2="${h - axis + 0.5}"></line>` + ticks.join("");
+  const r = rows[state.index];
+  if (r) {
+    $("timeline-readout").innerHTML = `<b>${r.fires}</b> fires detected · <b>${r.expected_cells}</b> cells expected to burn · <b>${r.high_risk_cells}</b> at high risk`;
+  }
+}
+window.addEventListener("resize", renderTimeline);
+
+// Hover tooltip on the timeline (the transparent slider sits on top and receives the pointer).
+const tip = document.createElement("div");
+tip.className = "tooltip";
+tip.hidden = true;
+document.querySelector(".timeline-wrap").appendChild(tip);
+$("date-range").addEventListener("pointermove", (e) => {
+  const rows = state.season;
+  if (!rows.length) return;
+  const box = $("timeline").getBoundingClientRect();
+  const i = Math.min(rows.length - 1, Math.max(0, Math.floor(((e.clientX - box.left) / box.width) * rows.length)));
+  const r = rows[i];
+  $("timeline").querySelectorAll(".bar.hover").forEach((b) => b.classList.remove("hover"));
+  const bar = $("timeline").querySelector(`.bar[data-i="${i}"]`);
+  if (bar && i !== state.index) bar.classList.add("hover");
+  const d = new Date(r.date + "T00:00:00").toLocaleDateString("en-IN", { day: "numeric", month: "short" });
+  tip.innerHTML = `<b>${d}</b> · ${r.fires} fires · ${r.expected_cells} cells expected`;
+  tip.hidden = false;
+  const wrap = document.querySelector(".timeline-wrap").getBoundingClientRect();
+  const x = Math.min(Math.max(e.clientX - wrap.left - 70, 0), wrap.width - 200);
+  tip.style.left = `${x}px`;
+  tip.style.top = `-6px`;
+});
+$("date-range").addEventListener("pointerleave", () => {
+  tip.hidden = true;
+  $("timeline").querySelectorAll(".bar.hover").forEach((b) => b.classList.remove("hover"));
+});
+
+// Tabs
+function showTab(name) {
+  for (const t of ["risk", "bulletin", "ask"]) {
+    const on = t === name;
+    $(`tab-${t}`).classList.toggle("active", on);
+    $(`tab-${t}`).setAttribute("aria-selected", on);
+    $(`pane-${t}`).hidden = !on;
+  }
+}
+for (const t of ["risk", "bulletin", "ask"]) $(`tab-${t}`).addEventListener("click", () => showTab(t));
+
+// Example questions
+document.querySelectorAll("#examples .chip").forEach((c) =>
+  c.addEventListener("click", () => { $("ask-input").value = c.textContent; $("ask-form").requestSubmit(); })
+);
 $("show-fires").addEventListener("change", (e) => map.setLayoutProperty("fires", "visibility", e.target.checked ? "visible" : "none"));
 $("close-detail").addEventListener("click", () => {
   state.selected = null;
   $("detail").hidden = true;
-  map.setFilter("risk-selected", ["==", ["get", "cell"], ""]);
+  highlight("");
 });
 
 $("lang-en").addEventListener("click", () => setLang("en"));
@@ -286,6 +406,29 @@ function feedbackRow(traceId) {
   return row;
 }
 
+// Answer text -> one block per cited statement ("... [2]"), plus the knowledge-graph facts.
+function answerHtml(text) {
+  const [main, facts] = text.split(/\n\nRelated facts:\n/);
+  const lines = main.split("\n");
+  let intro = "";
+  if (lines.length > 1 && !/\[\d+\]/.test(lines[0])) intro = `<p class="answer-intro">${esc(lines.shift())}</p>`;
+  const body = lines.join(" ");
+  const parts = [...body.matchAll(/(.+?)\s*\[(\d+)\](?=\s|$)/g)];
+  let html = intro;
+  if (parts.length) {
+    html += `<ul class="quotes">${parts
+      .map((m) => `<li><span>${esc(m[1].trim())}</span><span class="cite-chip" title="Source ${m[2]}">${m[2]}</span></li>`)
+      .join("")}</ul>`;
+  } else {
+    html += `<p>${esc(body)}</p>`;
+  }
+  if (facts) {
+    html += `<p class="eyebrow cites-head">Related facts (reviewed knowledge graph)</p><ul class="facts">${facts
+      .split("\n").filter(Boolean).map((f) => `<li>${esc(f.replace(/^-\s*/, ""))}</li>`).join("")}</ul>`;
+  }
+  return html;
+}
+
 $("ask-form").addEventListener("submit", async (e) => {
   e.preventDefault();
   const q = $("ask-input").value.trim();
@@ -305,7 +448,7 @@ $("ask-form").addEventListener("submit", async (e) => {
       .map((c) => `<li>[${c.n}] ${esc(c.title)}, page ${c.page}</li>`)
       .join("");
     const modes = { llm: "Written by the AI from the sources below.", extractive: "Quoted from the sources below (no AI model connected).", not_found: "" };
-    box.innerHTML = `<div>${esc(a.text).replace(/\n/g, "<br>")}</div>${cites ? `<ol class="cites">${cites}</ol>` : ""}<div class="mode">${modes[a.mode] || ""}</div>`;
+    box.innerHTML = `${answerHtml(a.text)}${cites ? `<p class="eyebrow cites-head">Sources</p><ol class="cites">${cites}</ol>` : ""}<div class="mode">${modes[a.mode] || ""}</div>`;
     if ("speechSynthesis" in window) {
       const listen = document.createElement("button");
       listen.type = "button";

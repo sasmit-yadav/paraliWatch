@@ -5,104 +5,149 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Parali Watch</title>
   <meta name="description" content="Next-3-day crop-residue fire risk for Punjab and Haryana, with reasons.">
+  <meta name="theme-color" content="#0a0a0a">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23000'/%3E%3Cpath d='M16 3 27.3 9.5v13L16 29 4.7 22.5v-13z' fill='none' stroke='%2376b900' stroke-width='2.2'/%3E%3Cpath d='M16 9c2.8 3 4.6 5.6 4.6 8.4a4.6 4.6 0 0 1-9.2 0c0-1.6.7-3 1.8-4.2.3 1.4 1 2.3 2 2.6-.6-2.4-.2-4.6.8-6.8z' fill='%2376b900'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&family=Barlow+Condensed:wght@500;600;700&display=swap">
   <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css">
   <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
   <header class="topbar">
-    <div>
-      <h1>Parali Watch</h1>
-      <p class="sub">Where crop-residue fires are likely in the next 3 days, and why</p>
-    </div>
-    <span class="badge" id="mode-badge">Demo: 2025 season</span>
+    <a class="brand" href="/" aria-label="Parali Watch home">
+      <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true">
+        <path d="M16 2 28.1 9v14L16 30 3.9 23V9z" fill="none" stroke="currentColor" stroke-width="2"/>
+        <path d="M16 9c2.8 3 4.6 5.6 4.6 8.4a4.6 4.6 0 0 1-9.2 0c0-1.6.7-3 1.8-4.2.3 1.4 1 2.3 2 2.6-.6-2.4-.2-4.6.8-6.8z" fill="currentColor"/>
+      </svg>
+      <span class="brand-text">
+        <span class="brand-name">Parali Watch</span>
+        <span class="brand-sub">Crop-residue fire risk · Punjab &amp; Haryana · next 3 days</span>
+      </span>
+    </a>
+    <dl class="kpis" aria-label="Model performance on the unseen 2025 season">
+      <div class="kpi"><dt>Fires caught in top 10% of cells</dt><dd><span id="kpi-capture">–</span><small id="kpi-capture-rule"></small></dd></div>
+      <div class="kpi"><dt>PR-AUC (2025, unseen)</dt><dd><span id="kpi-prauc">–</span><small id="kpi-prauc-rule"></small></dd></div>
+      <div class="kpi"><dt>Grid</dt><dd>2,455<small>H3 cells</small></dd></div>
+    </dl>
+    <span class="badge" id="mode-badge">Demo · 2025 season replay</span>
   </header>
 
   <main class="layout">
     <aside class="panel" aria-label="Controls and details">
-      <section class="card">
-        <label class="label" for="date-range">Forecast date</label>
-        <div class="date-row">
-          <button class="icon-btn" id="prev-day" aria-label="Previous day">&#8249;</button>
-          <output id="date-label" class="date-label">-</output>
-          <button class="icon-btn" id="next-day" aria-label="Next day">&#8250;</button>
-        </div>
-        <input type="range" id="date-range" min="0" max="0" value="0">
-        <label class="toggle"><input type="checkbox" id="show-fires" checked> Show fires detected that day</label>
-      </section>
+      <nav class="tabs" role="tablist" aria-label="Panels">
+        <button class="tab active" role="tab" id="tab-risk" aria-selected="true" aria-controls="pane-risk">Risk</button>
+        <button class="tab" role="tab" id="tab-bulletin" aria-selected="false" aria-controls="pane-bulletin">Bulletin</button>
+        <button class="tab" role="tab" id="tab-ask" aria-selected="false" aria-controls="pane-ask">Assistant</button>
+      </nav>
 
-      <section class="card" id="detail" hidden>
-        <div class="detail-head">
-          <div>
-            <h2 id="d-district">-</h2>
-            <p class="muted" id="d-meta">-</p>
+      <div class="pane" id="pane-risk" role="tabpanel" aria-labelledby="tab-risk">
+        <section class="card" id="detail" hidden>
+          <div class="detail-head">
+            <div>
+              <p class="eyebrow">Selected cell</p>
+              <h2 id="d-district">-</h2>
+              <p class="muted mono small" id="d-meta">-</p>
+            </div>
+            <button class="icon-btn" id="close-detail" aria-label="Close details">&#215;</button>
           </div>
-          <button class="icon-btn" id="close-detail" aria-label="Close details">&#215;</button>
-        </div>
-        <div class="stat-row">
-          <div class="stat"><span class="stat-value" id="d-prob">-</span><span class="stat-label">chance of fire, next 3 days</span></div>
-          <div class="stat"><span class="stat-value" id="d-rank">-</span><span class="stat-label">of cells today, ranked by risk</span></div>
-        </div>
-        <h3>Why</h3>
-        <ol class="reasons" id="d-reasons"></ol>
-        <h3>Fires in this cell, last 14 days</h3>
-        <div class="spark" id="d-history" role="img" aria-label="Daily fires in the last 14 days"></div>
-        <p class="outcome" id="d-outcome"></p>
-      </section>
-
-      <section class="card" id="bulletin-card">
-        <div class="card-head">
-          <h2>Daily bulletin</h2>
-          <div class="seg" role="group" aria-label="Bulletin language">
-            <button id="lang-en" class="seg-btn active" aria-pressed="true">EN</button>
-            <button id="lang-hi" class="seg-btn" aria-pressed="false">हिं</button>
+          <div class="stat-row">
+            <div class="stat"><span class="stat-value" id="d-prob">-</span><span class="stat-label">chance of fire, next 3 days</span></div>
+            <div class="stat"><span class="stat-value" id="d-rank">-</span><span class="stat-label">of cells today, by risk</span></div>
           </div>
-        </div>
-        <p class="muted small" id="b-status">Written by agents for district officers. Draft until approved.</p>
-        <h3 id="b-headline" class="b-headline"></h3>
-        <p id="b-summary" class="b-summary"></p>
-        <ul id="b-actions" class="b-actions"></ul>
-        <ul id="b-districts" class="b-districts"></ul>
-        <form id="approve-form" class="approve">
-          <input id="approver" type="text" placeholder="Your name to approve" aria-label="Approver name" maxlength="80">
-          <button type="submit" class="btn">Approve</button>
-        </form>
-      </section>
+          <h3>Why the model says so</h3>
+          <ol class="reasons" id="d-reasons"></ol>
+          <h3>Fires in this cell, last 14 days</h3>
+          <div class="spark" id="d-history" role="img" aria-label="Daily fires in the last 14 days"></div>
+          <p class="outcome" id="d-outcome"></p>
+        </section>
 
-      <section class="card" id="ask-card">
-        <h2>Ask about schemes</h2>
-        <p class="muted small">Answers come only from official documents, with page references. English or Hindi.</p>
-        <form id="ask-form">
-          <textarea id="ask-input" rows="2" maxlength="500" placeholder="e.g. पराली न जलाने पर कितना प्रोत्साहन मिलता है?" aria-label="Your question"></textarea>
-          <div class="ask-actions">
-            <button type="submit" class="btn">Ask</button>
-            <button type="button" id="mic" class="btn btn-ghost" aria-label="Ask by voice" title="Ask by voice (Hindi or English)">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0"/><path d="M12 17v5"/></svg>
-              <span id="mic-label">Speak</span>
-            </button>
+        <section class="card">
+          <div class="card-head"><h2>Highest risk today</h2><span class="hint">click to fly</span></div>
+          <ol class="top-list" id="top-list"></ol>
+        </section>
+
+        <section class="card about">
+          <p id="metrics-line"></p>
+          <p>Cells are ~36 km² H3 hexagons. Probabilities are calibrated on the 2024 season.
+            Data: NASA FIRMS (VIIRS), Open-Meteo ERA5, geoBoundaries.</p>
+        </section>
+      </div>
+
+      <div class="pane" id="pane-bulletin" role="tabpanel" aria-labelledby="tab-bulletin" hidden>
+        <section class="card" id="bulletin-card">
+          <div class="card-head">
+            <h2>Daily bulletin</h2>
+            <div class="seg" role="group" aria-label="Bulletin language">
+              <button id="lang-en" class="seg-btn active" aria-pressed="true">EN</button>
+              <button id="lang-hi" class="seg-btn" aria-pressed="false">हिं</button>
+            </div>
           </div>
-        </form>
-        <div id="ask-answer" class="answer" hidden></div>
-      </section>
+          <p class="status-line" id="b-status">Written by agents for district officers. Draft until approved.</p>
+          <h3 id="b-headline" class="b-headline"></h3>
+          <p id="b-summary" class="b-summary"></p>
+          <ul id="b-actions" class="b-actions"></ul>
+          <ul id="b-districts" class="b-districts"></ul>
+          <form id="approve-form" class="approve">
+            <input id="approver" type="text" placeholder="Your name to approve" aria-label="Approver name" maxlength="80">
+            <button type="submit" class="btn">Approve</button>
+          </form>
+        </section>
+      </div>
 
-      <section class="card">
-        <h2>Highest risk today</h2>
-        <ol class="top-list" id="top-list"></ol>
-      </section>
-
-      <section class="card">
-        <h2>Legend</h2>
-        <ul class="legend" id="legend"></ul>
-        <p class="muted small"><span class="dot"></span> Fire detected by NASA VIIRS that day</p>
-      </section>
-
-      <section class="card muted small" id="about">
-        <p id="metrics-line"></p>
-        <p>Grid cells are ~36 km<sup>2</sup> H3 hexagons. Probabilities are calibrated on the 2024 season.
-          Data: NASA FIRMS (VIIRS), Open-Meteo ERA5, geoBoundaries.</p>
-      </section>
+      <div class="pane" id="pane-ask" role="tabpanel" aria-labelledby="tab-ask" hidden>
+        <section class="card" id="ask-card">
+          <h2>Ask about schemes</h2>
+          <p class="muted small">Answers come only from official documents, with page references. English or Hindi, typed or spoken.</p>
+          <form id="ask-form">
+            <textarea id="ask-input" rows="3" maxlength="500" placeholder="e.g. पराली न जलाने पर कितना प्रोत्साहन मिलता है?" aria-label="Your question"></textarea>
+            <div class="ask-actions">
+              <button type="submit" class="btn">Ask</button>
+              <button type="button" id="mic" class="btn btn-ghost" aria-label="Ask by voice" title="Ask by voice (Hindi or English)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0"/><path d="M12 17v5"/></svg>
+                <span id="mic-label">Speak</span>
+              </button>
+            </div>
+          </form>
+          <div class="examples" id="examples" aria-label="Example questions">
+            <button type="button" class="chip">Up to what percentage can power plants co-fire paddy straw pellets?</button>
+            <button type="button" class="chip">पराली न जलाने पर कितना प्रोत्साहन मिलता है?</button>
+            <button type="button" class="chip">What moisture content must biomass pellets have?</button>
+          </div>
+          <div id="ask-answer" class="answer" hidden></div>
+        </section>
+      </div>
     </aside>
 
-    <div id="map" aria-label="Map of fire risk"></div>
+    <section class="stage" aria-label="Map and season timeline">
+      <div class="timebar">
+        <div class="date-block">
+          <button class="icon-btn" id="play" aria-label="Play the season" title="Play the season">
+            <svg id="play-icon" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d="M7 5v14l12-7z" fill="currentColor"/></svg>
+          </button>
+          <button class="icon-btn" id="prev-day" aria-label="Previous day">&#8249;</button>
+          <div class="date-text">
+            <label class="eyebrow" for="date-range">Forecast date</label>
+            <output id="date-label" class="date-label">-</output>
+          </div>
+          <button class="icon-btn" id="next-day" aria-label="Next day">&#8250;</button>
+        </div>
+        <div class="timeline-wrap">
+          <div class="timeline-head">
+            <span class="eyebrow">Fires detected per day, 2025 season</span>
+            <span class="timeline-readout" id="timeline-readout"></span>
+          </div>
+          <svg id="timeline" class="timeline" role="img" aria-label="Fires detected per day across the season; the selected day is highlighted"></svg>
+          <input type="range" id="date-range" min="0" max="0" value="0" aria-label="Forecast date">
+        </div>
+      </div>
+      <div id="map" aria-label="Map of fire risk"></div>
+      <div class="map-legend" aria-label="Legend">
+        <p class="eyebrow">Chance of fire, next 3 days</p>
+        <ul class="legend" id="legend"></ul>
+        <label class="toggle"><input type="checkbox" id="show-fires" checked> <span class="dot"></span> Fires detected that day (NASA VIIRS)</label>
+      </div>
+    </section>
   </main>
 
   <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>

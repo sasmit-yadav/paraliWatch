@@ -65,3 +65,10 @@ def test_profile_roundtrip(tmp_path, monkeypatch):
     monkeypatch.setattr(memory, "DB", tmp_path / "a.db")
     client.put("/api/profile/farmer1", json={"district": "Karnal", "land_acres": 3, "language": "hi"})
     assert client.get("/api/profile/farmer1").json()["district"] == "Karnal"
+
+
+def test_season_timeline_covers_every_forecast_day(meta):
+    rows = client.get("/api/season").json()
+    assert [r["date"] for r in rows] == meta["dates"]
+    assert all(r["fires"] >= 0 and r["expected_cells"] >= 0 for r in rows)
+    assert sum(r["fires"] for r in rows) > 0
