@@ -95,3 +95,9 @@ HELPLINE = "Kisan Call Centre 1800-180-1551"
 # write it (recommended only with a strong model; see docs/AGENTS_AND_MCP.md for why).
 BULLETIN_LLM = os.environ.get("PARALI_BULLETIN_LLM", "0") == "1"
 USE_GRAPH = os.environ.get("PARALI_USE_GRAPH", "1") == "1"  # add knowledge-graph facts to answers
+
+# --- Phase 4: operations -------------------------------------------------------------------------
+OPS_DIR = DATA_DIR / "ops"  # MLflow store, traces, feedback (local, not committed)
+MLFLOW_URI = os.environ.get("PARALI_MLFLOW_URI", f"sqlite:///{(OPS_DIR / 'mlflow.db').as_posix()}")
+TRACKING = os.environ.get("PARALI_TRACKING", "0") == "1"  # log `python -m parali train` runs to MLflow
+FORECAST_MODEL_NAME = "parali-forecast"

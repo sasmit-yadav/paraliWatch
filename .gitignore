@@ -44,3 +44,7 @@ data/corpus/*.htm
 models/burn_scars/*.pt
 !models/burn_scars/prithvi_finetune.pt
 models/answer_lora/
+
+# Phase 4: local MLflow store, traces and feedback
+data/ops/
+mlruns/

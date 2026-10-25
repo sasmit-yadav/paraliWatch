@@ -148,6 +148,10 @@ def run(panel: pd.DataFrame) -> dict:
         "test_metrics": results["model"],
     }
     META_PATH.write_text(json.dumps(meta, indent=2), encoding="utf-8")
+    if config.TRACKING:  # PARALI_TRACKING=1: log the run, register the model, champion/challenger check
+        from parali.ops import tracking
+
+        tracking.log_forecast(meta, trials[best_name]["valid"], results["model_uncalibrated"])
     return {"results": results, "booster": booster, "calibrator": calibrator, "test": test}
 
 

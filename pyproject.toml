@@ -36,6 +36,8 @@ experiments = ["xgboost>=2.0", "torch>=2.2", "chronos-forecasting>=1.4"]
 vision = ["torch>=2.2", "einops>=0.7", "rasterio>=1.3", "pystac-client>=0.7", "scipy>=1.11", "matplotlib>=3.8"]
 voice = ["faster-whisper>=1.0", "av>=11,<17", "jiwer>=3.0"]  # av 17+ breaks faster-whisper 1.2 audio decoding
 tune = ["torch>=2.2", "transformers>=4.45", "peft>=0.13"]
+# Phase 4 (optional): experiment tracking and model registry
+ops = ["mlflow>=3.0"]
 
 [build-system]
 requires = ["hatchling"]
