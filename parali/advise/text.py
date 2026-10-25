@@ -89,13 +89,29 @@ def _split_sentences(block: str) -> list[str]:
     return merged
 
 
+def _split_long(clause: str, max_words: int) -> list[str]:
+    """A clause still far too long to quote (no ';' or ':' in it) is cut at commas into pieces
+    of at most about max_words words, so a quote stays readable."""
+    if len(clause.split()) <= int(max_words * 1.5):
+        return [clause]
+    pieces, current = [], []
+    for part in clause.split(", "):
+        if current and len(" ".join(current + [part]).split()) > max_words:
+            pieces.append(", ".join(current) + ",")
+            current = []
+        current.append(part)
+    pieces.append(", ".join(current))
+    return pieces
+
+
 def sentences(text: str, max_words: int = 40) -> list[str]:
     """Sentences, with long ones (common in legal notices and OCR text) split at clause breaks."""
     lines = [re.sub(r"^\s*#+\s*", "", ln) for ln in text.split("\n")]  # drop markdown heading marks
     out = []
     for part in (p.strip() for block in lines for p in _split_sentences(block)):
         if len(part.split()) > max_words:
-            out.extend(c.strip() for c in CLAUSE_END.split(part))
+            for clause in (c.strip() for c in CLAUSE_END.split(part)):
+                out.extend(_split_long(clause, max_words))
         else:
             out.append(part)
     return [p for p in out if len(p) > 2]

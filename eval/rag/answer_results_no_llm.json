@@ -14,7 +14,7 @@
   "false_answer_on_unanswerable": 3,
   "unanswerable": 12,
   "wrongly_refused_answerable": 1,
-  "median_seconds_generation": 1.4
+  "median_seconds_generation": 1.15
  },
  "records": [
   {
@@ -22,7 +22,7 @@
    "lang": "en",
    "answerable": true,
    "mode": "extractive",
-   "seconds": 3.8,
+   "seconds": 3.0,
    "cited_gold_page": true,
    "facts_found": [
     "5-10%"
@@ -40,7 +40,7 @@
    "lang": "en",
    "answerable": true,
    "mode": "extractive",
-   "seconds": 1.4,
+   "seconds": 1.2,
    "cited_gold_page": true,
    "facts_found": [
     "300"
@@ -58,7 +58,7 @@
    "lang": "en",
    "answerable": true,
    "mode": "extractive",
-   "seconds": 4.7,
+   "seconds": 2.0,
    "cited_gold_page": true,
    "facts_found": [
     "30%",
@@ -71,14 +71,14 @@
    "rejected_llm_text": null,
    "llm_declined": false,
    "llm_error": null,
-   "answer": "Requisite directions / orders shall be issued by the State Governments of Punjab and Haryana in this context mandating the above stipulation for use of paddy straw-based bio-mass pellets / briquettes in brick kilns located in non-NCR areas. [1] the CPCB Report, “solid bio-mass based fuels can substitute coal, without any technical limitations”, WHEREAS, there are no restrictions on the periods of operations of brick kilns in the non-NCR districts of Haryana and in the State of Punjab, about 940 and 2050 brick kilns are reported to be operational in these areas respectively, where the annual fuel requirement is substantially high and thus these offer a huge potential for use of paddy straw-based bio-mass pellets as fuel and improvement in ambient air quality; [2] WHEREAS, arising out of various deliberations held by the Commission with different stakeholders and appraisal of the draft Plans submitted by the State Governments of Punjab, Haryana and Uttar Pradesh, the Commission, inter alia, identified “mandating use of paddy straw pellets/ briquettes for co-firing in brick kilns” as one of the most effective means of enhancing ex-situ Management of paddy straw and thereby preventing its open burning in the fields; [2] ex-situ Management of paddy straw and thereby preventing its open burning in the fields; . [3] 2 Now, THEREFORE, in view of the compelling need to control air pollution from uncontrolled / open burning of paddy straw, the Commission hereby directs the State Governments of Punjab and Haryana to mandate use of paddy straw-based bio-mass pellets / briquettes in all brick kilns located in the districts beyond NCR, as one of the means towards elimination of the practice of open paddy stubble burning, aiming for 50% co-firing of paddy straw based ? [3]\n\nRelated facts:\n- brick kilns -> applies in -> Punjab and non-NCR districts of Haryana must use paddy straw pellets/briquettes (CAQM Direction No. 92) (CAQM Direction No. 92: Paddy straw pellets in brick kilns, p. 4)\n- brick kilns -> amount -> Paddy straw pellet co-firing targets: 30% from 01.11.2026, 40% from 01.11.2027, 50% from 01.11.2028 (CAQM Direction No. 92: Paddy straw pellets in brick kilns, p. 5)\n- brick kilns -> amount -> About 2050 brick kilns in Punjab and 940 in non-NCR Haryana (CAQM Direction No. 92: Paddy straw pellets in brick kilns, p. 4)\n- paddy straw -> alternative to -> Fuel for thermal power plants, waste-to-energy plants and brick kilns; pellets, briquettes, bio-ethanol, compressed bio-gas, particle board (CAQM Advisory No. 5 of 2021: Ex-situ stubble management (Punjab), p. 2)"
+   "answer": "Requisite directions / orders shall be issued by the State Governments of Punjab and Haryana in this context mandating the above stipulation for use of paddy straw-based bio-mass pellets / briquettes in brick kilns located in non-NCR areas. [1] identified “mandating use of paddy straw pellets/ briquettes for co-firing in brick kilns” as one of the most effective means of enhancing ex-situ Management of paddy straw and thereby preventing its open burning in the fields; [2] ex-situ Management of paddy straw and thereby preventing its open burning in the fields; . [3] the Commission hereby directs the State Governments of Punjab and Haryana to mandate use of paddy straw-based bio-mass pellets / briquettes in all brick kilns located in the districts beyond NCR, [3] as one of the means towards elimination of the practice of open paddy stubble burning, aiming for 50% co-firing of paddy straw based ? [3]\n\nRelated facts:\n- brick kilns -> applies in -> Punjab and non-NCR districts of Haryana must use paddy straw pellets/briquettes (CAQM Direction No. 92) (CAQM Direction No. 92: Paddy straw pellets in brick kilns, p. 4)\n- brick kilns -> amount -> Paddy straw pellet co-firing targets: 30% from 01.11.2026, 40% from 01.11.2027, 50% from 01.11.2028 (CAQM Direction No. 92: Paddy straw pellets in brick kilns, p. 5)\n- brick kilns -> amount -> About 2050 brick kilns in Punjab and 940 in non-NCR Haryana (CAQM Direction No. 92: Paddy straw pellets in brick kilns, p. 4)\n- paddy straw -> alternative to -> Fuel for thermal power plants, waste-to-energy plants and brick kilns; pellets, briquettes, bio-ethanol, compressed bio-gas, particle board (CAQM Advisory No. 5 of 2021: Ex-situ stubble management (Punjab), p. 2)"
   },
   {
    "id": "q04",
    "lang": "en",
    "answerable": true,
    "mode": "extractive",
-   "seconds": 3.4,
+   "seconds": 2.5,
    "cited_gold_page": true,
    "facts_found": [
     "2050",
@@ -90,14 +90,14 @@
    "rejected_llm_text": null,
    "llm_declined": false,
    "llm_error": null,
-   "answer": "the CPCB Report, “solid bio-mass based fuels can substitute coal, without any technical limitations”, WHEREAS, there are no restrictions on the periods of operations of brick kilns in the non-NCR districts of Haryana and in the State of Punjab, about 940 and 2050 brick kilns are reported to be operational in these areas respectively, where the annual fuel requirement is substantially high and thus these offer a huge potential for use of paddy straw-based bio-mass pellets as fuel and improvement in ambient air quality; [1] thereby implying that brick kilns can use pellets / briquettes of biomass / agriculture residue; [2] WHEREAS, vide Notification No. GSR 143 (E) dated 22.02.2022, all new brick kilns shall be allowed only with zig-zag technology or vertical shaft or use of PNG as fuel in brick making and the existing brick kilns not following these technologies shall be converted to zig- zag technology or vertical shaft or use PNG as fuel within a period of 2 years, which has since ended, WHEREAS, while there are more than 3000 brick kilns located in the NCR Districts of Uttar Pradesh, Haryana and Rajasthan, the Hon’ble NGT vide its order dated 17.02.2021 in OA No. 1016/2019, inter alia, directed for operation of a minimal number of brick kilns in the NCR only during the months from March to June, also permitting operation of such brick kilns in an unrestrictive manner which operate on PNG, even beyond these four months; [2] WHEREAS, no brick kiln in the NCR is reported to have been converted to PNG as fuel so far, in wake of the [2] Punjab and Haryana to submit district-wise reports on co-firing in brick kilns for the period 01.11.2025 to 30.04.2026, along with monthly progress reports thereafter, in a time-bound manner. [3]\n\nRelated facts:\n- brick kilns -> applies in -> Punjab and non-NCR districts of Haryana must use paddy straw pellets/briquettes (CAQM Direction No. 92) (CAQM Direction No. 92: Paddy straw pellets in brick kilns, p. 4)\n- brick kilns -> amount -> Paddy straw pellet co-firing targets: 30% from 01.11.2026, 40% from 01.11.2027, 50% from 01.11.2028 (CAQM Direction No. 92: Paddy straw pellets in brick kilns, p. 5)\n- brick kilns -> amount -> About 2050 brick kilns in Punjab and 940 in non-NCR Haryana (CAQM Direction No. 92: Paddy straw pellets in brick kilns, p. 4)"
+   "answer": "about 940 and 2050 brick kilns are reported to be operational in these areas respectively, [1] thereby implying that brick kilns can use pellets / briquettes of biomass / agriculture residue; [2] which has since ended, WHEREAS, while there are more than 3000 brick kilns located in the NCR Districts of Uttar Pradesh, Haryana and Rajasthan, the Hon’ble NGT vide its order dated 17.02.2021 in OA No. 1016/2019, inter alia, [2] directed for operation of a minimal number of brick kilns in the NCR only during the months from March to June, also permitting operation of such brick kilns in an unrestrictive manner which operate on PNG, [2] Punjab and Haryana to submit district-wise reports on co-firing in brick kilns for the period 01.11.2025 to 30.04.2026, along with monthly progress reports thereafter, in a time-bound manner. [3]\n\nRelated facts:\n- brick kilns -> applies in -> Punjab and non-NCR districts of Haryana must use paddy straw pellets/briquettes (CAQM Direction No. 92) (CAQM Direction No. 92: Paddy straw pellets in brick kilns, p. 4)\n- brick kilns -> amount -> Paddy straw pellet co-firing targets: 30% from 01.11.2026, 40% from 01.11.2027, 50% from 01.11.2028 (CAQM Direction No. 92: Paddy straw pellets in brick kilns, p. 5)\n- brick kilns -> amount -> About 2050 brick kilns in Punjab and 940 in non-NCR Haryana (CAQM Direction No. 92: Paddy straw pellets in brick kilns, p. 4)"
   },
   {
    "id": "q05",
    "lang": "en",
    "answerable": true,
    "mode": "extractive",
-   "seconds": 2.0,
+   "seconds": 0.9,
    "cited_gold_page": true,
    "facts_found": [
     "2.32"
@@ -108,14 +108,14 @@
    "rejected_llm_text": null,
    "llm_declined": false,
    "llm_error": null,
-   "answer": "for bio-mass pellets was strongly felt so as to ease out the process of repeated procurements of large quantities of agro-based pellets for co-firing in TPPs. [1] II dated 23.08.2023 have issued a benchmark price of non -torrefied bio-mass pellets in the NCR @Rs. 2.32 / 1000 Kceal, excluding t sand [1] GST & transportation cost at the pellet manufacturing plant site, for a period of one-year w.e.f. 01.09.2023. [2] Such pellets however, need to have a moisture content of below 14% and GCV between 2800-3400 Kceal/Kg. [2] Considering that an established benchmark price facilitates and significantly eases out the process of procurement /tendering of bio-mass pellets and with abundant availability of agro-based bio-mass, including paddy straw in particular, the state Governments and the 11 identified Thermal power plants within 300 kms of Delhi are required to substantially step-up bio-mass co-firing in their respective units as per the targeted quantities, towards effective implementation and compliance of the statutory Direction No. 42 of the Commission in letter and spirit. [2]\n\nRelated facts:\n- biomass pellets -> amount -> Benchmark price of non-torrefied pellets in NCR: Rs 2.32 per 1000 kcal, excluding GST and transport (CAQM Advisory No. 11: Co-firing of biomass in thermal power plants, p. 2)\n- biomass pellets -> eligible -> Moisture below 14% and GCV between 2800-3400 kcal/kg (CAQM Advisory No. 11: Co-firing of biomass in thermal power plants, p. 3)"
+   "answer": "for bio-mass pellets was strongly felt so as to ease out the process of repeated procurements of large quantities of agro-based pellets for co-firing in TPPs. [1] II dated 23.08.2023 have issued a benchmark price of non -torrefied bio-mass pellets in the NCR @Rs. 2.32 / 1000 Kceal, excluding t sand [1] GST & transportation cost at the pellet manufacturing plant site, for a period of one-year w.e.f. 01.09.2023. [2] Such pellets however, need to have a moisture content of below 14% and GCV between 2800-3400 Kceal/Kg. [2] Considering that an established benchmark price facilitates and significantly eases out the process of procurement /tendering of bio-mass pellets and with abundant availability of agro-based bio-mass, including paddy straw in particular, [2]\n\nRelated facts:\n- biomass pellets -> amount -> Benchmark price of non-torrefied pellets in NCR: Rs 2.32 per 1000 kcal, excluding GST and transport (CAQM Advisory No. 11: Co-firing of biomass in thermal power plants, p. 2)\n- biomass pellets -> eligible -> Moisture below 14% and GCV between 2800-3400 kcal/kg (CAQM Advisory No. 11: Co-firing of biomass in thermal power plants, p. 3)"
   },
   {
    "id": "q06",
    "lang": "en",
    "answerable": true,
    "mode": "extractive",
-   "seconds": 1.4,
+   "seconds": 0.7,
    "cited_gold_page": true,
    "facts_found": [
     "14%",
@@ -128,14 +128,14 @@
    "rejected_llm_text": null,
    "llm_declined": false,
    "llm_error": null,
-   "answer": "GST & transportation cost at the pellet manufacturing plant site, for a period of one-year w.e.f. 01.09.2023. [1] Such pellets however, need to have a moisture content of below 14% and GCV between 2800-3400 Kceal/Kg. [1] Considering that an established benchmark price facilitates and significantly eases out the process of procurement /tendering of bio-mass pellets and with abundant availability of agro-based bio-mass, including paddy straw in particular, the state Governments and the 11 identified Thermal power plants within 300 kms of Delhi are required to substantially step-up bio-mass co-firing in their respective units as per the targeted quantities, towards effective implementation and compliance of the statutory Direction No. 42 of the Commission in letter and spirit. [1] Appropriate action may accordingly be taken on top priority and well before the ensuing paddy harvesting season. [1] The Chief Secretary, Government of Punjab The Chief Secretary, Government of Uttar Pradesh The Chief Secretary, Government of Rajasthan The Chairperson and all Members, CAQM. [1]\n\nRelated facts:\n- biomass pellets -> amount -> Benchmark price of non-torrefied pellets in NCR: Rs 2.32 per 1000 kcal, excluding GST and transport (CAQM Advisory No. 11: Co-firing of biomass in thermal power plants, p. 2)\n- biomass pellets -> eligible -> Moisture below 14% and GCV between 2800-3400 kcal/kg (CAQM Advisory No. 11: Co-firing of biomass in thermal power plants, p. 3)"
+   "answer": "GST & transportation cost at the pellet manufacturing plant site, for a period of one-year w.e.f. 01.09.2023. [1] Such pellets however, need to have a moisture content of below 14% and GCV between 2800-3400 Kceal/Kg. [1] Considering that an established benchmark price facilitates and significantly eases out the process of procurement /tendering of bio-mass pellets and with abundant availability of agro-based bio-mass, including paddy straw in particular, [1] the state Governments and the 11 identified Thermal power plants within 300 kms of Delhi are required to substantially step-up bio-mass co-firing in their respective units as per the targeted quantities, [1] Appropriate action may accordingly be taken on top priority and well before the ensuing paddy harvesting season. [1]\n\nRelated facts:\n- biomass pellets -> amount -> Benchmark price of non-torrefied pellets in NCR: Rs 2.32 per 1000 kcal, excluding GST and transport (CAQM Advisory No. 11: Co-firing of biomass in thermal power plants, p. 2)\n- biomass pellets -> eligible -> Moisture below 14% and GCV between 2800-3400 kcal/kg (CAQM Advisory No. 11: Co-firing of biomass in thermal power plants, p. 3)"
   },
   {
    "id": "q07",
    "lang": "en",
    "answerable": true,
    "mode": "extractive",
-   "seconds": 1.4,
+   "seconds": 2.0,
    "cited_gold_page": true,
    "facts_found": [
     "11"
@@ -146,14 +146,14 @@
    "rejected_llm_text": null,
    "llm_declined": false,
    "llm_error": null,
-   "answer": "WHEREAS, bio-mass pellets prioritising paddy straw have already been mandated by the Commission to be co-fired @5-10% of the annual fuel (coal) requirement in the identified 11 thermal power plants within 300 kms of Delhi, there exists a similar untapped potential of utilisation of paddy straw based bio-mass pellets in large number of brick kilns located in NCR and beyond; [1] WHEREAS, particularly from the standpoint of a common airshed approach for the entire NCR and adjoining areas and an overall improved air quality in the region, the Commission vide Direction No. 65 dated 23.06.2022 directed for adoption of a standard list of clean fuels in NCR w.e.f. 01.01.2023, also permitting bio-mass based fuels for industrial applications in the NCR, beyond NCT of Delhi, F Page 2 of 5 m4 [1] in Thermal Power Plants. [2] 2% The above referred statutory directions of the Commission mandate all the 11 identified thermal power plants situated up to 300 kms of Delhi to \\ ae [2] burning of paddy straw and its effective utilization as a resource, the Commission constituted under the provisions of “Commission for Air Quality Management in National Capital Region and Adjoining Areas, Act, 2021”, hereby directs the Coal based Thermal Power plants situated upto a radius of 300 Km of Delhi: [3]\n\nRelated facts:\n- thermal power plants -> applies in -> Coal-based plants within 300 km of Delhi must co-fire biomass pellets (CAQM Direction No. 42) (CAQM Direction No. 42: Paddy straw in coal-based thermal power plants, p. 3)\n- thermal power plants -> amount -> Co-firing of biomass pellets with coal: up to 5-10% (CAQM Direction No. 42: Paddy straw in coal-based thermal power plants, p. 3)\n- thermal power plants -> amount -> 11 identified plants within 300 km of Delhi (CAQM Advisory No. 11: Co-firing of biomass in thermal power plants, p. 3)"
+   "answer": "WHEREAS, bio-mass pellets prioritising paddy straw have already been mandated by the Commission to be co-fired @5-10% of the annual fuel (coal) requirement in the identified 11 thermal power plants within 300 kms of Delhi, there exists a similar untapped potential of utilisation of paddy straw based bio-mass pellets in large number of brick kilns located in NCR and beyond; [1] the Commission vide Direction No. 65 dated 23.06.2022 directed for adoption of a standard list of clean fuels in NCR w.e.f. 01.01.2023, also permitting bio-mass based fuels for industrial applications in the NCR, beyond NCT of Delhi, [1] in Thermal Power Plants. [2] 2% The above referred statutory directions of the Commission mandate all the 11 identified thermal power plants situated up to 300 kms of Delhi to \\ ae [2] burning of paddy straw and its effective utilization as a resource, the Commission constituted under the provisions of “Commission for Air Quality Management in National Capital Region and Adjoining Areas, Act, 2021”, hereby directs the Coal based Thermal Power plants situated upto a radius of 300 Km of Delhi: [3]\n\nRelated facts:\n- thermal power plants -> applies in -> Coal-based plants within 300 km of Delhi must co-fire biomass pellets (CAQM Direction No. 42) (CAQM Direction No. 42: Paddy straw in coal-based thermal power plants, p. 3)\n- thermal power plants -> amount -> Co-firing of biomass pellets with coal: up to 5-10% (CAQM Direction No. 42: Paddy straw in coal-based thermal power plants, p. 3)\n- thermal power plants -> amount -> 11 identified plants within 300 km of Delhi (CAQM Advisory No. 11: Co-firing of biomass in thermal power plants, p. 3)"
   },
   {
    "id": "q08",
    "lang": "en",
    "answerable": true,
    "mode": "extractive",
-   "seconds": 1.9,
+   "seconds": 2.2,
    "cited_gold_page": true,
    "facts_found": [
     "7000"
@@ -171,7 +171,7 @@
    "lang": "en",
    "answerable": true,
    "mode": "extractive",
-   "seconds": 2.9,
+   "seconds": 2.8,
    "cited_gold_page": true,
    "facts_found": [
     "Karnal",
@@ -191,7 +191,7 @@
    "lang": "en",
    "answerable": true,
    "mode": "extractive",
-   "seconds": 3.1,
+   "seconds": 2.9,
    "cited_gold_page": true,
    "facts_found": [
     "maize"
@@ -209,7 +209,7 @@
    "lang": "en",
    "answerable": true,
    "mode": "extractive",
-   "seconds": 2.1,
+   "seconds": 1.9,
    "cited_gold_page": true,
    "facts_found": [
     "60:40"
@@ -227,7 +227,7 @@
    "lang": "en",
    "answerable": true,
    "mode": "extractive",
-   "seconds": 2.6,
+   "seconds": 2.7,
    "cited_gold_page": true,
    "facts_found": [
     "3,729",
@@ -246,7 +246,7 @@
    "lang": "en",
    "answerable": true,
    "mode": "extractive",
-   "seconds": 3.9,
+   "seconds": 3.0,
    "cited_gold_page": true,
    "facts_found": [],
    "facts_total": 2,
@@ -255,14 +255,14 @@
    "rejected_llm_text": null,
    "llm_declined": false,
    "llm_error": null,
-   "answer": "and Gautam Buddha Nagar and Meerut in Uttar Pradesh, presented district-level strategies for crop residue management and measures being undertaken during the ongoing wheat harvesting season. [1] Ministry of Environment, Forest and Climate Change CAQM reviews preparedness of States for elimination of Stubble Burning in 2026; [2] 07 MAY 2026 8:58PM by PIB Delhi The Commission for Air Quality Management in NCR and Adjoining Areas (CAQM), under the Chairmanship of Shri Rajesh Verma, convened a meeting on 06.05.2026 with senior officials of Punjab, Haryana and Uttar Pradesh, including Deputy Commissioners/District Magistrates of hotspot districts and representatives of State Pollution Control Boards, to review State Action Plans and preparedness for elimination of paddy stubble burning during 2026. [2] It stressed strengthening both in-situ and ex-situ crop residue management mechanisms, along with focused enforcement and awareness measures, to ensure effective implementation at the field level. [2] Discussions were also held on operational and logistical aspects such as timely availability of Crop Residue Management (CRM) machines, promotion of zero stubble burning villages through incentives, intensified IEC activities and enforcement measures. [3]"
+   "answer": "and Gautam Buddha Nagar and Meerut in Uttar Pradesh, presented district-level strategies for crop residue management and measures being undertaken during the ongoing wheat harvesting season. [1] Ministry of Environment, Forest and Climate Change CAQM reviews preparedness of States for elimination of Stubble Burning in 2026; [2] including Deputy Commissioners/District Magistrates of hotspot districts and representatives of State Pollution Control Boards, to review State Action Plans and preparedness for elimination of paddy stubble burning during 2026. [2] It stressed strengthening both in-situ and ex-situ crop residue management mechanisms, along with focused enforcement and awareness measures, to ensure effective implementation at the field level. [2] Discussions were also held on operational and logistical aspects such as timely availability of Crop Residue Management (CRM) machines, promotion of zero stubble burning villages through incentives, intensified IEC activities and enforcement measures. [3]"
   },
   {
    "id": "q14",
    "lang": "en",
    "answerable": true,
    "mode": "extractive",
-   "seconds": 3.9,
+   "seconds": 2.9,
    "cited_gold_page": false,
    "facts_found": [],
    "facts_total": 1,
@@ -271,14 +271,14 @@
    "rejected_llm_text": null,
    "llm_declined": false,
    "llm_error": null,
-   "answer": "Ministry of Environment, Forest and Climate Change CAQM reviews preparedness of States for elimination of Stubble Burning in 2026; [2] 07 MAY 2026 8:58PM by PIB Delhi The Commission for Air Quality Management in NCR and Adjoining Areas (CAQM), under the Chairmanship of Shri Rajesh Verma, convened a meeting on 06.05.2026 with senior officials of Punjab, Haryana and Uttar Pradesh, including Deputy Commissioners/District Magistrates of hotspot districts and representatives of State Pollution Control Boards, to review State Action Plans and preparedness for elimination of paddy stubble burning during 2026. [2] The Commission underlined that elimination of stubble burning [2] 10.WHEREAS, the matter was further deliberated in the Sth Meeting of the Commission dated 19h August, 2021 and 24th August, wherein, the State Governments of Punjab, Haryana and Uttar Pradesh presented their respective plans of action and the Commission advised these states to Update and refine the action plans as communicated through the minutes of the meetings; [3] WHEREAS, the Ministry of EF&CC vide OM dated 06.09.2021 has conveyed to CAQM to issue directions to Chief Secretaries of Haryana, Punjab and Uttar Pradesh for effective implementation of their detailed action plan for control and elimination of stubble burning; [3]\n\nRelated facts:\n- paddy straw -> alternative to -> Fuel for thermal power plants, waste-to-energy plants and brick kilns; pellets, briquettes, bio-ethanol, compressed bio-gas, particle board (CAQM Advisory No. 5 of 2021: Ex-situ stubble management (Punjab), p. 2)\n- stubble burning -> penalty for -> FIR, fine Rs 5,000 to Rs 30,000, red entry in land record blocking e-kharid sales for two seasons (UNVERIFIED summary) (Haryana zero stubble burning measures: summary from project author (UNVERIFIED), p. 1)\n- paddy straw -> amount -> Rs 500 per tonne extra for delivery to the 2G ethanol plant, Panipat (UNVERIFIED summary) (Haryana zero stubble burning measures: summary from project author (UNVERIFIED), p. 1)"
+   "answer": "Ministry of Environment, Forest and Climate Change CAQM reviews preparedness of States for elimination of Stubble Burning in 2026; [2] including Deputy Commissioners/District Magistrates of hotspot districts and representatives of State Pollution Control Boards, to review State Action Plans and preparedness for elimination of paddy stubble burning during 2026. [2] The Commission underlined that elimination of stubble burning [2] 10.WHEREAS, the matter was further deliberated in the Sth Meeting of the Commission dated 19h August, 2021 and 24th August, wherein, the State Governments of Punjab, Haryana and Uttar Pradesh presented their respective plans of action and the Commission advised these states to Update and refine the action plans as communicated through the minutes of the meetings; [3] WHEREAS, the Ministry of EF&CC vide OM dated 06.09.2021 has conveyed to CAQM to issue directions to Chief Secretaries of Haryana, Punjab and Uttar Pradesh for effective implementation of their detailed action plan for control and elimination of stubble burning; [3]\n\nRelated facts:\n- paddy straw -> alternative to -> Fuel for thermal power plants, waste-to-energy plants and brick kilns; pellets, briquettes, bio-ethanol, compressed bio-gas, particle board (CAQM Advisory No. 5 of 2021: Ex-situ stubble management (Punjab), p. 2)\n- stubble burning -> penalty for -> FIR, fine Rs 5,000 to Rs 30,000, red entry in land record blocking e-kharid sales for two seasons (UNVERIFIED summary) (Haryana zero stubble burning measures: summary from project author (UNVERIFIED), p. 1)\n- paddy straw -> amount -> Rs 500 per tonne extra for delivery to the 2G ethanol plant, Panipat (UNVERIFIED summary) (Haryana zero stubble burning measures: summary from project author (UNVERIFIED), p. 1)"
   },
   {
    "id": "q15",
    "lang": "en",
    "answerable": true,
    "mode": "extractive",
-   "seconds": 3.5,
+   "seconds": 2.1,
    "cited_gold_page": true,
    "facts_found": [],
    "facts_total": 1,
@@ -287,14 +287,14 @@
    "rejected_llm_text": null,
    "llm_declined": false,
    "llm_error": null,
-   "answer": "Direction No. 92 COMMISSION FOR AIR QUALITY MANAGEMENT IN NATIONAL CAPITAL REGION AND ADJOINING AREAS 17th Floor, Jawahar Vyapar Bhawan (STC Building) Tolstoy Marg, New Delhi-110001 F. No. A-110018/01/2021/CAQM/Vol-VII/1lo5 —- Dated: [1] 03.06.2025 Subject: [1] WHEREAS, under section 12(1) of the Act, the Commission has powers to take all such measures, issue directions, etc., as it deems necessary or expedient for the purpose of protecting and improving the quality of the air [1] Discussions were also held on operational and logistical aspects such as timely availability of Crop Residue Management (CRM) machines, promotion of zero stubble burning villages through incentives, intensified IEC activities and enforcement measures. [2] The Chief Secretary, Government of Punjab The Chief Secretary, Government of Uttar Pradesh The Chief Secretary, Government of Rajasthan The Chairperson and all Members, CAQM. [3]"
+   "answer": "Direction No. 92 COMMISSION FOR AIR QUALITY MANAGEMENT IN NATIONAL CAPITAL REGION AND ADJOINING AREAS 17th Floor, Jawahar Vyapar Bhawan (STC Building) Tolstoy Marg, New Delhi-110001 F. No. A-110018/01/2021/CAQM/Vol-VII/1lo5 —- Dated: [1] WHEREAS, Ministry of Environment, Forest and Climate Change, Government of India, in exercise of the powers conferred under Section 3 of the Commission for Air Quality Management in National Capital Region and Adjoining Areas Act 2021, has constituted the Commission for Air Quality Management in National Capital Region and Adjoining Areas (hereinafter referred to as the Commission); [1] WHEREAS, under section 12(1) of the Act, the Commission has powers to take all such measures, issue directions, etc., as it deems necessary or expedient for the purpose of protecting and improving the quality of the air [1] Discussions were also held on operational and logistical aspects such as timely availability of Crop Residue Management (CRM) machines, promotion of zero stubble burning villages through incentives, intensified IEC activities and enforcement measures. [2] towards effective implementation and compliance of the statutory Direction No. 42 of the Commission in letter and spirit. [3]"
   },
   {
    "id": "q16",
    "lang": "en",
    "answerable": true,
    "mode": "extractive",
-   "seconds": 3.4,
+   "seconds": 1.9,
    "cited_gold_page": true,
    "facts_found": [],
    "facts_total": 1,
@@ -303,14 +303,14 @@
    "rejected_llm_text": null,
    "llm_declined": false,
    "llm_error": null,
-   "answer": "(iii) Developing low cost, long-term paddy straw storage facilities by creating a convergence of subsidies, loan guarantees, lowering collateral etc.; [1] (v) Demonstrating the profitability of paddy straw residue end use; [1] And further the State Government of Haryana is advised to take note that paddy straw based biomass pellets [1] ex-situ Management of paddy straw and thereby preventing its open burning in the fields; . [2] 2 Now, THEREFORE, in view of the compelling need to control air pollution from uncontrolled / open burning of paddy straw, the Commission hereby directs the State Governments of Punjab and Haryana to mandate use of paddy straw-based bio-mass pellets / briquettes in all brick kilns located in the districts beyond NCR, as one of the means towards elimination of the practice of open paddy stubble burning, aiming for 50% co-firing of paddy straw based ? [2]"
+   "answer": "(iii) Developing low cost, long-term paddy straw storage facilities by creating a convergence of subsidies, loan guarantees, lowering collateral etc.; [1] (v) Demonstrating the profitability of paddy straw residue end use; [1] (vi) Deploying and scaling decentralized innovations, which deliver higher value for paddy straw through multiple sustainable high-value end products. [1] And further the State Government of Haryana is advised to take note that paddy straw based biomass pellets [1] ex-situ Management of paddy straw and thereby preventing its open burning in the fields; . [2]"
   },
   {
    "id": "q17",
    "lang": "en",
    "answerable": true,
    "mode": "extractive",
-   "seconds": 2.5,
+   "seconds": 2.1,
    "cited_gold_page": true,
    "facts_found": [
     "pellets",
@@ -322,14 +322,14 @@
    "rejected_llm_text": null,
    "llm_declined": false,
    "llm_error": null,
-   "answer": "Whereas, Ex-situ Crop Residue management (CRM) is one of the vital strategies of the framework to tackle the problem of stubble burning; . [1] Whereas, a meeting dated 13' July, 20210n the subject of Ex-sifu stubble management was chaired by Chairperson of Commission and attended by the representatives of the State Governments of Punjab, Haryana and Uttar Pradesh, Ministries of Power, Agriculture and Farmers Welfare, New and Renewable Energy, Government of India and National Thermal Power Corporation (NTPC) and the meeting inter alia discussed utilization of stubble in Coal based Thermal Power Plants; [1] Whereas, the major alternate usage of paddy straw as fuel is in thermal power plants, waste to energy plants, brick kilns etc. and also as end products as pellets/ briquettes, bio-fuels (bio-ethanol, compressed bio-gas), particle board, compressed agri-panel, panel furniture, packaging material etc. was highlighted in the meeting; [1] and also economic value to farmers and other stakeholders in the paddy straw supply chain; [3] WHEREAS, bio-mass pellets prioritising paddy straw have already been mandated by the Commission to be co-fired @5-10% of the annual fuel (coal) requirement in the identified 11 thermal power plants within 300 kms of Delhi, there exists a similar untapped potential of utilisation of paddy straw based bio-mass pellets in large number of brick kilns located in NCR and beyond; [3]\n\nRelated facts:\n- paddy straw -> alternative to -> Fuel for thermal power plants, waste-to-energy plants and brick kilns; pellets, briquettes, bio-ethanol, compressed bio-gas, particle board (CAQM Advisory No. 5 of 2021: Ex-situ stubble management (Punjab), p. 2)\n- paddy straw -> amount -> Rs 500 per tonne extra for delivery to the 2G ethanol plant, Panipat (UNVERIFIED summary) (Haryana zero stubble burning measures: summary from project author (UNVERIFIED), p. 1)"
+   "answer": "Whereas, Ex-situ Crop Residue management (CRM) is one of the vital strategies of the framework to tackle the problem of stubble burning; . [1] Agriculture and Farmers Welfare, New and Renewable Energy, Government of India and National Thermal Power Corporation (NTPC) and the meeting inter alia discussed utilization of stubble in Coal based Thermal Power Plants; [1] Whereas, the major alternate usage of paddy straw as fuel is in thermal power plants, waste to energy plants, brick kilns etc. and also as end products as pellets/ briquettes, bio-fuels (bio-ethanol, compressed bio-gas), particle board, compressed agri-panel, panel furniture, packaging material etc. was highlighted in the meeting; [1] and also economic value to farmers and other stakeholders in the paddy straw supply chain; [3] WHEREAS, bio-mass pellets prioritising paddy straw have already been mandated by the Commission to be co-fired @5-10% of the annual fuel (coal) requirement in the identified 11 thermal power plants within 300 kms of Delhi, there exists a similar untapped potential of utilisation of paddy straw based bio-mass pellets in large number of brick kilns located in NCR and beyond; [3]\n\nRelated facts:\n- paddy straw -> alternative to -> Fuel for thermal power plants, waste-to-energy plants and brick kilns; pellets, briquettes, bio-ethanol, compressed bio-gas, particle board (CAQM Advisory No. 5 of 2021: Ex-situ stubble management (Punjab), p. 2)\n- paddy straw -> amount -> Rs 500 per tonne extra for delivery to the 2G ethanol plant, Panipat (UNVERIFIED summary) (Haryana zero stubble burning measures: summary from project author (UNVERIFIED), p. 1)"
   },
   {
    "id": "q18",
    "lang": "en",
    "answerable": true,
    "mode": "extractive",
-   "seconds": 2.9,
+   "seconds": 1.4,
    "cited_gold_page": true,
    "facts_found": [
     "5 million"
@@ -347,7 +347,7 @@
    "lang": "en",
    "answerable": true,
    "mode": "extractive",
-   "seconds": 4.1,
+   "seconds": 2.3,
    "cited_gold_page": true,
    "facts_found": [
     "600 million"
@@ -365,7 +365,7 @@
    "lang": "en",
    "answerable": true,
    "mode": "extractive",
-   "seconds": 4.1,
+   "seconds": 2.8,
    "cited_gold_page": true,
    "facts_found": [
     "40,000"
@@ -383,7 +383,7 @@
    "lang": "en",
    "answerable": true,
    "mode": "extractive",
-   "seconds": 1.0,
+   "seconds": 0.5,
    "cited_gold_page": true,
    "facts_found": [
     "CRRI",
@@ -395,14 +395,14 @@
    "rejected_llm_text": null,
    "llm_declined": false,
    "llm_error": null,
-   "answer": "for Science & Technology, Earth Sciences, and MoS PMO, Personnel, Public Grievances, Pensions, Atomic Energy and Space, Dr. Jitendra Singh today said that crop waste converted to bio-bitumen can save around Rs 40,000 cr import annually for India. [1] This has been made possible using indigenous bio- bitumen technology developed by CSIR–Central Road Research Institute (CRRI) New Delhi and CSIR–Indian Institute of Petroleum (IIP), Dehradun, he added. [1] The Minister said that even partial substitution of conventional bitumen with bio-bitumen will significantly cut import dependence, strengthen economic resilience, and ensure that infrastructure development remains insulated from global supply disruptions. [1] Dr Jitendra Singh was addressing a Technology Transfer event organised by the Council of Scientific and Industrial Research (CSIR) for large-scale industry adoption of the indigenously developed “Bio-Bitumen from Lignocellulosic Biomass” technology. [1] The [1]\n\nRelated facts:\n- bio-bitumen -> alternative to -> Crop residue converted to bio-bitumen for roads; technology by CSIR-CRRI and CSIR-IIP (PIB: Crop residue converted to bio-bitumen, p. 1)"
+   "answer": "for Science & Technology, Earth Sciences, and MoS PMO, Personnel, Public Grievances, Pensions, Atomic Energy and Space, Dr. Jitendra Singh today said that crop waste converted to bio-bitumen can save around Rs 40,000 cr import annually for India. [1] This has been made possible using indigenous bio- bitumen technology developed by CSIR–Central Road Research Institute (CRRI) New Delhi and CSIR–Indian Institute of Petroleum (IIP), Dehradun, he added. [1] The Minister said that even partial substitution of conventional bitumen with bio-bitumen will significantly cut import dependence, strengthen economic resilience, and ensure that infrastructure development remains insulated from global supply disruptions. [1] Dr Jitendra Singh was addressing a Technology Transfer event organised by the Council of Scientific and Industrial Research (CSIR) for large-scale industry adoption of the indigenously developed “Bio-Bitumen from Lignocellulosic Biomass” technology. [1]\n\nRelated facts:\n- bio-bitumen -> alternative to -> Crop residue converted to bio-bitumen for roads; technology by CSIR-CRRI and CSIR-IIP (PIB: Crop residue converted to bio-bitumen, p. 1)"
   },
   {
    "id": "q22",
    "lang": "en",
    "answerable": true,
    "mode": "extractive",
-   "seconds": 3.0,
+   "seconds": 2.9,
    "cited_gold_page": true,
    "facts_found": [
     "weekly"
@@ -473,7 +473,7 @@
    "lang": "en",
    "answerable": true,
    "mode": "extractive",
-   "seconds": 1.8,
+   "seconds": 1.7,
    "cited_gold_page": true,
    "facts_found": [
     "March",
@@ -485,14 +485,14 @@
    "rejected_llm_text": null,
    "llm_declined": false,
    "llm_error": null,
-   "answer": "WHEREAS, vide Notification No. GSR 143 (E) dated 22.02.2022, all new brick kilns shall be allowed only with zig-zag technology or vertical shaft or use of PNG as fuel in brick making and the existing brick kilns not following these technologies shall be converted to zig- zag technology or vertical shaft or use PNG as fuel within a period of 2 years, which has since ended, WHEREAS, while there are more than 3000 brick kilns located in the NCR Districts of Uttar Pradesh, Haryana and Rajasthan, the Hon’ble NGT vide its order dated 17.02.2021 in OA No. 1016/2019, inter alia, directed for operation of a minimal number of brick kilns in the NCR only during the months from March to June, also permitting operation of such brick kilns in an unrestrictive manner which operate on PNG, even beyond these four months; [1] WHEREAS, no brick kiln in the NCR is reported to have been converted to PNG as fuel so far, in wake of the [1] of such brick kilns in an unrestrictive manner which operate on PNG, even beyond these four months; [2] WHEREAS, no brick kiln in the NCR is reported to have been converted to PNG as fuel so far, in wake of the directions for standard list for approved clean fuels for NCR which bans coal for industrial applications other than in TPPs, bio-mass based fuels appear to be the most economical permissible option for brick kilns in the NCR; [2] WHEREAS, the Central Pollution Control Board in its Technical Evaluation Report on Use of Bio-mass as Fuel in Brick Kilns in NCR (May 2025) has, inter alia, concluded that the brick kilns, which have been shifted to zig-zag technology can be fired by means of solid biomass fuels in pellet or briquette form. [2]\n\nRelated facts:\n- brick kilns -> applies in -> Punjab and non-NCR districts of Haryana must use paddy straw pellets/briquettes (CAQM Direction No. 92) (CAQM Direction No. 92: Paddy straw pellets in brick kilns, p. 4)\n- brick kilns -> amount -> Paddy straw pellet co-firing targets: 30% from 01.11.2026, 40% from 01.11.2027, 50% from 01.11.2028 (CAQM Direction No. 92: Paddy straw pellets in brick kilns, p. 5)\n- brick kilns -> amount -> About 2050 brick kilns in Punjab and 940 in non-NCR Haryana (CAQM Direction No. 92: Paddy straw pellets in brick kilns, p. 4)"
+   "answer": "which has since ended, WHEREAS, while there are more than 3000 brick kilns located in the NCR Districts of Uttar Pradesh, Haryana and Rajasthan, the Hon’ble NGT vide its order dated 17.02.2021 in OA No. 1016/2019, inter alia, [1] directed for operation of a minimal number of brick kilns in the NCR only during the months from March to June, also permitting operation of such brick kilns in an unrestrictive manner which operate on PNG, [1] WHEREAS, no brick kiln in the NCR is reported to have been converted to PNG as fuel so far, in wake of the [1] of such brick kilns in an unrestrictive manner which operate on PNG, even beyond these four months; [2] WHEREAS, no brick kiln in the NCR is reported to have been converted to PNG as fuel so far, in wake of the directions for standard list for approved clean fuels for NCR which bans coal for industrial applications other than in TPPs, bio-mass based fuels appear to be the most economical permissible option for brick kilns in the NCR; [2]\n\nRelated facts:\n- brick kilns -> applies in -> Punjab and non-NCR districts of Haryana must use paddy straw pellets/briquettes (CAQM Direction No. 92) (CAQM Direction No. 92: Paddy straw pellets in brick kilns, p. 4)\n- brick kilns -> amount -> Paddy straw pellet co-firing targets: 30% from 01.11.2026, 40% from 01.11.2027, 50% from 01.11.2028 (CAQM Direction No. 92: Paddy straw pellets in brick kilns, p. 5)\n- brick kilns -> amount -> About 2050 brick kilns in Punjab and 940 in non-NCR Haryana (CAQM Direction No. 92: Paddy straw pellets in brick kilns, p. 4)"
   },
   {
    "id": "q27",
    "lang": "hi",
    "answerable": true,
    "mode": "extractive",
-   "seconds": 0.7,
+   "seconds": 0.8,
    "cited_gold_page": true,
    "facts_found": [
     "7000"
@@ -510,7 +510,7 @@
    "lang": "hi",
    "answerable": true,
    "mode": "extractive",
-   "seconds": 1.7,
+   "seconds": 1.9,
    "cited_gold_page": true,
    "facts_found": [
     "5-10%"
@@ -528,7 +528,7 @@
    "lang": "hi",
    "answerable": true,
    "mode": "extractive",
-   "seconds": 1.4,
+   "seconds": 0.6,
    "cited_gold_page": true,
    "facts_found": [
     "30%"
@@ -539,14 +539,14 @@
    "rejected_llm_text": null,
    "llm_declined": false,
    "llm_error": null,
-   "answer": "दस्तावेज़ों से संबंधित अंश (अंग्रेज़ी में):\npellets / briquettes with a target of at least 20% w.e.f. 01.1 1.2025, 30% w.e.f. 01.11.2026, 40% w.ef. [1] 01.11.2027 and 50% w.e.. [1] Requisite directions / orders shall be issued by the State Governments of Punjab and Haryana in this context mandating the above stipulation for use of paddy straw-based bio-mass pellets / briquettes in brick kilns located in non-NCR areas. [1] Secretary, Environment, Government of Punjab 2. [1] Member Secretary, Punjab Pollution Control Board. [1]\n\nRelated facts:\n- brick kilns -> applies in -> Punjab and non-NCR districts of Haryana must use paddy straw pellets/briquettes (CAQM Direction No. 92) (CAQM Direction No. 92: Paddy straw pellets in brick kilns, p. 4)\n- brick kilns -> amount -> Paddy straw pellet co-firing targets: 30% from 01.11.2026, 40% from 01.11.2027, 50% from 01.11.2028 (CAQM Direction No. 92: Paddy straw pellets in brick kilns, p. 5)\n- brick kilns -> amount -> About 2050 brick kilns in Punjab and 940 in non-NCR Haryana (CAQM Direction No. 92: Paddy straw pellets in brick kilns, p. 4)\n- paddy straw -> alternative to -> Fuel for thermal power plants, waste-to-energy plants and brick kilns; pellets, briquettes, bio-ethanol, compressed bio-gas, particle board (CAQM Advisory No. 5 of 2021: Ex-situ stubble management (Punjab), p. 2)"
+   "answer": "दस्तावेज़ों से संबंधित अंश (अंग्रेज़ी में):\npellets / briquettes with a target of at least 20% w.e.f. 01.1 1.2025, 30% w.e.f. 01.11.2026, 40% w.ef. [1] 01.11.2027 and 50% w.e.. [1] Requisite directions / orders shall be issued by the State Governments of Punjab and Haryana in this context mandating the above stipulation for use of paddy straw-based bio-mass pellets / briquettes in brick kilns located in non-NCR areas. [1] Action taken towards compliance of these Directions may be apprised to the Commission on a monthly basis. [1] Secretary, Environment, Government of Punjab 2. [1]\n\nRelated facts:\n- brick kilns -> applies in -> Punjab and non-NCR districts of Haryana must use paddy straw pellets/briquettes (CAQM Direction No. 92) (CAQM Direction No. 92: Paddy straw pellets in brick kilns, p. 4)\n- brick kilns -> amount -> Paddy straw pellet co-firing targets: 30% from 01.11.2026, 40% from 01.11.2027, 50% from 01.11.2028 (CAQM Direction No. 92: Paddy straw pellets in brick kilns, p. 5)\n- brick kilns -> amount -> About 2050 brick kilns in Punjab and 940 in non-NCR Haryana (CAQM Direction No. 92: Paddy straw pellets in brick kilns, p. 4)\n- paddy straw -> alternative to -> Fuel for thermal power plants, waste-to-energy plants and brick kilns; pellets, briquettes, bio-ethanol, compressed bio-gas, particle board (CAQM Advisory No. 5 of 2021: Ex-situ stubble management (Punjab), p. 2)"
   },
   {
    "id": "q30",
    "lang": "hi",
    "answerable": true,
    "mode": "extractive",
-   "seconds": 2.4,
+   "seconds": 2.7,
    "cited_gold_page": false,
    "facts_found": [],
    "facts_total": 1,
@@ -562,7 +562,7 @@
    "lang": "hi",
    "answerable": true,
    "mode": "extractive",
-   "seconds": 0.6,
+   "seconds": 0.7,
    "cited_gold_page": true,
    "facts_found": [
     "Karnal"
@@ -580,7 +580,7 @@
    "lang": "hi",
    "answerable": true,
    "mode": "extractive",
-   "seconds": 1.4,
+   "seconds": 0.7,
    "cited_gold_page": true,
    "facts_found": [
     "14%"
@@ -591,14 +591,14 @@
    "rejected_llm_text": null,
    "llm_declined": false,
    "llm_error": null,
-   "answer": "दस्तावेज़ों से संबंधित अंश (अंग्रेज़ी में):\nGST & transportation cost at the pellet manufacturing plant site, for a period of one-year w.e.f. 01.09.2023. [1] Such pellets however, need to have a moisture content of below 14% and GCV between 2800-3400 Kceal/Kg. [1] Considering that an established benchmark price facilitates and significantly eases out the process of procurement /tendering of bio-mass pellets and with abundant availability of agro-based bio-mass, including paddy straw in particular, the state Governments and the 11 identified Thermal power plants within 300 kms of Delhi are required to substantially step-up bio-mass co-firing in their respective units as per the targeted quantities, towards effective implementation and compliance of the statutory Direction No. 42 of the Commission in letter and spirit. [1] Appropriate action may accordingly be taken on top priority and well before the ensuing paddy harvesting season. [1] The Chief Secretary, Government of Punjab The Chief Secretary, Government of Uttar Pradesh The Chief Secretary, Government of Rajasthan The Chairperson and all Members, CAQM. [1]\n\nRelated facts:\n- biomass pellets -> amount -> Benchmark price of non-torrefied pellets in NCR: Rs 2.32 per 1000 kcal, excluding GST and transport (CAQM Advisory No. 11: Co-firing of biomass in thermal power plants, p. 2)\n- biomass pellets -> eligible -> Moisture below 14% and GCV between 2800-3400 kcal/kg (CAQM Advisory No. 11: Co-firing of biomass in thermal power plants, p. 3)"
+   "answer": "दस्तावेज़ों से संबंधित अंश (अंग्रेज़ी में):\nGST & transportation cost at the pellet manufacturing plant site, for a period of one-year w.e.f. 01.09.2023. [1] Such pellets however, need to have a moisture content of below 14% and GCV between 2800-3400 Kceal/Kg. [1] Considering that an established benchmark price facilitates and significantly eases out the process of procurement /tendering of bio-mass pellets and with abundant availability of agro-based bio-mass, including paddy straw in particular, [1] the state Governments and the 11 identified Thermal power plants within 300 kms of Delhi are required to substantially step-up bio-mass co-firing in their respective units as per the targeted quantities, [1] Appropriate action may accordingly be taken on top priority and well before the ensuing paddy harvesting season. [1]\n\nRelated facts:\n- biomass pellets -> amount -> Benchmark price of non-torrefied pellets in NCR: Rs 2.32 per 1000 kcal, excluding GST and transport (CAQM Advisory No. 11: Co-firing of biomass in thermal power plants, p. 2)\n- biomass pellets -> eligible -> Moisture below 14% and GCV between 2800-3400 kcal/kg (CAQM Advisory No. 11: Co-firing of biomass in thermal power plants, p. 3)"
   },
   {
    "id": "q33",
    "lang": "hi",
    "answerable": true,
    "mode": "extractive",
-   "seconds": 0.7,
+   "seconds": 0.8,
    "cited_gold_page": false,
    "facts_found": [
     "CSIR"
@@ -616,7 +616,7 @@
    "lang": "hi",
    "answerable": true,
    "mode": "extractive",
-   "seconds": 2.4,
+   "seconds": 2.3,
    "cited_gold_page": true,
    "facts_found": [
     "600"
@@ -645,14 +645,14 @@
    "rejected_llm_text": null,
    "llm_declined": false,
    "llm_error": null,
-   "answer": "4,500 per acre. [1] Biomass delivery: An additional Rs 500 per metric tonne is provided for delivering paddy straw to the 2G Ethanol Plant in Panipat. [1] ## Machinery subsidies and infrastructure Subsidies: The government provides a 50% subsidy on CRM machines (for example Super Seeder, Happy Seeder, Balers) for individual farmers and an 80% subsidy for Custom Hiring Centres (CHCs). [1] Deployment: The state has distributed over 90,000 machines and plans to supply an additional 10,588 super seeders and 1,405 baling units for in-situ and ex-situ management. [1] ## Enforcement and community rewards Penalties: Violations result in FIR registration, fines ranging from Rs 5,000 to Rs 30,000, and a red entry in the farmer's land record, which blocks access to e-kharid crop sales for two seasons. [1]\n\nRelated facts:\n- crm machines -> amount -> Subsidy 50% for individual farmers, 80% for custom hiring centres (UNVERIFIED summary) (Haryana zero stubble burning measures: summary from project author (UNVERIFIED), p. 1)"
+   "answer": "Biomass delivery: An additional Rs 500 per metric tonne is provided for delivering paddy straw to the 2G Ethanol Plant in Panipat. [1] ## Machinery subsidies and infrastructure Subsidies: The government provides a 50% subsidy on CRM machines (for example Super Seeder, Happy Seeder, Balers) for individual farmers and an 80% subsidy for Custom Hiring Centres (CHCs). [1] Deployment: The state has distributed over 90,000 machines and plans to supply an additional 10,588 super seeders and 1,405 baling units for in-situ and ex-situ management. [1] Storage: Government and panchayat land is allocated for straw bale storage, with supply chains mapped to connect farmers with industries for pelletization and briquetting. [1] ## Enforcement and community rewards Penalties: Violations result in FIR registration, fines ranging from Rs 5,000 to Rs 30,000, and a red entry in the farmer's land record, which blocks access to e-kharid crop sales for two seasons. [1]\n\nRelated facts:\n- crm machines -> amount -> Subsidy 50% for individual farmers, 80% for custom hiring centres (UNVERIFIED summary) (Haryana zero stubble burning measures: summary from project author (UNVERIFIED), p. 1)"
   },
   {
    "id": "q36",
    "lang": "en",
    "answerable": true,
    "mode": "extractive",
-   "seconds": 0.7,
+   "seconds": 0.8,
    "cited_gold_page": true,
    "facts_found": [
     "5,000",
@@ -735,7 +735,7 @@
    "lang": "hi",
    "answerable": true,
    "mode": "extractive",
-   "seconds": 0.7,
+   "seconds": 0.6,
    "cited_gold_page": true,
    "facts_found": [
     "50%"
@@ -746,7 +746,7 @@
    "rejected_llm_text": null,
    "llm_declined": false,
    "llm_error": null,
-   "answer": "दस्तावेज़ों से संबंधित अंश (अंग्रेज़ी में):\n4,500 per acre. [1] Biomass delivery: An additional Rs 500 per metric tonne is provided for delivering paddy straw to the 2G Ethanol Plant in Panipat. [1] ## Machinery subsidies and infrastructure Subsidies: The government provides a 50% subsidy on CRM machines (for example Super Seeder, Happy Seeder, Balers) for individual farmers and an 80% subsidy for Custom Hiring Centres (CHCs). [1] Deployment: The state has distributed over 90,000 machines and plans to supply an additional 10,588 super seeders and 1,405 baling units for in-situ and ex-situ management. [1] ## Enforcement and community rewards Penalties: Violations result in FIR registration, fines ranging from Rs 5,000 to Rs 30,000, and a red entry in the farmer's land record, which blocks access to e-kharid crop sales for two seasons. [1]\n\nRelated facts:\n- crm machines -> amount -> Subsidy 50% for individual farmers, 80% for custom hiring centres (UNVERIFIED summary) (Haryana zero stubble burning measures: summary from project author (UNVERIFIED), p. 1)"
+   "answer": "दस्तावेज़ों से संबंधित अंश (अंग्रेज़ी में):\nBiomass delivery: An additional Rs 500 per metric tonne is provided for delivering paddy straw to the 2G Ethanol Plant in Panipat. [1] ## Machinery subsidies and infrastructure Subsidies: The government provides a 50% subsidy on CRM machines (for example Super Seeder, Happy Seeder, Balers) for individual farmers and an 80% subsidy for Custom Hiring Centres (CHCs). [1] Deployment: The state has distributed over 90,000 machines and plans to supply an additional 10,588 super seeders and 1,405 baling units for in-situ and ex-situ management. [1] Storage: Government and panchayat land is allocated for straw bale storage, with supply chains mapped to connect farmers with industries for pelletization and briquetting. [1] ## Enforcement and community rewards Penalties: Violations result in FIR registration, fines ranging from Rs 5,000 to Rs 30,000, and a red entry in the farmer's land record, which blocks access to e-kharid crop sales for two seasons. [1]\n\nRelated facts:\n- crm machines -> amount -> Subsidy 50% for individual farmers, 80% for custom hiring centres (UNVERIFIED summary) (Haryana zero stubble burning measures: summary from project author (UNVERIFIED), p. 1)"
   },
   {
    "id": "q42",
@@ -769,7 +769,7 @@
    "lang": "en",
    "answerable": false,
    "mode": "extractive",
-   "seconds": 0.6,
+   "seconds": 0.8,
    "cited_gold_page": false,
    "facts_found": [],
    "facts_total": 0,
@@ -785,7 +785,7 @@
    "lang": "en",
    "answerable": false,
    "mode": "extractive",
-   "seconds": 0.8,
+   "seconds": 0.9,
    "cited_gold_page": false,
    "facts_found": [],
    "facts_total": 0,
@@ -833,7 +833,7 @@
    "lang": "en",
    "answerable": false,
    "mode": "extractive",
-   "seconds": 0.8,
+   "seconds": 0.9,
    "cited_gold_page": false,
    "facts_found": [],
    "facts_total": 0,

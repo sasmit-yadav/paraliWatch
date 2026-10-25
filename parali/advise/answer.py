@@ -8,6 +8,7 @@ source -> return text + citations.
 from __future__ import annotations
 
 import logging
+import re
 from dataclasses import asdict, dataclass, field
 from functools import lru_cache
 
@@ -115,6 +116,14 @@ def retrieve(question: str, profile: Profile | None = None, use_llm: bool = True
     return hits, steps
 
 
+# Lines of a government notice that are about who sends or receives it, not what it says.
+BOILERPLATE = re.compile(
+    r"\b(chief secretary|copy to|email|e-mail|member[- ]secretary|yours faithfully|sd/-|"
+    r"the chairperson and all members)\b",
+    re.IGNORECASE,
+)
+
+
 def _extractive(question: str, hits: list[Hit], max_sentences: int = 5) -> tuple[str, list[int]]:
     """No LLM: quote the sentences closest in meaning to the question, each with its source."""
     # Chunks overlap by 40 words, so the same sentence can come from two passages: keep the first.
@@ -122,6 +131,8 @@ def _extractive(question: str, hits: list[Hit], max_sentences: int = 5) -> tuple
     for i, h in enumerate(hits[:3], start=1):
         for s in sentences(h.chunk.text):
             key = " ".join(s.lower().split())
+            if BOILERPLATE.search(s) or len(key.split()) < 4:
+                continue  # addresses, signatures and fragments are never the answer
             if key not in seen:
                 seen.add(key)
                 candidates.append((i, s))
