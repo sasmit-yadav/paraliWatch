@@ -83,8 +83,11 @@ def season_matrix(fires: pd.DataFrame, cells: list[str], year: int) -> Season:
     dates = pd.date_range(start, end, freq="D")
     index = {c: i for i, c in enumerate(cells)}
     f = fires[pd.to_datetime(fires["acq_date"]).dt.year == year]
-    d_idx = (pd.to_datetime(f["acq_date"]) - dates[0]).dt.days.to_numpy()
-    c_idx = f["cell"].map(index).to_numpy()
+    cell_pos = f["cell"].map(index)
+    f, cell_pos = f[cell_pos.notna()], cell_pos[cell_pos.notna()]  # fires outside the grid are ignored
+    d_idx = (pd.to_datetime(f["acq_date"]) - dates[0]).dt.days.to_numpy(dtype=np.int64)
+    # explicit integer dtype: pandas 3 returns object/float arrays from .map()
+    c_idx = cell_pos.to_numpy(dtype=np.int64)
     counts = np.zeros((len(cells), len(dates)), dtype=np.float32)
     frp = np.zeros_like(counts)
     np.add.at(counts, (c_idx, d_idx), 1)
