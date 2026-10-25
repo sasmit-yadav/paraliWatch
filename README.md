@@ -109,7 +109,7 @@ bash deploy/huggingface/deploy.sh <hf-user>/<space>   # public demo (see docs/OP
 ```bash
 uv run python -m parali data    # downloads ~330 MB of FIRMS archives, boundaries, weather (~5 min)
 uv run python -m parali train   # trains, evaluates, writes eval/ and data/demo/ (~2 min)
-uv run pytest                   # 38 tests (Phase 3 model tests skip unless the optional groups are installed)
+uv run pytest                   # 46 tests (model tests skip unless the optional groups are installed)
 ```
 
 ## How it works

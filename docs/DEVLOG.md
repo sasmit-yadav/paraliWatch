@@ -30,6 +30,18 @@ Decisions and findings, newest first. Each entry says what changed and why.
 - The first down-voted answer in testing exposed quotes cut at "w.e.f."; abbreviations no longer
   end a sentence; quote-mode fact recall without the graph 64% -> 68%.
 
+**CI, reproduced locally before it ever runs on GitHub**
+- CI runs `ruff check`, `ruff format --check` and pytest in the locked environment. The code had
+  never been formatted: formatted the whole code base and fixed the lint findings (the vendored
+  Prithvi file is exempt).
+- A fresh clone with `uv sync --frozen` on Python 3.11 failed 3 feature tests: the lock resolves
+  pandas 3.1 there (the local Python 3.10 environment had pandas 2.3), and pandas 3 returns
+  object arrays from `.map()`, which numpy refuses as indices. Made the indices explicit integers.
+- Reproducibility under the locked Python 3.11 environment: the rebuilt feature table is
+  identical (max difference 0.0 over 1.2M rows x 28 columns); retraining gives test PR-AUC 0.267
+  vs 0.266 and fire capture 36.7% vs 36.8% (scikit-learn 1.9 vs 1.7; tree count 214 vs 263).
+  The committed model was kept.
+
 **Lesson (again): one heavy job at a time.** A container test running next to the judge model
 pushed the machine out of memory and killed the judge mid-run; it was re-run afterwards.
 
