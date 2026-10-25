@@ -2,6 +2,21 @@
 
 Decisions and findings, newest first. Each entry says what changed and why.
 
+## 2026-10-25 (later): dashboard redesign and final polish
+
+- New dark "control room" design (inspired by NVIDIA's product pages: black, one lime accent,
+  bold condensed type). Interface accent and data colours are kept apart: the risk ramp is one
+  orange hue, validated as an ordinal palette on the dark map.
+- Added a season timeline (`/api/season`) with play/pause, hover tooltips and arrow-key
+  stepping; tabs for Risk / Bulletin / Assistant; headline metrics in the header; example
+  questions; answers shown as cited statements. Checked in a headless browser at desktop and
+  phone sizes: play, keys, timeline click and hover, and the assistant all work, no console errors.
+- Quote answers no longer include letter boilerplate (recipients, e-mail lines, signatures) and
+  very long clauses are cut at commas: median length 162 -> 150 words, same gold-page citation
+  (87%) and key-fact recall (79% with graph, 68% without). The LLM and judge results in
+  `eval/rag` and `eval/judge` were produced before this change; their LLM-written answers are
+  unaffected.
+
 ## 2026-10-25: Phase 4, operations, evaluation with a judge, preference tuning, deployment
 
 **Docker, verified for the first time**

@@ -55,6 +55,7 @@ Open-Meteo ──┘   (download, clean,     (fires, weather, grid,       (featu
 | `GET /api/risk?date=&min_prob=` | GeoJSON hexagons with calibrated probability and daily rank |
 | `GET /api/fires?date=&days=` | GeoJSON fire points |
 | `GET /api/top?date=&n=` | Highest-risk cells that day |
+| `GET /api/season` | Per-day totals for the season: fires detected, expected fire cells, high-risk cells (timeline) |
 | `GET /api/cell/{cell}?date=` | Probability, rank, top 3 reasons in plain language, 14-day history, what happened next |
 | `GET /api/district-summary?date=` | Expected fire cells and high-risk cells per district |
 | `GET /api/districts` | District boundaries |
@@ -79,3 +80,31 @@ Open-Meteo ──┘   (download, clean,     (fires, weather, grid,       (featu
 - **Raw score for ranking, calibrated probability for display:** see `docs/MODEL_SELECTION.md`.
 - **Vanilla JavaScript dashboard:** one HTML file, one script, MapLibre from a CDN; nothing to
   build. A framework can come later if the interface grows.
+
+## Dashboard design
+
+The dashboard is a dark, high-contrast "control room" layout. The visual language is inspired
+by NVIDIA's product pages: near-black surfaces, one lime accent colour, bold condensed uppercase
+type and thin rules. It is a general look, not a copy: no logos, no brand assets, our own icon.
+
+- **Colour has one job each.** The lime accent marks interface state only: the selected day,
+  the selected cell, the active tab, buttons and focus. Risk uses a single orange ramp, brighter
+  meaning riskier, checked as an ordinal palette against the dark map: monotone lightness,
+  visible steps, lowest band above 2:1 contrast. Alert levels in the bulletin use the status
+  colours plus a text label, never colour alone.
+- **Dark basemap without a paid tile service.** The OpenStreetMap raster is desaturated and its
+  brightness inverted in MapLibre's paint properties, so the risk colours stand out.
+- **Time is the main control.** A season timeline (fires detected per day, from `/api/season`)
+  sits above the map. Click or drag to jump; hover for that day's numbers. Play animates the
+  season one day per second; the arrow keys step through days.
+- **Three tabs instead of one long column:** Risk (selected cell with its reasons, top cells),
+  Bulletin, Assistant. Clicking a cell on the map opens its details on the Risk tab.
+- **Answers are shown as cited statements:** each quote or sentence in its own block with its
+  source number, then the reviewed knowledge-graph facts, then the source list.
+- **Headline numbers in the header** (fire capture at the top 10% of cells, PR-AUC, each against
+  the best simple rule) come from `/api/meta`, so they always match the model being served.
+- **Phone layout:** under 900 px the map and timeline come first, the tabs below, and the
+  legend leaves the map.
+
+Plain HTML, CSS and JavaScript, three files and no build step. Fonts: Barlow and Barlow
+Condensed (Google Fonts, SIL Open Font Licence).

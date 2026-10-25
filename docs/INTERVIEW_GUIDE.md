@@ -429,6 +429,13 @@ Spaces do, made model downloads fail: libraries write caches under HOME, which w
 HOME and the cache paths inside a writable folder fixed it. Tests that only run as root would
 never have caught it.
 
+**"Why does the dashboard look like this?"** It's a monitoring tool, so it uses a dark
+"control room" layout where the data is the brightest thing on screen. Colour has one job each:
+lime only for interface state (selection, focus, the current day), one orange ramp for risk
+(brighter = riskier, checked for monotone lightness and contrast on the dark map), and status
+colours with text labels for alert levels. Time is the main control, so a season timeline with
+play sits above the map. Still plain JavaScript, three files, no build step.
+
 ### Limitations to state first
 
 - The Hugging Face Space and CI need the owner's accounts to go live; both are scripted and

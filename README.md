@@ -35,7 +35,7 @@ used here, in plain words, with the file that implements it and the result it pr
 | Part | What it does | Details |
 | --- | --- | --- |
 | Forecast | LightGBM risk per ~36 km2 cell for the next 3 days, calibrated, with SHAP reasons | [Model selection](docs/MODEL_SELECTION.md) |
-| Dashboard | Map, date slider, cell explanations, top-risk list | [Architecture](docs/ARCHITECTURE.md) |
+| Dashboard | Dark control-room map: season timeline with play, cell explanations, top-risk list, bulletin and assistant tabs | [Architecture, dashboard design](docs/ARCHITECTURE.md) |
 | Bulletin agents | LangGraph monitor -> analyst -> writer; EN + HI; official approves | [Agents and MCP](docs/AGENTS_AND_MCP.md) |
 | Assistant (RAG) | Hybrid search + multilingual reranker over CAQM, PIB, Haryana and ICAR documents; cited answers; refuses when unsure | [RAG](docs/RAG.md) |
 | MCP server | 7 tools: risk, explanations, fires, district summary, bulletin, scheme search | [Agents and MCP](docs/AGENTS_AND_MCP.md) |
@@ -109,7 +109,7 @@ bash deploy/huggingface/deploy.sh <hf-user>/<space>   # public demo (see docs/OP
 ```bash
 uv run python -m parali data    # downloads ~330 MB of FIRMS archives, boundaries, weather (~5 min)
 uv run python -m parali train   # trains, evaluates, writes eval/ and data/demo/ (~2 min)
-uv run pytest                   # 46 tests (model tests skip unless the optional groups are installed)
+uv run pytest                   # 47 tests (model tests skip unless the optional groups are installed)
 ```
 
 ## How it works
@@ -122,8 +122,9 @@ uv run pytest                   # 46 tests (model tests skip unless the optional
 4. **Model:** LightGBM, trained on 2020-2023, tuned and calibrated on 2024, tested once on 2025.
 5. **Explanations:** the top 3 SHAP reasons per cell, written as plain sentences ("15 fires in the
    6 surrounding cells over 7 days").
-6. **Dashboard:** FastAPI + MapLibre. Pick a day, see risk, click a cell for its reasons, its
-   14-day history and what actually happened next.
+6. **Dashboard:** FastAPI + MapLibre. Scrub or play the season on a timeline of daily fires, see
+   risk on the map, click a cell for its reasons, its 14-day history and what actually happened
+   next.
 
 Architecture: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
