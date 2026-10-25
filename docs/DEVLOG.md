@@ -2,7 +2,7 @@
 
 Decisions and findings, newest first. Each entry says what changed and why.
 
-## 2026-10-24 (evening): Phase 3, burn-scar segmentation and voice input
+## 2026-10-24 (evening): Phase 3, burn-scar segmentation, voice input, LoRA
 
 **Burn scars**
 - First tried weak labels for Punjab (dNBR near VIIRS points). Fires were only ~1.1x more likely
@@ -24,6 +24,21 @@ Decisions and findings, newest first. Each entry says what changed and why.
 - `/api/transcribe` (faster-whisper, int8 CPU) and a mic button; answers are read aloud with the
   browser's own speech synthesis, so no TTS model or licence is needed (MMS-TTS is non-commercial).
 - PyAV 17+ breaks faster-whisper 1.2's decoder; pinned `av<17`.
+- FLEURS Hindi, 100 utterances: tiny WER 1.06 (Latin script, loops), base 1.04 (mostly Urdu
+  script), small 0.57 / CER 0.26. Chose small.
+
+**LoRA fine-tune of Qwen2.5-0.5B**
+- Prompting failed: base 0.5B cited sources in 0/37 answers (1.5B: 1/37).
+- Synthetic data: doc2query on 23 held-out chunks -> 114 questions -> 68 kept by the retrieval
+  round-trip filter -> grounded quote targets + 12 reranker-verified "not found" negatives.
+- First model repeated sentences: overlapping chunks had put duplicate sentences in 14 of 80
+  targets. Fixed `_extractive` de-duplication (also in the live assistant) and rebuilt the data.
+- OOM twice: full-vocabulary logits (~2 GB at 3,300 tokens) -> loss on answer positions only
+  (verified identical); quadratic attention memory -> cap 2,304 tokens.
+- Result: 19/37 answers pass guardrails (0 missing citations), but fact recall 0.61 vs 0.79 for
+  plain quotes and too many Hindi refusals. Not the default; teacher quality is the limit.
+- LLM refusals are now recorded as `llm_declined` instead of being counted as guardrail failures
+  (the helpline number in the "not found" text was tripping the number check).
 
 ## 2026-10-24 (later): Phase 2, assistant, agents, MCP, foundation model
 

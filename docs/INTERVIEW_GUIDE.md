@@ -249,7 +249,107 @@ zero) because it sees one cell at a time and can't use neighbours, the second-st
 - The abstention cut-off was tuned on the same 50 questions.
 - The 1.5B local model can't follow the citation format; quality answers need a larger model.
 
-## 8. Questions to ask back
+## 8. Phase 3: satellite images, voice, and a fine-tuned small LLM
+
+### Pitch addition (20 seconds)
+
+> I also fine-tuned NASA and IBM's Prithvi geospatial foundation model to map burn scars from
+> satellite images. On NASA's labelled dataset it beats a U-Net and, more importantly, beats the
+> same network trained without pre-training by 5 IoU points, so I can show what pre-training is
+> worth. When I applied it to Punjab it failed: harvested fields look burned to a model trained on
+> US wildfires. I measured that failure instead of hiding it. Farmers can also ask by voice in
+> Hindi, and I LoRA-fine-tuned a 0.5B model to answer with citations.
+
+### Numbers to remember
+
+| What | Value |
+| --- | --- |
+| Burn-scar IoU: Prithvi fine-tuned / scratch / U-Net / frozen | **0.758** / 0.706 / 0.700 / 0.627 |
+| Gain from pre-training (paired bootstrap) | +0.052 IoU, 95% CI +0.029 to +0.084 |
+| Training cost | 15-40 min per model on a 2-core CPU; 0.3 s per 512 x 512 scene |
+| Punjab: share of post-harvest land flagged as burned | 81-96% (domain shift) |
+| Hindi speech WER (FLEURS, 100 utterances): tiny / base / small | 1.06 / 1.04 / **0.57** (CER 0.26) |
+| LoRA 0.5B: answers passing guardrails, base -> fine-tuned | 0/37 -> **19/37** (1.5B base: 1/37) |
+| LoRA cost | 8.8 M trainable params (1.75%), 80 synthetic examples, 74 min on CPU |
+
+### Questions and answers
+
+**"Why a foundation model for burn scars?"** Labelled satellite data is scarce and expensive.
+Prithvi was pre-trained on a huge unlabelled HLS archive by hiding 75% of image patches and
+reconstructing them, so it already knows what fields, water, cloud and soil look like in these six
+bands. Fine-tuning needs far fewer labels than training from scratch.
+
+**"How do you know pre-training helped, and not just a bigger model?"** I trained the identical
+architecture from random weights with the same data, steps and seed: 0.706 vs 0.758. A paired
+bootstrap over the 264 validation scenes puts the gain at +0.03 to +0.08 IoU. The U-Net, with 6x
+fewer parameters, matched the un-pre-trained transformer, so architecture alone bought nothing.
+
+**"Why did the frozen encoder do worst?"** Its recall was 0.92 but precision 0.66: the general
+features find dark, changed surfaces but can't separate burned ground from dark soil or shadow.
+That last distinction needs the encoder itself to adapt, which is why full fine-tuning (with the
+encoder at a 5x lower learning rate so it doesn't forget) won.
+
+**"Did you tune on the validation set?"** No. Every model trains for a fixed 1,200 steps and is
+evaluated once, with no early stopping or checkpoint picking. The dataset only has a train and a
+validation split, so that was the only honest option.
+
+**"The model fails in Punjab. Isn't that a problem for your project?"** It's the most useful result
+in Phase 3. US training scenes show black scars in green or grey landscapes. In Punjab in November
+every harvested field is brown stubble or bare soil, so the model calls 81-96% of the land burned.
+I checked new scars between two images three days apart against VIIRS fires: only 1.15-1.25x better
+than random. So it isn't on the dashboard. The fix is 200-300 labelled local fields and fine-tuning
+on image pairs so the model learns the change, not the look. I also tried weak labels from dNBR
+first and dropped them because they were barely better than random (1.1x).
+
+**"You removed a dependency from NASA's code. How do you know you didn't break it?"** Two checks: a
+unit test compares my attention block with PyTorch's reference implementation, and with the official
+weights the model reconstructs masked patches of real images with loss 0.043, against 0.83 for
+random weights. A wrong layer would destroy that.
+
+**"How does voice work, and why not a text-to-speech model?"** Browser records, faster-whisper small
+transcribes on CPU, the normal cited-answer pipeline answers, and the browser's built-in speech
+synthesis reads the answer. Hindi TTS models are large, slow on CPU, or non-commercial (MMS-TTS is
+CC-BY-NC); Android phones already ship good Hindi voices, at zero server cost.
+
+**"WER 0.57 sounds bad."** It is high, and FLEURS is clean read speech, so real farmers will be
+worse. But the transcript only has to retrieve the right document: the multilingual embedding and
+reranker tolerate spelling noise, and the user sees and can edit the text before asking. The smaller
+models were unusable: tiny wrote Hindi in Latin letters and looped, base mostly wrote Urdu script.
+On a GPU I'd use large-v3-turbo.
+
+**"Why fine-tune instead of prompting?"** I tried prompting first: a 0.5B model cited sources in 0
+of 37 answers, a 1.5B in 1 of 37, even with an example in the prompt. Small models don't follow
+format instructions reliably, but they can learn a format from examples, and LoRA does that cheaply:
+8.8 M trainable parameters, 80 examples, 74 minutes on a laptop CPU.
+
+**"Where did the training data come from?"** Generated and filtered automatically: a 1.5B model
+wrote questions for document chunks (doc2query), I kept only questions where the retriever finds
+the source chunk in its top 3 (round-trip filter), the targets are grounded quote answers that pass
+the guardrails by construction, and negatives are pairs the reranker confirms are irrelevant. All
+chunks on the evaluation's gold pages were excluded, so the test questions stay unseen.
+
+**"Did it work?"** Partly, and I can say exactly which part. Answers passing the guardrails went
+from 0 to 19 of 37, with no missing citations and 17 of 19 citing the right page. But the model
+learned what its teacher did, copying sentences, and chooses them worse than the ranker that made
+its targets, so key-fact recall fell from 0.79 to 0.61. It also refuses too often in Hindi. So it's
+not the default. The lesson: fine-tuning transfers format easily, but quality is capped by the
+teacher. The next step is distillation from a strong model with the same guardrails as a filter.
+
+**"What went wrong on the way?"** Three things, all in the DEVLOG. The model learned to repeat
+sentences because overlapping chunks put duplicate sentences in 14 of 80 targets; I fixed the
+de-duplication in the live assistant too. Training ran out of memory: full-vocabulary logits for
+3,300 tokens are about 2 GB, so I compute logits only for the answer tokens and checked that the loss
+is identical. And attention memory grows with the square of the length, so I measured it and capped
+examples at 2,304 tokens.
+
+### Limitations to state first
+
+- Burn scars: no Punjab labels, so the in-domain number (0.758) says nothing about Punjab.
+- Voice: tested on read speech in standard Hindi only; no Punjabi.
+- The fine-tuned model is a format experiment, not the default: its answers carry fewer key facts
+  than plain quotes, and it was evaluated on only 37 questions.
+
+## 9. Questions to ask back
 
 - "How do you handle distribution shift between training and production data in your team?"
 - "Do you evaluate models on time-based splits?"

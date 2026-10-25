@@ -1,0 +1,61 @@
+{
+  "base": "Qwen/Qwen2.5-0.5B-Instruct",
+  "examples": 69,
+  "epochs": 2,
+  "effective_batch": 4,
+  "lora": {
+    "r": 16,
+    "alpha": 32,
+    "dropout": 0.05,
+    "targets": [
+      "down_proj",
+      "gate_proj",
+      "k_proj",
+      "o_proj",
+      "q_proj",
+      "up_proj",
+      "v_proj"
+    ]
+  },
+  "trainable_params": 8798208,
+  "total_params": 502830976,
+  "train_minutes": 71.1,
+  "loss_curve": [
+    {
+      "step": 5,
+      "epoch": 1,
+      "loss": 0.5988,
+      "minutes": 10.4
+    },
+    {
+      "step": 10,
+      "epoch": 1,
+      "loss": 0.3463,
+      "minutes": 21.1
+    },
+    {
+      "step": 15,
+      "epoch": 1,
+      "loss": 0.1828,
+      "minutes": 31.8
+    },
+    {
+      "step": 20,
+      "epoch": 2,
+      "loss": 0.1187,
+      "minutes": 41.6
+    },
+    {
+      "step": 25,
+      "epoch": 2,
+      "loss": 0.1014,
+      "minutes": 51.7
+    },
+    {
+      "step": 30,
+      "epoch": 2,
+      "loss": 0.0815,
+      "minutes": 61.8
+    }
+  ]
+}

@@ -66,3 +66,12 @@ def test_answer_prompt_is_shared_with_fine_tuning():
     msgs = build_messages("Kitna paisa?", ["[1] Doc, page 2:\nRs 1,000 per acre"], "en")
     assert [m["role"] for m in msgs] == ["system", "user"]
     assert "<question>Kitna paisa?</question>" in msgs[1]["content"] and "[1] Doc" in msgs[1]["content"]
+
+
+def test_llm_refusal_is_detected_not_treated_as_answer():
+    from parali import config
+    from parali.advise.answer import NOT_FOUND, _declined
+
+    assert _declined(NOT_FOUND["en"].format(helpline=config.HELPLINE))
+    assert _declined(NOT_FOUND["hi"].format(helpline=config.HELPLINE))
+    assert not _declined("The incentive is Rs 1,000 per acre [2].")

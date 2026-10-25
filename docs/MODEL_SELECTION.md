@@ -222,3 +222,31 @@ Bootstrap on the 2024 season (whole days resampled, 300 times):
 **Decision:** keep LightGBM. A useful next experiment would be to feed the Chronos forecast into
 LightGBM as one more feature, or to fine-tune Chronos on these series, so the foundation model's
 view of each cell's own history is combined with the spatial features.
+
+## 11. Burn-scar segmentation: Prithvi-EO-2.0 vs U-Net (Phase 3)
+
+Four models, same data (NASA HLS Burn Scars, 540 training / 264 validation scenes), same 1,200
+steps, same augmentation and loss, no checkpoint selection on validation. Burn-class IoU:
+
+| Model | IoU (95% CI) | Trained params |
+| --- | --- | --- |
+| **Prithvi-EO-2.0-tiny, pre-trained, fine-tuned** | **0.758 (0.706-0.802)** | 6.2 M |
+| Prithvi architecture, random init | 0.706 (0.645-0.758) | 6.2 M |
+| U-Net from scratch | 0.700 (0.646-0.749) | 1.1 M |
+| Prithvi pre-trained, encoder frozen | 0.627 (0.571-0.682) | 0.6 M |
+
+Chosen: fine-tuned Prithvi; paired bootstrap +0.05 IoU over both baselines, CI above zero. It does
+not transfer to post-harvest Punjab without local labels. Full write-up: [BURN_SCARS.md](BURN_SCARS.md).
+
+## 12. Speech recognition for Hindi questions (Phase 3)
+
+faster-whisper on 100 FLEURS Hindi utterances (CPU, int8): tiny WER 1.06, base 1.04 (mostly Urdu
+script), **small 0.57** (CER 0.26, chosen). Text-to-speech: the browser's built-in voices, not a
+model (no licence, no server cost). Details: [VOICE.md](VOICE.md).
+
+## 13. Small LLM: prompting vs LoRA fine-tuning (Phase 3)
+
+Answers passing the citation and number guardrails (37 answerable questions): Qwen2.5-0.5B base
+0/37, 1.5B base 1/37, **0.5B + LoRA 19/37**. But the fine-tuned answers carry fewer key facts than
+plain quotes (fact recall 0.61 vs 0.79), so quote mode stays the default. Details:
+[FINE_TUNING.md](FINE_TUNING.md).

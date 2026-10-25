@@ -38,7 +38,8 @@ How the model was chosen (7 model families, bootstrap tests, ablation):
 | MCP server | 7 tools: risk, explanations, fires, district summary, bulletin, scheme search | [Agents and MCP](docs/AGENTS_AND_MCP.md) |
 | Foundation-model check | Chronos-Bolt zero-shot vs the tuned model | [Model selection, section 10](docs/MODEL_SELECTION.md) |
 | Burn-scar segmentation | Prithvi-EO-2.0 (NASA/IBM) fine-tuned vs U-Net on HLS Burn Scars: 0.758 vs 0.700 IoU; Punjab transfer tested honestly | [Burn scars](docs/BURN_SCARS.md) |
-| Voice input | Speak a question (Hindi or English), Whisper transcribes it, the answer is read aloud | [Architecture](docs/ARCHITECTURE.md) |
+| Voice input | Speak a question (Hindi or English), Whisper small transcribes it (WER 0.57 on FLEURS Hindi), the answer is read aloud | [Voice](docs/VOICE.md) |
+| Fine-tuned small LLM | LoRA on Qwen2.5-0.5B with synthetic, guardrail-verified data: cited answers 0/37 -> 19/37 (kept as an experiment) | [Fine-tuning](docs/FINE_TUNING.md) |
 
 ## Quick start
 
@@ -75,12 +76,23 @@ uv run python -m parali add-url <link to an official page>   # then: uv run pyth
 
 Or with Docker: `docker compose up --build`.
 
+### Phase 3 extras (optional)
+
+```bash
+uv sync --group voice            # mic button in the dashboard (Whisper speech-to-text)
+uv sync --group vision           # burn-scar models: python -m parali.detect.train / compare / punjab
+uv sync --group tune             # LoRA fine-tuning: python -m parali.tune.data / lora / serve
+```
+
+See [Burn scars](docs/BURN_SCARS.md), [Voice](docs/VOICE.md) and [Fine-tuning](docs/FINE_TUNING.md)
+for data downloads and exact commands.
+
 ### Rebuild everything from the raw data
 
 ```bash
 uv run python -m parali data    # downloads ~330 MB of FIRMS archives, boundaries, weather (~5 min)
 uv run python -m parali train   # trains, evaluates, writes eval/ and data/demo/ (~2 min)
-uv run pytest                   # 31 tests
+uv run pytest                   # 38 tests (Phase 3 model tests skip unless the optional groups are installed)
 ```
 
 ## How it works

@@ -197,6 +197,7 @@ def run_answers(limit: int | None = None, stage: str = "both") -> dict | None:
                 "unsupported_numbers": a.checks.get("unsupported_numbers", []),
                 "has_citation": a.checks.get("has_citation"),
                 "rejected_llm_text": a.checks.get("rejected_llm_text"),
+                "llm_declined": bool(a.checks.get("llm_declined")),
                 "llm_error": a.checks.get("llm_error"),
                 "answer": a.text,
             }
@@ -216,6 +217,7 @@ def run_answers(limit: int | None = None, stage: str = "both") -> dict | None:
         "llm_model": config.LLM_MODEL or None,
         "llm_attempts": len(llm_tried),
         "llm_answers_accepted": sum(r["mode"] == "llm" for r in ans),
+        "llm_declined_although_sources_relevant": sum(r.get("llm_declined", False) for r in ans),
         "llm_rejected_no_citation": sum(r["has_citation"] is False for r in ans),
         "llm_rejected_unsupported_numbers": sum(bool(r["unsupported_numbers"]) for r in ans),
         "llm_errors": sum(bool(r["llm_error"]) for r in records),

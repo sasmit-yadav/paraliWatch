@@ -116,7 +116,14 @@ def retrieve(question: str, profile: Profile | None = None, use_llm: bool = True
 
 def _extractive(question: str, hits: list[Hit], max_sentences: int = 5) -> tuple[str, list[int]]:
     """No LLM: quote the sentences closest in meaning to the question, each with its source."""
-    candidates = [(i, s) for i, h in enumerate(hits[:3], start=1) for s in sentences(h.chunk.text)]
+    # Chunks overlap by 40 words, so the same sentence can come from two passages: keep the first.
+    seen, candidates = set(), []
+    for i, h in enumerate(hits[:3], start=1):
+        for s in sentences(h.chunk.text):
+            key = " ".join(s.lower().split())
+            if key not in seen:
+                seen.add(key)
+                candidates.append((i, s))
     if not candidates:
         return "", []
     q = embed([question], kind="query")[0]
@@ -138,6 +145,18 @@ def answer(question: str, profile: Profile | None = None, use_llm: bool = True) 
     hits, trace = retrieve(question, profile, use_llm)
     checks.update(trace)
     return compose(question, hits, checks, profile, use_llm)
+
+
+class _Fallback(Exception):
+    """Internal: use the quoted-sources answer instead of the LLM draft."""
+
+
+def _declined(text: str) -> bool:
+    """Did the LLM answer with the 'not found' message instead of an answer?"""
+    t = text.strip().lower()
+    return t.startswith(NOT_FOUND["en"][:30].lower()) or t.startswith(NOT_FOUND["hi"][:20]) or (
+        "could not find" in t[:80] and "[" not in t
+    )
 
 
 def build_messages(question: str, blocks: list[str], lang: str, profile: Profile | None = None) -> list[dict]:
@@ -172,6 +191,12 @@ def compose(
         try:
             text = llm.chat(build_messages(question, blocks, lang, profile), max_tokens=400, purpose="answer")
             mode = "llm"
+            if _declined(text):
+                # The model says the passages don't answer it, but retrieval found relevant ones:
+                # quote them rather than refuse. Recorded separately, not as a guardrail failure.
+                checks["llm_declined"] = True
+                checks["rejected_llm_text"] = text[:400]
+                raise _Fallback
             used = guard.cited_indices(text, len(sources))
             cited_texts = [f"{sources[i - 1].title}\n{sources[i - 1].text}" for i in used] or [
                 f"{c.title}\n{c.text}" for c in sources
@@ -183,6 +208,8 @@ def compose(
                 checks["rejected_llm_text"] = text[:400]
                 log.info("LLM answer failed checks (%s); falling back to quotes", checks)
                 text, mode = "", "extractive"
+        except _Fallback:
+            text, mode = "", "extractive"
         except llm.LLMUnavailable as exc:
             checks["llm_error"] = str(exc)
     if mode == "extractive":

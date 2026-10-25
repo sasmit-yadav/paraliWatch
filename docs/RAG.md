@@ -130,7 +130,8 @@ questions correctly. Caveat: the cut-off was chosen on the same 50 questions it 
 
 Generated from the retrieved passages of each question (`python -m parali.advise.evaluate answers`).
 In quote mode the assistant picks the 5 sentences or clauses closest in meaning to the question;
-long legal sentences are split at ";", ":" and "(ii)" so quotes stay readable. (Splitting first cut
+long legal sentences are split at ";", ":" and "(ii)" so quotes stay readable. Sentences repeated
+across overlapping chunks are quoted once (this affected 5 of 50 answers before Phase 3). (Splitting first cut
 fact recall from 59% to 48% with 3 quotes; 5 shorter quotes recovered it to 64%.) The LLM column
 was measured before this change.
 

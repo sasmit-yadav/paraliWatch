@@ -1,0 +1,121 @@
+# Fine-tuning a small LLM to answer with citations (Phase 3, LoRA)
+
+Phase 2 found that small local models can't follow the assistant's rules. Qwen2.5-1.5B passed the
+guardrails (every fact cited as [n], every number present in a cited source) on **1 of 37**
+answerable questions. Qwen2.5-0.5B passed on **0 of 37**: its drafts were often reasonable but
+never had a single [n] citation. So the assistant falls back to quoting source sentences, which is
+safe but not a written answer.
+
+Question: can a cheap LoRA fine-tune on CPU teach a 0.5B model the format (cite every sentence,
+copy numbers exactly, say "not found" when the passages don't answer)?
+
+## 1. Training data, with no human labelling and no paid API
+
+`python -m parali.tune.data select | questions | build` (three stages, so the LLM server and the
+retrieval models never share the 6 GB memory limit):
+
+1. **Hold out the evaluation.** Only chunks that are *not* on any gold page of the 50 evaluation
+   questions, and not near-duplicates of one (cosine < 0.9), are used: 23 chunks.
+2. **doc2query.** A local Qwen2.5-1.5B writes up to 5 questions each chunk answers: 114 questions;
+   about 30% (23) are then translated into Hindi.
+3. **Round-trip filter.** A question is kept only if the real retriever puts its source chunk in the
+   top 3: 68 kept. This removes vague or wrong questions without reading them by hand.
+4. **Targets.** The answer is the grounded quote answer (the 3 sentences closest to the question,
+   each with its [n]), so every target passes the guardrails by construction. Overlapping chunks
+   produced duplicate sentences in 14 of the first 80 targets, and the first trained model learned
+   to repeat itself; duplicates are now removed in `_extractive` (which also fixed 5 of 50
+   quote-mode answers in the live assistant) and the data was rebuilt.
+5. **Negatives.** For about a third of questions, the same question with passages from another
+   topic, *verified irrelevant by the reranker*, and the target "I could not find this in the
+   documents...": 12 examples.
+
+Result: 80 examples (`data/tune/train.jsonl`, statistics in `data/tune/stats.json`). The prompt is
+built by `answer.build_messages`, the same function used at inference, so training and serving
+can't drift apart.
+
+## 2. Training
+
+| Setting | Value | Why |
+| --- | --- | --- |
+| Base model | Qwen2.5-0.5B-Instruct (Apache-2.0) | Runs on any laptop CPU |
+| Method | LoRA, rank 16, alpha 32, dropout 0.05 | Adapter of 8.8 M parameters (1.75% of 503 M); 34 MB on disk |
+| Target layers | q, k, v, o, gate, up, down projections | Attention + MLP; format learning needs both |
+| Loss | Answer tokens only | The model should learn to answer, not to reproduce the prompt |
+| Optimiser | AdamW, lr 2e-4, one-cycle, grad-clip 1.0 | Standard LoRA settings |
+| Batch | 1 sequence, gradient accumulation 4 | No padding waste on CPU |
+| Epochs | 2 | Small data; loss flattens in the second epoch |
+| Max length | 2,304 tokens (69 of 80 examples fit) | See below |
+
+Why not QLoRA (4-bit base)? bitsandbytes 4-bit needs a GPU. On CPU the base stays in float32 and
+only the adapter trains, which is what QLoRA would do minus the quantisation.
+
+**Two memory problems, solved properly:**
+- A normal forward pass builds logits for every position over the 151,936-token vocabulary:
+  3,300 x 151,936 floats is about 2 GB, plus its gradient. `answer_loss` runs the transformer, then
+  applies the output layer only to the ~100 answer positions. Checked to give the same loss as the
+  library's own loss (9.168901 vs 9.168902 on a test example).
+- Attention memory grows with the square of the length: measured peak 3.5 GB at 1,000 tokens,
+  4.5 GB at 2,000, over 6 GB at 3,300 even with gradient checkpointing. So examples are capped at
+  2,304 tokens.
+
+Training loss (answer tokens): 0.60 after 5 steps, 0.18 at the end of epoch 1, 0.08 at the end of
+epoch 2 (`eval/tune/train_log.json`); 74 minutes on 2 CPU cores.
+
+## 3. Evaluation
+
+Same 50 questions, same retrieved passages (cached), same guardrails as Phase 2; only the model
+behind the OpenAI-compatible endpoint changes (`python -m parali.tune.serve` serves a Hugging Face
+model with or without the adapter). Greedy decoding with a mild repetition penalty (1.1) for both.
+
+Results on the 37 answerable questions (`eval/rag/answer_results_qwen2.5-0.5b-{base,lora}.json`):
+
+| | Base 0.5B | **LoRA 0.5B** | Phase 2: base 1.5B |
+| --- | --- | --- | --- |
+| LLM answers accepted by the guardrails | 0 / 37 | **19 / 37** | 1 / 37 |
+| Rejected: no citation | 37 | **0** | - |
+| Rejected: number not in a cited source | 3 | **1** | - |
+| Declined ("not found") although relevant passages were retrieved | 0 | 17 (8 of the 10 Hindi questions) | - |
+| Accepted answers that cite a gold page | - | 17 / 19 | - |
+| Key facts in the accepted answers | - | 12 / 32 | - |
+| Same questions answered by quoting (no LLM) | - | 22 / 32 key facts | - |
+| Overall fact recall (with quote fallback) | 0.79 | 0.61 | - |
+| Median seconds per answer (2-core CPU) | 11 | 12 | - |
+
+Unanswerable questions are decided by the retrieval cut-off before any LLM runs, so both models
+give the same 3 false answers out of 12.
+
+**What the fine-tune achieved:** the format. Every answer it gives has [n] citations (0 rejected
+for missing citations, vs 37 of 37 for the base model), numbers are copied exactly (1 failure vs
+3), and 17 of 19 accepted answers cite the right page. Format compliance went from 0% to 51%.
+
+**What it did not achieve:** better answers. It learned what its teacher did, which is copy
+sentences, and it picks sentences less well than the embedding ranker that wrote its targets
+(12 vs 22 key facts on the same questions), sometimes including signatures and boilerplate. It
+also over-learned "not found", especially for Hindi (8 of 10), and 4 of 19 answers still repeat a
+sentence. So overall fact recall falls from 0.79 to 0.61.
+
+**Decision:** the assistant's default stays as before: an LLM is optional, and without one, or
+when its draft fails the checks, the user gets the quoted sources. The adapter is kept as a
+documented experiment (`models/answer_lora/`, not committed; rebuild with the commands below).
+
+**What would make it work**, in order:
+1. A better teacher. Targets written by a strong model (7B+ local, or a hosted API) that
+   *synthesises* a short answer, kept only if it passes the same guardrails (distillation with
+   verification). The format has been shown to be learnable; the content needs a better example.
+2. More and more varied data: 23 chunks is narrow. Use all documents, and evaluate on questions
+   whose documents were never seen in training.
+3. Hindi targets in Hindi (now they are English quotes with a Hindi preface), and fewer negatives
+   for Hindi.
+
+## 4. Reproduce
+
+```bash
+uv sync --group tune
+python -m parali.tune.data select
+PARALI_LLM_BASE_URL=http://localhost:8081/v1 PARALI_LLM_MODEL=qwen2.5-1.5b python -m parali.tune.data questions 5
+python -m parali.tune.data build
+python -m parali.tune.lora Qwen/Qwen2.5-0.5B-Instruct 2        # ~75 min on 2 CPU cores
+python -m parali.tune.serve Qwen/Qwen2.5-0.5B-Instruct models/answer_lora 8082 &
+PARALI_LLM_BASE_URL=http://localhost:8082/v1 PARALI_LLM_MODEL=qwen2.5-0.5b-lora \
+  python -c "from parali.advise.evaluate import run_answers; run_answers(stage='generate')"
+```
