@@ -14,7 +14,7 @@
   "false_answer_on_unanswerable": 3,
   "unanswerable": 12,
   "wrongly_refused_answerable": 1,
-  "median_seconds_generation": 11.95
+  "median_seconds_generation": 11.35
  },
  "records": [
   {
@@ -22,7 +22,7 @@
    "lang": "en",
    "answerable": true,
    "mode": "llm",
-   "seconds": 33.0,
+   "seconds": 32.6,
    "cited_gold_page": true,
    "facts_found": [
     "5-10%"
@@ -40,7 +40,7 @@
    "lang": "en",
    "answerable": true,
    "mode": "llm",
-   "seconds": 37.2,
+   "seconds": 37.0,
    "cited_gold_page": true,
    "facts_found": [
     "300"
@@ -58,7 +58,7 @@
    "lang": "en",
    "answerable": true,
    "mode": "llm",
-   "seconds": 50.1,
+   "seconds": 49.3,
    "cited_gold_page": true,
    "facts_found": [],
    "facts_total": 4,
@@ -74,7 +74,7 @@
    "lang": "en",
    "answerable": true,
    "mode": "llm",
-   "seconds": 48.3,
+   "seconds": 40.2,
    "cited_gold_page": true,
    "facts_found": [
     "2050",
@@ -93,7 +93,7 @@
    "lang": "en",
    "answerable": true,
    "mode": "extractive",
-   "seconds": 23.3,
+   "seconds": 21.6,
    "cited_gold_page": true,
    "facts_found": [
     "2.32"
@@ -106,14 +106,14 @@
    "rejected_llm_text": "of a period of one-year w.e.f. 01.09.2023. Such pellets however, need to have a moisture content of below 14% and GCV between 2800-3400 Kceal/Kg. [1] of a period of one-year w.e.f. 01.09.2023. [1] of a period of one-year w.e.f. 01.09.2023. [1]",
    "llm_declined": false,
    "llm_error": null,
-   "answer": "for bio-mass pellets was strongly felt so as to ease out the process of repeated procurements of large quantities of agro-based pellets for co-firing in TPPs. [1] II dated 23.08.2023 have issued a benchmark price of non -torrefied bio-mass pellets in the NCR @Rs. [1] GST & transportation cost at the pellet manufacturing plant site, for a period of one-year w.e.f. [2] Such pellets however, need to have a moisture content of below 14% and GCV between 2800-3400 Kceal/Kg. [2] Considering that an established benchmark price facilitates and significantly eases out the process of procurement /tendering of bio-mass pellets and with abundant availability of agro-based bio-mass, including paddy straw in particular, the state Governments and the 11 identified Thermal power plants within 300 kms of Delhi are required to substantially step-up bio-mass co-firing in their respective units as per the targeted quantities, towards effective implementation and compliance of the statutory Direction No. [2]\n\nRelated facts:\n- biomass pellets -> amount -> Benchmark price of non-torrefied pellets in NCR: Rs 2.32 per 1000 kcal, excluding GST and transport (CAQM Advisory No. 11: Co-firing of biomass in thermal power plants, p. 2)\n- biomass pellets -> eligible -> Moisture below 14% and GCV between 2800-3400 kcal/kg (CAQM Advisory No. 11: Co-firing of biomass in thermal power plants, p. 3)"
+   "answer": "for bio-mass pellets was strongly felt so as to ease out the process of repeated procurements of large quantities of agro-based pellets for co-firing in TPPs. [1] II dated 23.08.2023 have issued a benchmark price of non -torrefied bio-mass pellets in the NCR @Rs. 2.32 / 1000 Kceal, excluding t sand [1] GST & transportation cost at the pellet manufacturing plant site, for a period of one-year w.e.f. 01.09.2023. [2] Such pellets however, need to have a moisture content of below 14% and GCV between 2800-3400 Kceal/Kg. [2] Considering that an established benchmark price facilitates and significantly eases out the process of procurement /tendering of bio-mass pellets and with abundant availability of agro-based bio-mass, including paddy straw in particular, the state Governments and the 11 identified Thermal power plants within 300 kms of Delhi are required to substantially step-up bio-mass co-firing in their respective units as per the targeted quantities, towards effective implementation and compliance of the statutory Direction No. 42 of the Commission in letter and spirit. [2]\n\nRelated facts:\n- biomass pellets -> amount -> Benchmark price of non-torrefied pellets in NCR: Rs 2.32 per 1000 kcal, excluding GST and transport (CAQM Advisory No. 11: Co-firing of biomass in thermal power plants, p. 2)\n- biomass pellets -> eligible -> Moisture below 14% and GCV between 2800-3400 kcal/kg (CAQM Advisory No. 11: Co-firing of biomass in thermal power plants, p. 3)"
   },
   {
    "id": "q06",
    "lang": "en",
    "answerable": true,
    "mode": "llm",
-   "seconds": 18.2,
+   "seconds": 17.3,
    "cited_gold_page": true,
    "facts_found": [
     "14%"
@@ -131,7 +131,7 @@
    "lang": "en",
    "answerable": true,
    "mode": "llm",
-   "seconds": 36.0,
+   "seconds": 33.4,
    "cited_gold_page": true,
    "facts_found": [
     "11"
@@ -149,7 +149,7 @@
    "lang": "en",
    "answerable": true,
    "mode": "extractive",
-   "seconds": 12.1,
+   "seconds": 11.7,
    "cited_gold_page": true,
    "facts_found": [
     "7000"
@@ -167,7 +167,7 @@
    "lang": "en",
    "answerable": true,
    "mode": "extractive",
-   "seconds": 14.7,
+   "seconds": 13.2,
    "cited_gold_page": true,
    "facts_found": [
     "Karnal",
@@ -187,7 +187,7 @@
    "lang": "en",
    "answerable": true,
    "mode": "llm",
-   "seconds": 20.1,
+   "seconds": 16.1,
    "cited_gold_page": true,
    "facts_found": [],
    "facts_total": 2,
@@ -203,7 +203,7 @@
    "lang": "en",
    "answerable": true,
    "mode": "extractive",
-   "seconds": 13.9,
+   "seconds": 11.9,
    "cited_gold_page": true,
    "facts_found": [
     "60:40"
@@ -214,14 +214,14 @@
    "rejected_llm_text": "I could not find this in the documents I have. Please check with your local agriculture office or the Kisan Call Centre 1800-180-1551.",
    "llm_declined": true,
    "llm_error": null,
-   "answer": "Crop Diversification Programme – Mera Pani Meri Virasat (Cente+State Plan) Diversification in Agriculture refers to the change in the regional dominance of a crop to meet the increasing demand for cereals, pulses, vegetables, fruits, oilseeds, animal feed and grass etc. [1] The purpose of crop diversification is to promote the latest technology along with sustainable agriculture and to promote the latest technology with sustainable agriculture and to enable the farmers to choose alternative crops for increasing the pro ductivity and income of the farmers. [1] Crop Diversification Scheme (State Plan) Crop Diversification Program - Mera Pani Meri Virasat scheme is being implemented in all the districts of the state. [2] In the year 2020 -21, under the crop diversification scheme, farmers were given a grant of 7000 / - per acre with the aim of reducing the area of paddy in the state and promoting maize, cotto n, Kharif Oilseed, Kharif Pulses, Kharif onion, Fodder crops, Horticulture / vegetable crops , even in case of fallow land. [2] The details of the budget allocation and the amount utilized under the crop diversification program for the year 2019-20 to 2021-22 are given below:- Crop Diversification (Central –State Plan) Year Allotment in Crore Released in Crore [2]\n\nRelated facts:\n- mera pani meri virasat -> amount -> Rs 7,000 per acre grant for moving away from paddy (2020-21, official note) (Haryana: Crop Diversification Programme - Mera Pani Meri Virasat, p. 2)\n- mera pani meri virasat -> amount -> Rs 8,000 per acre (UNVERIFIED summary) (Haryana zero stubble burning measures: summary from project author (UNVERIFIED), p. 1)\n- mera pani meri virasat -> applies in -> Crop diversification districts: Ambala, Yamunanagar, Kurukshetra, Karnal, Panipat, Sonipat, Jind, Kaithal, Fatehabad, Sirsa (Haryana: Crop Diversification Programme - Mera Pani Meri Virasat, p. 1)\n- mera pani meri virasat -> administered by -> Centre-State funding share 60:40 since 2015-16 (Haryana: Crop Diversification Programme - Mera Pani Meri Virasat, p. 1)"
+   "answer": "Crop Diversification Programme – Mera Pani Meri Virasat (Cente+State Plan) Diversification in Agriculture refers to the change in the regional dominance of a crop to meet the increasing demand for cereals, pulses, vegetables, fruits, oilseeds, animal feed and grass etc. Its purpose is to improve the dynamic balance of soil health and agro -friendly system. [1] The purpose of crop diversification is to promote the latest technology along with sustainable agriculture and to promote the latest technology with sustainable agriculture and to enable the farmers to choose alternative crops for increasing the pro ductivity and income of the farmers. [1] Crop Diversification Scheme (State Plan) Crop Diversification Program - Mera Pani Meri Virasat scheme is being implemented in all the districts of the state. [2] In the year 2020 -21, under the crop diversification scheme, farmers were given a grant of 7000 / - per acre with the aim of reducing the area of paddy in the state and promoting maize, cotto n, Kharif Oilseed, Kharif Pulses, Kharif onion, Fodder crops, Horticulture / vegetable crops , even in case of fallow land. [2] The details of the budget allocation and the amount utilized under the crop diversification program for the year 2019-20 to 2021-22 are given below:- Crop Diversification (Central –State Plan) Year Allotment in Crore Released in Crore [2]\n\nRelated facts:\n- mera pani meri virasat -> amount -> Rs 7,000 per acre grant for moving away from paddy (2020-21, official note) (Haryana: Crop Diversification Programme - Mera Pani Meri Virasat, p. 2)\n- mera pani meri virasat -> amount -> Rs 8,000 per acre (UNVERIFIED summary) (Haryana zero stubble burning measures: summary from project author (UNVERIFIED), p. 1)\n- mera pani meri virasat -> applies in -> Crop diversification districts: Ambala, Yamunanagar, Kurukshetra, Karnal, Panipat, Sonipat, Jind, Kaithal, Fatehabad, Sirsa (Haryana: Crop Diversification Programme - Mera Pani Meri Virasat, p. 1)\n- mera pani meri virasat -> administered by -> Centre-State funding share 60:40 since 2015-16 (Haryana: Crop Diversification Programme - Mera Pani Meri Virasat, p. 1)"
   },
   {
    "id": "q12",
    "lang": "en",
    "answerable": true,
    "mode": "extractive",
-   "seconds": 14.2,
+   "seconds": 13.6,
    "cited_gold_page": true,
    "facts_found": [
     "3,729",
@@ -233,14 +233,14 @@
    "rejected_llm_text": "I could not find this in the documents I have. Please check with your local agriculture office or the Kisan Call Centre 1800-180-1551.",
    "llm_declined": true,
    "llm_error": null,
-   "answer": "It was noted that during the period 01.04.2026 to 06.05.2026, Punjab recorded 3,729 fire counts, Haryana reported 2,683 incidents and Uttar Pradesh (NCR) recorded 176 incidents. [1]  Total 3036 burning events were detected in the five states between 01-Apr-2026 and 05-Apr-2026, which are distributed as 00, 04, 94, 01 and 2937 in Punjab, Haryana, UP, Delhi and MP, respectively. [2] Temporal distribution of wheat residue burning events for the study States in 2026 01-Apr 02-Apr 03-Apr 04-Apr 05-Apr No. [2]  Total 1532 burning events were detected in the five states between 01-Apr-2026 and 03-Apr-2026, which are distributed as 00, 04, 56, 00 and 1472 in Punjab, Haryana, UP, Delhi and MP, respectively. [3] Temporal distribution of wheat residue burning events for the study States in 2026 01-Apr 02-Apr 03-Apr No. [3]\n\nRelated facts:\n- paddy straw -> alternative to -> Fuel for thermal power plants, waste-to-energy plants and brick kilns; pellets, briquettes, bio-ethanol, compressed bio-gas, particle board (CAQM Advisory No. 5 of 2021: Ex-situ stubble management (Punjab), p. 2)\n- paddy straw -> amount -> Rs 500 per tonne extra for delivery to the 2G ethanol plant, Panipat (UNVERIFIED summary) (Haryana zero stubble burning measures: summary from project author (UNVERIFIED), p. 1)"
+   "answer": "It was noted that during the period 01.04.2026 to 06.05.2026, Punjab recorded 3,729 fire counts, Haryana reported 2,683 incidents and Uttar Pradesh (NCR) recorded 176 incidents. [1]  Total 3036 burning events were detected in the five states between 01-Apr-2026 and 05-Apr-2026, which are distributed as 00, 04, 94, 01 and 2937 in Punjab, Haryana, UP, Delhi and MP, respectively. [2] Temporal distribution of wheat residue burning events for the study States in 2026 01-Apr 02-Apr 03-Apr 04-Apr 05-Apr No. of residue burning events Haryana Daily 01-Apr 02-Apr 03-Apr 04-Apr 05-Apr No. of residue burning events Uttar Pradesh Daily [2]  Total 1532 burning events were detected in the five states between 01-Apr-2026 and 03-Apr-2026, which are distributed as 00, 04, 56, 00 and 1472 in Punjab, Haryana, UP, Delhi and MP, respectively. [3] Temporal distribution of wheat residue burning events for the study States in 2026 01-Apr 02-Apr 03-Apr No. of residue burning events Haryana Daily 01-Apr 02-Apr 03-Apr No. of residue burning events Uttar Pradesh Daily [3]\n\nRelated facts:\n- paddy straw -> alternative to -> Fuel for thermal power plants, waste-to-energy plants and brick kilns; pellets, briquettes, bio-ethanol, compressed bio-gas, particle board (CAQM Advisory No. 5 of 2021: Ex-situ stubble management (Punjab), p. 2)\n- paddy straw -> amount -> Rs 500 per tonne extra for delivery to the 2G ethanol plant, Panipat (UNVERIFIED summary) (Haryana zero stubble burning measures: summary from project author (UNVERIFIED), p. 1)"
   },
   {
    "id": "q13",
    "lang": "en",
    "answerable": true,
    "mode": "llm",
-   "seconds": 25.5,
+   "seconds": 24.4,
    "cited_gold_page": true,
    "facts_found": [
     "Sangrur"
@@ -258,7 +258,7 @@
    "lang": "en",
    "answerable": true,
    "mode": "llm",
-   "seconds": 24.2,
+   "seconds": 23.2,
    "cited_gold_page": true,
    "facts_found": [
     "11.05.2026"
@@ -276,7 +276,7 @@
    "lang": "en",
    "answerable": true,
    "mode": "llm",
-   "seconds": 40.7,
+   "seconds": 35.6,
    "cited_gold_page": true,
    "facts_found": [],
    "facts_total": 1,
@@ -292,7 +292,7 @@
    "lang": "en",
    "answerable": true,
    "mode": "llm",
-   "seconds": 15.2,
+   "seconds": 15.0,
    "cited_gold_page": true,
    "facts_found": [
     "balers"
@@ -310,7 +310,7 @@
    "lang": "en",
    "answerable": true,
    "mode": "llm",
-   "seconds": 54.1,
+   "seconds": 45.5,
    "cited_gold_page": false,
    "facts_found": [
     "pellets",
@@ -329,7 +329,7 @@
    "lang": "en",
    "answerable": true,
    "mode": "extractive",
-   "seconds": 11.6,
+   "seconds": 10.7,
    "cited_gold_page": true,
    "facts_found": [
     "5 million"
@@ -347,7 +347,7 @@
    "lang": "en",
    "answerable": true,
    "mode": "extractive",
-   "seconds": 11.2,
+   "seconds": 10.8,
    "cited_gold_page": true,
    "facts_found": [
     "600 million"
@@ -358,14 +358,14 @@
    "rejected_llm_text": "I could not find this in the documents I have. Please check with your local agriculture office or the Kisan Call Centre 1800-180-1551.",
    "llm_declined": true,
    "llm_error": null,
-   "answer": "He said that India produces nearly 600 million tonnes of crop residue annually, much of which is burnt, leading to severe air pollution. [1] At the same time, India consumes about 88 lakh tonnes of bitumen every year, nearly 50–58% of which is imported at a cost of ₹ 25,000–30,000 crore. [1] Ministry of Science & Technology Crop residue waste converted to bio-bitumen through indigenously developed bio-bitumen technology can save around Rs 40,000 cr import annually for India: [2] Dr Jitendra Singh India produces nearly 600 million tonnes of crop residue annually, which instead of being burnt causing pollution, can be converted to bio-bitumen; [2] Jitendra Singh today said that crop waste converted to bio-bitumen can save around Rs 40,000 cr import annually for India. [2]"
+   "answer": "He said that India produces nearly 600 million tonnes of crop residue annually, much of which is burnt, leading to severe air pollution. [1] At the same time, India consumes about 88 lakh tonnes of bitumen every year, nearly 50–58% of which is imported at a cost of ₹ 25,000–30,000 crore. [1] Ministry of Science & Technology Crop residue waste converted to bio-bitumen through indigenously developed bio-bitumen technology can save around Rs 40,000 cr import annually for India: [2] Dr Jitendra Singh India produces nearly 600 million tonnes of crop residue annually, which instead of being burnt causing pollution, can be converted to bio-bitumen; [2] 30 MAR 2026 5:55PM by PIB Delhi Union Minister of State (Independent Charge) for Science & Technology, Earth Sciences, and MoS PMO, Personnel, Public Grievances, Pensions, Atomic Energy and Space, Dr. Jitendra Singh today said that crop waste converted to bio-bitumen can save around Rs 40,000 cr import annually for India. [2]"
   },
   {
    "id": "q20",
    "lang": "en",
    "answerable": true,
    "mode": "llm",
-   "seconds": 31.2,
+   "seconds": 26.4,
    "cited_gold_page": true,
    "facts_found": [],
    "facts_total": 1,
@@ -381,7 +381,7 @@
    "lang": "en",
    "answerable": true,
    "mode": "extractive",
-   "seconds": 9.3,
+   "seconds": 7.6,
    "cited_gold_page": true,
    "facts_found": [
     "CRRI",
@@ -393,14 +393,14 @@
    "rejected_llm_text": "I could not find this in the documents I have. Please check with your local agriculture office or the Kisan Call Centre 1800-180-1551.",
    "llm_declined": true,
    "llm_error": null,
-   "answer": "for Science & Technology, Earth Sciences, and MoS PMO, Personnel, Public Grievances, Pensions, Atomic Energy and Space, Dr. [1] Jitendra Singh today said that crop waste converted to bio-bitumen can save around Rs 40,000 cr import annually for India. [1] This has been made possible using indigenous bio- bitumen technology developed by CSIR–Central Road Research Institute (CRRI) New Delhi and CSIR–Indian Institute of Petroleum (IIP), Dehradun, he added. [1] The Minister said that even partial substitution of conventional bitumen with bio-bitumen will significantly cut import dependence, strengthen economic resilience, and ensure that infrastructure development remains insulated from global supply disruptions. [1] Dr Jitendra Singh was addressing a Technology Transfer event organised by the Council of Scientific and Industrial Research (CSIR) for large-scale industry adoption of the indigenously developed “Bio-Bitumen from Lignocellulosic Biomass” technology. [1]\n\nRelated facts:\n- bio-bitumen -> alternative to -> Crop residue converted to bio-bitumen for roads; technology by CSIR-CRRI and CSIR-IIP (PIB: Crop residue converted to bio-bitumen, p. 1)"
+   "answer": "for Science & Technology, Earth Sciences, and MoS PMO, Personnel, Public Grievances, Pensions, Atomic Energy and Space, Dr. Jitendra Singh today said that crop waste converted to bio-bitumen can save around Rs 40,000 cr import annually for India. [1] This has been made possible using indigenous bio- bitumen technology developed by CSIR–Central Road Research Institute (CRRI) New Delhi and CSIR–Indian Institute of Petroleum (IIP), Dehradun, he added. [1] The Minister said that even partial substitution of conventional bitumen with bio-bitumen will significantly cut import dependence, strengthen economic resilience, and ensure that infrastructure development remains insulated from global supply disruptions. [1] Dr Jitendra Singh was addressing a Technology Transfer event organised by the Council of Scientific and Industrial Research (CSIR) for large-scale industry adoption of the indigenously developed “Bio-Bitumen from Lignocellulosic Biomass” technology. [1] The [1]\n\nRelated facts:\n- bio-bitumen -> alternative to -> Crop residue converted to bio-bitumen for roads; technology by CSIR-CRRI and CSIR-IIP (PIB: Crop residue converted to bio-bitumen, p. 1)"
   },
   {
    "id": "q22",
    "lang": "en",
    "answerable": true,
    "mode": "llm",
-   "seconds": 20.7,
+   "seconds": 17.5,
    "cited_gold_page": true,
    "facts_found": [],
    "facts_total": 1,
@@ -416,7 +416,7 @@
    "lang": "en",
    "answerable": true,
    "mode": "llm",
-   "seconds": 12.2,
+   "seconds": 11.8,
    "cited_gold_page": true,
    "facts_found": [],
    "facts_total": 2,
@@ -432,7 +432,7 @@
    "lang": "en",
    "answerable": true,
    "mode": "llm",
-   "seconds": 26.4,
+   "seconds": 25.5,
    "cited_gold_page": false,
    "facts_found": [],
    "facts_total": 2,
@@ -448,7 +448,7 @@
    "lang": "en",
    "answerable": true,
    "mode": "llm",
-   "seconds": 25.6,
+   "seconds": 27.1,
    "cited_gold_page": true,
    "facts_found": [],
    "facts_total": 2,
@@ -464,7 +464,7 @@
    "lang": "en",
    "answerable": true,
    "mode": "llm",
-   "seconds": 36.5,
+   "seconds": 39.8,
    "cited_gold_page": true,
    "facts_found": [],
    "facts_total": 2,
@@ -480,7 +480,7 @@
    "lang": "hi",
    "answerable": true,
    "mode": "extractive",
-   "seconds": 9.2,
+   "seconds": 9.9,
    "cited_gold_page": true,
    "facts_found": [
     "7000"
@@ -498,7 +498,7 @@
    "lang": "hi",
    "answerable": true,
    "mode": "llm",
-   "seconds": 25.2,
+   "seconds": 27.2,
    "cited_gold_page": true,
    "facts_found": [
     "5-10%"
@@ -516,7 +516,7 @@
    "lang": "hi",
    "answerable": true,
    "mode": "extractive",
-   "seconds": 10.7,
+   "seconds": 11.0,
    "cited_gold_page": true,
    "facts_found": [
     "30%"
@@ -527,14 +527,14 @@
    "rejected_llm_text": "I could not find this in the documents I have. Please check with your local agriculture office or the Kisan Call Centre 1800-180-1551.",
    "llm_declined": true,
    "llm_error": null,
-   "answer": "दस्तावेज़ों से संबंधित अंश (अंग्रेज़ी में):\npellets / briquettes with a target of at least 20% w.e.f. [1] 01.1 1.2025, 30% w.e.f. [1] 01.11.2026, 40% w.ef. [1] 01.11.2027 and 50% w.e.. [1] Requisite directions / orders shall be issued by the State Governments of Punjab and Haryana in this context mandating the above stipulation for use of paddy straw-based bio-mass pellets / briquettes in brick kilns located in non-NCR areas. [1]\n\nRelated facts:\n- brick kilns -> applies in -> Punjab and non-NCR districts of Haryana must use paddy straw pellets/briquettes (CAQM Direction No. 92) (CAQM Direction No. 92: Paddy straw pellets in brick kilns, p. 4)\n- brick kilns -> amount -> Paddy straw pellet co-firing targets: 30% from 01.11.2026, 40% from 01.11.2027, 50% from 01.11.2028 (CAQM Direction No. 92: Paddy straw pellets in brick kilns, p. 5)\n- brick kilns -> amount -> About 2050 brick kilns in Punjab and 940 in non-NCR Haryana (CAQM Direction No. 92: Paddy straw pellets in brick kilns, p. 4)\n- paddy straw -> alternative to -> Fuel for thermal power plants, waste-to-energy plants and brick kilns; pellets, briquettes, bio-ethanol, compressed bio-gas, particle board (CAQM Advisory No. 5 of 2021: Ex-situ stubble management (Punjab), p. 2)"
+   "answer": "दस्तावेज़ों से संबंधित अंश (अंग्रेज़ी में):\npellets / briquettes with a target of at least 20% w.e.f. 01.1 1.2025, 30% w.e.f. 01.11.2026, 40% w.ef. [1] 01.11.2027 and 50% w.e.. [1] Requisite directions / orders shall be issued by the State Governments of Punjab and Haryana in this context mandating the above stipulation for use of paddy straw-based bio-mass pellets / briquettes in brick kilns located in non-NCR areas. [1] Secretary, Environment, Government of Punjab 2. [1] Member Secretary, Punjab Pollution Control Board. [1]\n\nRelated facts:\n- brick kilns -> applies in -> Punjab and non-NCR districts of Haryana must use paddy straw pellets/briquettes (CAQM Direction No. 92) (CAQM Direction No. 92: Paddy straw pellets in brick kilns, p. 4)\n- brick kilns -> amount -> Paddy straw pellet co-firing targets: 30% from 01.11.2026, 40% from 01.11.2027, 50% from 01.11.2028 (CAQM Direction No. 92: Paddy straw pellets in brick kilns, p. 5)\n- brick kilns -> amount -> About 2050 brick kilns in Punjab and 940 in non-NCR Haryana (CAQM Direction No. 92: Paddy straw pellets in brick kilns, p. 4)\n- paddy straw -> alternative to -> Fuel for thermal power plants, waste-to-energy plants and brick kilns; pellets, briquettes, bio-ethanol, compressed bio-gas, particle board (CAQM Advisory No. 5 of 2021: Ex-situ stubble management (Punjab), p. 2)"
   },
   {
    "id": "q30",
    "lang": "hi",
    "answerable": true,
    "mode": "extractive",
-   "seconds": 20.3,
+   "seconds": 19.7,
    "cited_gold_page": false,
    "facts_found": [],
    "facts_total": 1,
@@ -543,14 +543,14 @@
    "rejected_llm_text": "I could not find this in the documents I have. Please check with your local agriculture office or the Kisan Call Centre 1800-180-1551.",
    "llm_declined": true,
    "llm_error": null,
-   "answer": "दस्तावेज़ों से संबंधित अंश (अंग्रेज़ी में):\n Total 3036 burning events were detected in the five states between 01-Apr-2026 and 05-Apr-2026, which are distributed as 00, 04, 94, 01 and 2937 in Punjab, Haryana, UP, Delhi and MP, respectively. [2] Temporal distribution of wheat residue burning events for the study States in 2026 01-Apr 02-Apr 03-Apr 04-Apr 05-Apr No. [2] of residue burning events Haryana Daily 01-Apr 02-Apr 03-Apr 04-Apr 05-Apr No. [2]  Total 1532 burning events were detected in the five states between 01-Apr-2026 and 03-Apr-2026, which are distributed as 00, 04, 56, 00 and 1472 in Punjab, Haryana, UP, Delhi and MP, respectively. [3] Temporal distribution of wheat residue burning events for the study States in 2026 01-Apr 02-Apr 03-Apr No. [3]\n\nRelated facts:\n- paddy straw -> alternative to -> Fuel for thermal power plants, waste-to-energy plants and brick kilns; pellets, briquettes, bio-ethanol, compressed bio-gas, particle board (CAQM Advisory No. 5 of 2021: Ex-situ stubble management (Punjab), p. 2)\n- stubble burning -> penalty for -> FIR, fine Rs 5,000 to Rs 30,000, red entry in land record blocking e-kharid sales for two seasons (UNVERIFIED summary) (Haryana zero stubble burning measures: summary from project author (UNVERIFIED), p. 1)\n- paddy straw -> amount -> Rs 500 per tonne extra for delivery to the 2G ethanol plant, Panipat (UNVERIFIED summary) (Haryana zero stubble burning measures: summary from project author (UNVERIFIED), p. 1)"
+   "answer": "दस्तावेज़ों से संबंधित अंश (अंग्रेज़ी में):\nHighlights for 05-Apr-2026  The active fire events due to wheat residue burning were monitored using satellite remote sensing, following the new \"Standard Protocol for Estimation of Crop Residue Burning Fire Events using Satellite Data\". [2]  Total 3036 burning events were detected in the five states between 01-Apr-2026 and 05-Apr-2026, which are distributed as 00, 04, 94, 01 and 2937 in Punjab, Haryana, UP, Delhi and MP, respectively. [2] Temporal distribution of wheat residue burning events for the study States in 2026 01-Apr 02-Apr 03-Apr 04-Apr 05-Apr No. of residue burning events Haryana Daily 01-Apr 02-Apr 03-Apr 04-Apr 05-Apr No. of residue burning events Uttar Pradesh Daily [2]  Total 1532 burning events were detected in the five states between 01-Apr-2026 and 03-Apr-2026, which are distributed as 00, 04, 56, 00 and 1472 in Punjab, Haryana, UP, Delhi and MP, respectively. [3] Temporal distribution of wheat residue burning events for the study States in 2026 01-Apr 02-Apr 03-Apr No. of residue burning events Haryana Daily 01-Apr 02-Apr 03-Apr No. of residue burning events Uttar Pradesh Daily [3]\n\nRelated facts:\n- paddy straw -> alternative to -> Fuel for thermal power plants, waste-to-energy plants and brick kilns; pellets, briquettes, bio-ethanol, compressed bio-gas, particle board (CAQM Advisory No. 5 of 2021: Ex-situ stubble management (Punjab), p. 2)\n- stubble burning -> penalty for -> FIR, fine Rs 5,000 to Rs 30,000, red entry in land record blocking e-kharid sales for two seasons (UNVERIFIED summary) (Haryana zero stubble burning measures: summary from project author (UNVERIFIED), p. 1)\n- paddy straw -> amount -> Rs 500 per tonne extra for delivery to the 2G ethanol plant, Panipat (UNVERIFIED summary) (Haryana zero stubble burning measures: summary from project author (UNVERIFIED), p. 1)"
   },
   {
    "id": "q31",
    "lang": "hi",
    "answerable": true,
    "mode": "extractive",
-   "seconds": 9.5,
+   "seconds": 8.0,
    "cited_gold_page": true,
    "facts_found": [
     "Karnal"
@@ -568,7 +568,7 @@
    "lang": "hi",
    "answerable": true,
    "mode": "extractive",
-   "seconds": 10.8,
+   "seconds": 9.9,
    "cited_gold_page": true,
    "facts_found": [
     "14%"
@@ -579,14 +579,14 @@
    "rejected_llm_text": "I could not find this in the documents I have. Please check with your local agriculture office or the Kisan Call Centre 1800-180-1551.",
    "llm_declined": true,
    "llm_error": null,
-   "answer": "दस्तावेज़ों से संबंधित अंश (अंग्रेज़ी में):\nGST & transportation cost at the pellet manufacturing plant site, for a period of one-year w.e.f. [1] 01.09.2023. [1] Such pellets however, need to have a moisture content of below 14% and GCV between 2800-3400 Kceal/Kg. [1] Considering that an established benchmark price facilitates and significantly eases out the process of procurement /tendering of bio-mass pellets and with abundant availability of agro-based bio-mass, including paddy straw in particular, the state Governments and the 11 identified Thermal power plants within 300 kms of Delhi are required to substantially step-up bio-mass co-firing in their respective units as per the targeted quantities, towards effective implementation and compliance of the statutory Direction No. [1] Appropriate action may accordingly be taken on top priority and well before the ensuing paddy harvesting season. [1]\n\nRelated facts:\n- biomass pellets -> amount -> Benchmark price of non-torrefied pellets in NCR: Rs 2.32 per 1000 kcal, excluding GST and transport (CAQM Advisory No. 11: Co-firing of biomass in thermal power plants, p. 2)\n- biomass pellets -> eligible -> Moisture below 14% and GCV between 2800-3400 kcal/kg (CAQM Advisory No. 11: Co-firing of biomass in thermal power plants, p. 3)"
+   "answer": "दस्तावेज़ों से संबंधित अंश (अंग्रेज़ी में):\nGST & transportation cost at the pellet manufacturing plant site, for a period of one-year w.e.f. 01.09.2023. [1] Such pellets however, need to have a moisture content of below 14% and GCV between 2800-3400 Kceal/Kg. [1] Considering that an established benchmark price facilitates and significantly eases out the process of procurement /tendering of bio-mass pellets and with abundant availability of agro-based bio-mass, including paddy straw in particular, the state Governments and the 11 identified Thermal power plants within 300 kms of Delhi are required to substantially step-up bio-mass co-firing in their respective units as per the targeted quantities, towards effective implementation and compliance of the statutory Direction No. 42 of the Commission in letter and spirit. [1] Appropriate action may accordingly be taken on top priority and well before the ensuing paddy harvesting season. [1] The Chief Secretary, Government of Punjab The Chief Secretary, Government of Uttar Pradesh The Chief Secretary, Government of Rajasthan The Chairperson and all Members, CAQM. [1]\n\nRelated facts:\n- biomass pellets -> amount -> Benchmark price of non-torrefied pellets in NCR: Rs 2.32 per 1000 kcal, excluding GST and transport (CAQM Advisory No. 11: Co-firing of biomass in thermal power plants, p. 2)\n- biomass pellets -> eligible -> Moisture below 14% and GCV between 2800-3400 kcal/kg (CAQM Advisory No. 11: Co-firing of biomass in thermal power plants, p. 3)"
   },
   {
    "id": "q33",
    "lang": "hi",
    "answerable": true,
    "mode": "extractive",
-   "seconds": 8.7,
+   "seconds": 8.5,
    "cited_gold_page": false,
    "facts_found": [
     "CSIR"
@@ -597,14 +597,14 @@
    "rejected_llm_text": "I could not find this in the documents I have. Please check with your local agriculture office or the Kisan Call Centre 1800-180-1551.",
    "llm_declined": true,
    "llm_error": null,
-   "answer": "दस्तावेज़ों से संबंधित अंश (अंग्रेज़ी में):\nrole in achieving that goal. [1] Kalaiselvi highlighted the rapid pace of adoption of the technology, stating that within a short span, multiple industries have already taken it up, with production and field implementation underway. [1] She said the technology marks a paradigm shift from petro-based binders to sustainable bio-based alternatives. [1] She further noted that the same agricultural biomass can also be utilised for applications such as pest management, advanced carbon materials, and energy storage, demonstrating its wide industrial potential. [1] The bio-bitumen technology utilises agricultural biomass such as rice straw, wheat straw, and other crop residues as feedstock through a thermochemical (pyrolysis) process to produce a renewable binder. [1]\n\nRelated facts:\n- bio-bitumen -> alternative to -> Crop residue converted to bio-bitumen for roads; technology by CSIR-CRRI and CSIR-IIP (PIB: Crop residue converted to bio-bitumen, p. 1)"
+   "answer": "दस्तावेज़ों से संबंधित अंश (अंग्रेज़ी में):\nrole in achieving that goal. [1] Director General, CSIR & Secretary, DSIR Dr. N. Kalaiselvi highlighted the rapid pace of adoption of the technology, stating that within a short span, multiple industries have already taken it up, with production and field implementation underway. [1] She said the technology marks a paradigm shift from petro-based binders to sustainable bio-based alternatives. [1] She further noted that the same agricultural biomass can also be utilised for applications such as pest management, advanced carbon materials, and energy storage, demonstrating its wide industrial potential. [1] The bio-bitumen technology utilises agricultural biomass such as rice straw, wheat straw, and other crop residues as feedstock through a thermochemical (pyrolysis) process to produce a renewable binder. [1]\n\nRelated facts:\n- bio-bitumen -> alternative to -> Crop residue converted to bio-bitumen for roads; technology by CSIR-CRRI and CSIR-IIP (PIB: Crop residue converted to bio-bitumen, p. 1)"
   },
   {
    "id": "q34",
    "lang": "hi",
    "answerable": true,
    "mode": "extractive",
-   "seconds": 11.8,
+   "seconds": 11.0,
    "cited_gold_page": true,
    "facts_found": [
     "600"
@@ -615,14 +615,14 @@
    "rejected_llm_text": "I could not find this in the documents I have. Please check with your local agriculture office or the Kisan Call Centre 1800-180-1551.",
    "llm_declined": true,
    "llm_error": null,
-   "answer": "दस्तावेज़ों से संबंधित अंश (अंग्रेज़ी में):\nHe said that India produces nearly 600 million tonnes of crop residue annually, much of which is burnt, leading to severe air pollution. [1] At the same time, India consumes about 88 lakh tonnes of bitumen every year, nearly 50–58% of which is imported at a cost of ₹ 25,000–30,000 crore. [1] Ministry of Science & Technology Crop residue waste converted to bio-bitumen through indigenously developed bio-bitumen technology can save around Rs 40,000 cr import annually for India: [2] Dr Jitendra Singh India produces nearly 600 million tonnes of crop residue annually, which instead of being burnt causing pollution, can be converted to bio-bitumen; [2] Jitendra Singh today said that crop waste converted to bio-bitumen can save around Rs 40,000 cr import annually for India. [2]"
+   "answer": "दस्तावेज़ों से संबंधित अंश (अंग्रेज़ी में):\nHe said that India produces nearly 600 million tonnes of crop residue annually, much of which is burnt, leading to severe air pollution. [1] At the same time, India consumes about 88 lakh tonnes of bitumen every year, nearly 50–58% of which is imported at a cost of ₹ 25,000–30,000 crore. [1] Ministry of Science & Technology Crop residue waste converted to bio-bitumen through indigenously developed bio-bitumen technology can save around Rs 40,000 cr import annually for India: [2] Dr Jitendra Singh India produces nearly 600 million tonnes of crop residue annually, which instead of being burnt causing pollution, can be converted to bio-bitumen; [2] 30 MAR 2026 5:55PM by PIB Delhi Union Minister of State (Independent Charge) for Science & Technology, Earth Sciences, and MoS PMO, Personnel, Public Grievances, Pensions, Atomic Energy and Space, Dr. Jitendra Singh today said that crop waste converted to bio-bitumen can save around Rs 40,000 cr import annually for India. [2]"
   },
   {
    "id": "q35",
    "lang": "en",
    "answerable": true,
    "mode": "extractive",
-   "seconds": 10.7,
+   "seconds": 8.6,
    "cited_gold_page": true,
    "facts_found": [
     "50%"
@@ -640,7 +640,7 @@
    "lang": "en",
    "answerable": true,
    "mode": "extractive",
-   "seconds": 11.2,
+   "seconds": 9.5,
    "cited_gold_page": true,
    "facts_found": [
     "5,000",
@@ -723,7 +723,7 @@
    "lang": "hi",
    "answerable": true,
    "mode": "extractive",
-   "seconds": 10.0,
+   "seconds": 8.5,
    "cited_gold_page": true,
    "facts_found": [
     "50%"
@@ -757,7 +757,7 @@
    "lang": "en",
    "answerable": false,
    "mode": "extractive",
-   "seconds": 9.6,
+   "seconds": 8.4,
    "cited_gold_page": false,
    "facts_found": [],
    "facts_total": 0,
@@ -773,7 +773,7 @@
    "lang": "en",
    "answerable": false,
    "mode": "extractive",
-   "seconds": 9.1,
+   "seconds": 8.2,
    "cited_gold_page": false,
    "facts_found": [],
    "facts_total": 0,
@@ -821,7 +821,7 @@
    "lang": "en",
    "answerable": false,
    "mode": "extractive",
-   "seconds": 10.7,
+   "seconds": 9.2,
    "cited_gold_page": false,
    "facts_found": [],
    "facts_total": 0,
