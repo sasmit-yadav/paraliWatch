@@ -7,6 +7,24 @@ from datetime import date
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
+
+
+def _load_dotenv(path: Path) -> None:
+    """Read KEY=value lines from .env into the environment (values already set win).
+    Keeps secrets such as FIRMS_MAP_KEY out of the code and out of git."""
+    if not path.exists():
+        return
+    for line in path.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, value = line.split("=", 1)
+        if value.strip():
+            os.environ.setdefault(key.strip(), value.strip().strip('"').strip("'"))
+
+
+_load_dotenv(ROOT / ".env")
+
 DATA_DIR = ROOT / "data"
 RAW_DIR = Path(os.environ.get("PARALI_CACHE") or DATA_DIR / "raw")
 PROCESSED_DIR = DATA_DIR / "processed"
@@ -38,6 +56,13 @@ FIRMS_ARCHIVE_URL = (
     "https://firms.modaps.eosdis.nasa.gov/data/country/viirs-snpp/{year}/viirs-snpp_{year}_India.csv"
 )
 FIRMS_AREA_URL = "https://firms.modaps.eosdis.nasa.gov/api/area/csv/{key}/VIIRS_SNPP_NRT/{bbox}/{days}"
+# Same API with a start date: up to 5 days from {start}. Live mode walks the season in 5-day steps.
+FIRMS_AREA_DATED_URL = (
+    "https://firms.modaps.eosdis.nasa.gov/api/area/csv/{key}/VIIRS_SNPP_NRT/{bbox}/{days}/{start}"
+)
+OPEN_METEO_FORECAST_URL = "https://api.open-meteo.com/v1/forecast"  # recent days + forecast, no key
+LIVE_DIR = DATA_DIR / "live"  # live-season files, rebuilt by `python -m parali live` (not committed)
+LIVE_REFRESH_HOURS = float(os.environ.get("PARALI_LIVE_REFRESH_HOURS", "3"))
 BOUNDARY_URLS = {
     "adm1": "https://github.com/wmgeolab/geoBoundaries/raw/9469f09/releaseData/gbOpen/IND/ADM1/"
     "geoBoundaries-IND-ADM1_simplified.geojson",

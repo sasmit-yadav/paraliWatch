@@ -60,6 +60,14 @@ def cmd_graph(args) -> None:
     graph.extract(index.make_chunks(load_corpus(), "structure"))
 
 
+def cmd_live(args) -> None:
+    import json
+
+    from parali import live
+
+    print(json.dumps(live.refresh(), indent=2))
+
+
 def cmd_drift(args) -> None:
     from parali.ops import drift
 
@@ -129,6 +137,7 @@ def main() -> None:
     p_bul = sub.add_parser("bulletin", help="write the district bulletin for a date")
     p_bul.add_argument("date")
     sub.add_parser("mcp", help="run the MCP server over stdio")
+    sub.add_parser("live", help="rebuild the live season from today's satellite data (needs FIRMS_MAP_KEY)")
     p_drift = sub.add_parser("drift", help="drift report: new seasons vs the training seasons")
     p_drift.add_argument("seasons", nargs="*", type=int)
     p_track = sub.add_parser("track", help="log all recorded experiments to MLflow (needs the 'ops' group)")
@@ -157,6 +166,8 @@ def main() -> None:
         cmd_bulletin(args)
     elif args.command == "mcp":
         cmd_mcp(args)
+    elif args.command == "live":
+        cmd_live(args)
     elif args.command == "drift":
         cmd_drift(args)
     elif args.command == "track":

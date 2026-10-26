@@ -9,7 +9,7 @@
 
 ## Phase 1 follow-ups
 
-- [ ] Live mode: pull today's fires with a FIRMS key and forecast the current season
+- [x] Live mode: pull today's fires with a FIRMS key and forecast the current season ([Live mode](LIVE.md))
 - [ ] Weather forecast (next 3 days) as features, not only observed weather
 - [ ] Geostationary fire detections to reduce the satellite-timing blind spot
 - [ ] Separate forecasts for day +1, +2, +3

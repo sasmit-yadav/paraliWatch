@@ -51,6 +51,7 @@ Say it in this order. Each step has one decision worth defending.
 | Model vs best rule (bootstrap, 2024) | +0.112 PR-AUC, 95% CI +0.067 to +0.157 |
 | Fires detected per season | 84,206 (2021) -> 5,215 (2025) |
 | Night share of detections | 0.2% (2021) -> 8.1% (2025) |
+| Live 2026 so far (31 scored days to 22 Oct) | PR-AUC 0.227 vs best rule 0.144; capture@10% 72.6% vs 54.7% |
 
 ## 4. The decisions interviewers probe, with answers
 
@@ -442,6 +443,32 @@ play sits above the map. Still plain JavaScript, three files, no build step.
   tested locally.
 - The judge is a 3.8B model on 4-bit weights; it is a screening tool, not ground truth.
 - DPO and LoRA used 60-80 synthetic pairs; the effects are clear but the sample is small.
+
+## 9b. Live mode: "does it work today, or only on old data?"
+
+**Q: Your test season is 2025. Is this just a replay?**
+No. With a free NASA key the app fetches this season's near-real-time fire points (same VIIRS
+sensor as training) and forecast weather, builds features with the exact training code, and
+scores today. It rebuilds every 3 hours. 2025 stays as the replay because it is the only season
+with a complete, untouched test.
+
+**Q: How do you evaluate a season that hasn't finished?**
+A forecast for day d is about d+1..d+3, so its label exists only once data for d+3 does. Days up
+to (last data - 3) are scored; the last three are shown as "not known yet" rather than as zero
+fires, which would be a silent label error. 2026 so far: 0.227 vs 0.144 PR-AUC against the best
+simple rule.
+
+**Q: 72.6% capture in 2026 vs 36.8% in 2025: did the model get better?**
+No, and I would not claim that. Early October fires are few and concentrated (two districts have
+half of them), so ranking the top 10% is easier. The comparable signal is the margin over the
+rule on the same days, which held. That is the online-evaluation habit: compare against a
+baseline on identical data, not against last year's headline.
+
+**Q: What breaks in production that didn't in the notebook?**
+API limits (FIRMS allows 5 days per request: windowed fetches, caching of settled windows),
+outages (keep serving the last good build and expose the error), and caches (build-versioned
+URLs so browsers never show an old forecast as new). The key is a secret in `.env` or a Space
+secret, never in git.
 
 ## 10. Questions to ask back
 

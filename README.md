@@ -23,7 +23,12 @@ forward-looking, explained risk map at ~36 km2 resolution.
 | Random guess | 0.049 | 10.0% |
 
 *Fire capture @10%: if officials watched only the 10% of cells ranked highest each day, the share
-of the next 3 days' fires they would cover.* Full results: [`eval/RESULTS.md`](eval/RESULTS.md).
+of the next 3 days' fires they would cover.*
+
+**Live 2026 season:** with a free NASA key the same model forecasts the season happening now from
+today's satellite data, and scores itself as outcomes come in. So far (31 days to 22 Oct) it beats
+the best simple rule again: PR-AUC 0.227 vs 0.144. Partial-season numbers are not comparable with
+the 2025 table; see [Live mode](docs/LIVE.md). Full results: [`eval/RESULTS.md`](eval/RESULTS.md).
 How the model was chosen (7 model families, bootstrap tests, ablation):
 [`docs/MODEL_SELECTION.md`](docs/MODEL_SELECTION.md).
 
@@ -35,6 +40,7 @@ used here, in plain words, with the file that implements it and the result it pr
 | Part | What it does | Details |
 | --- | --- | --- |
 | Forecast | LightGBM risk per ~36 km2 cell for the next 3 days, calibrated, with SHAP reasons | [Model selection](docs/MODEL_SELECTION.md) |
+| Live mode | Today's risk map for the current season from NASA's near-real-time fire data, rebuilt every 3 hours and scored as the season goes; 2025 kept as the replay | [Live mode](docs/LIVE.md) |
 | Dashboard | Dark control-room map: season timeline with play, cell explanations, top-risk list, bulletin and assistant tabs | [Architecture, dashboard design](docs/ARCHITECTURE.md) |
 | Bulletin agents | LangGraph monitor -> analyst -> writer; EN + HI; official approves | [Agents and MCP](docs/AGENTS_AND_MCP.md) |
 | Assistant (RAG) | Hybrid search + multilingual reranker over CAQM, PIB, Haryana and ICAR documents; cited answers; refuses when unsure | [RAG](docs/RAG.md) |
@@ -62,6 +68,17 @@ uv run python -m parali serve
 Open http://127.0.0.1:8000 (API docs at http://127.0.0.1:8000/docs). On the very first start the
 app downloads its two search models (~1 GB, once) and indexes the documents in the background;
 after that it is ready a few seconds after starting, and answers take a few seconds.
+
+Optional: **live mode** (the current season, from today's satellite data). Get a free key at
+https://firms.modaps.eosdis.nasa.gov/api/map_key/, then:
+
+```bash
+cp .env.example .env            # put the key in FIRMS_MAP_KEY=; git ignores .env
+uv run python -m parali data    # once: the archive of earlier seasons the features need
+uv run python -m parali serve   # builds the live season in the background (~2 min)
+```
+
+A **Live / replay** switch then appears in the header. Details: [Live mode](docs/LIVE.md).
 
 Optional: connect any OpenAI-compatible LLM for written answers (otherwise the assistant quotes
 the documents):
@@ -110,7 +127,7 @@ bash deploy/huggingface/deploy.sh <hf-user>/<space>   # public demo (see docs/OP
 ```bash
 uv run python -m parali data    # downloads ~330 MB of FIRMS archives, boundaries, weather (~5 min)
 uv run python -m parali train   # trains, evaluates, writes eval/ and data/demo/ (~2 min)
-uv run pytest                   # 48 tests (model tests skip unless the optional groups are installed)
+uv run pytest                   # 51 tests (model tests skip unless the optional groups are installed)
 ```
 
 ## How it works
@@ -134,7 +151,9 @@ Architecture: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 - It predicts **satellite-detected** fires. Detected daytime fires fell ~17x from 2021 to 2025 while
   night detections rose, so some burning may be happening when the satellite is not overhead.
 - The 2025 test season was much quieter than the training seasons.
-- Weather adds little today because only observed weather is used; forecast weather is planned.
+- Weather adds little because training used observed weather; live mode uses forecast weather
+  for the coming days, a small mismatch.
+- Live mode does not learn from the current season; it is scored on it.
 - The burn-scar model is accurate on NASA's US data but does not transfer to post-harvest Punjab
   without local labels; it is documented, not shown on the map.
 - Small local LLMs (0.5B-1.5B) can be taught the citation format but not good content; without a

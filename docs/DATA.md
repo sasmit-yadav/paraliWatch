@@ -9,7 +9,7 @@ the dashboard needs are committed in `data/demo/`.
 | Data | Source | Licence / terms | How we use it |
 | --- | --- | --- | --- |
 | Active fire points | [NASA FIRMS](https://firms.modaps.eosdis.nasa.gov/), VIIRS S-NPP 375 m, yearly country archive for India | NASA open data; cite FIRMS | Fire counts per cell per day, 2019-2025 |
-| Recent fires (live mode) | FIRMS area API, `VIIRS_SNPP_NRT` | Free MAP_KEY | Optional; not needed for the demo |
+| Recent fires (live mode) | FIRMS area API, `VIIRS_SNPP_NRT` | Free MAP_KEY | Optional; turns on live mode ([Live mode](LIVE.md)) |
 | District and state boundaries | [geoBoundaries](https://www.geoboundaries.org/) gbOpen IND ADM1 / ADM2 (simplified) | CC BY 2.5 IN (ADM1), ODbL 1.0 (ADM2) | Study-area outline, district names |
 | Weather | [Open-Meteo historical API](https://open-meteo.com/en/docs/historical-weather-api) (ERA5) | CC BY 4.0, non-commercial free tier | Daily temperature, humidity, rain, wind |
 

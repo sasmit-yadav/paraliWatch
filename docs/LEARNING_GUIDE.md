@@ -111,6 +111,7 @@ Suggested route through the docs:
 | Tracing | Time and details of each step of one request | `parali/ops/trace.py` | Reranker is the slow step (~5 s) |
 | Feedback loop | User ratings become new test cases | `parali/ops/feedback.py` | Found and fixed a sentence-splitting bug |
 | Testing and CI | Automatic checks on every change | `tests/`, `.github/workflows/ci.yml` | Unit tests for leakage, metrics, guardrails, DPO maths |
+| Online evaluation, live data | Run the model on data arriving now and score it as answers come in | `parali/live.py` ([Live mode](LIVE.md)) | 2026 so far: PR-AUC 0.227 vs rule 0.144 |
 | Containers and deployment | Same environment everywhere; public demo | `Dockerfile`, `deploy/huggingface/` | Image verified; Space script tested |
 
 ## 10. Not covered (and why)

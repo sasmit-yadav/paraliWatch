@@ -11,7 +11,7 @@ const BANDS = [
 const ACCENT = "#76b900";
 // Below 5% the cell is left clear so the map highlights where action is needed.
 
-const state = { dates: [], index: 0, selected: null, metrics: null, bulletin: null, lang: "en", season: [], timer: null };
+const state = { dates: [], index: 0, selected: null, metrics: null, bulletin: null, lang: "en", timeline: [], year: null, mode: "replay", version: "", timer: null };
 const $ = (id) => document.getElementById(id);
 const pct = (x, digits = 0) => `${(100 * x).toFixed(digits)}%`;
 
@@ -23,19 +23,23 @@ async function getJSON(url) {
 
 // Day data (map, fires, top cells) is kept in memory and the next day is fetched ahead,
 // so stepping and playing through the season don't wait for the network.
+// Every request names the season; live data also carries its build time, so a rebuild
+// (every few hours) gets fresh URLs instead of stale browser-cached ones.
+const qs = (d) => `date=${d}&season=${state.year}` + (state.version ? `&v=${encodeURIComponent(state.version)}` : "");
 const dayCache = new Map();
 function dayData(d) {
-  if (!dayCache.has(d)) {
+  const key = `${state.year}|${state.version}|${d}`;
+  if (!dayCache.has(key)) {
     const p = Promise.all([
-      getJSON(`/api/risk?date=${d}&min_prob=0.05`),
-      getJSON(`/api/fires?date=${d}`),
-      getJSON(`/api/top?date=${d}&n=10`),
+      getJSON(`/api/risk?${qs(d)}&min_prob=0.05`),
+      getJSON(`/api/fires?${qs(d)}`),
+      getJSON(`/api/top?${qs(d)}&n=10`),
     ]);
-    p.catch(() => dayCache.delete(d));
-    dayCache.set(d, p);
+    p.catch(() => dayCache.delete(key));
+    dayCache.set(key, p);
     if (dayCache.size > 40) dayCache.delete(dayCache.keys().next().value);
   }
-  return dayCache.get(d);
+  return dayCache.get(key);
 }
 
 const map = new maplibregl.Map({
@@ -95,7 +99,7 @@ async function loadDay() {
 
 async function loadBulletin(d) {
   try {
-    state.bulletin = await getJSON(`/api/bulletin?date=${d}`);
+    state.bulletin = await getJSON(`/api/bulletin?${qs(d)}`);
   } catch {
     state.bulletin = null;
   }
@@ -158,7 +162,7 @@ async function selectCell(cell, scroll) {
   const d = state.dates[state.index];
   let info;
   try {
-    info = await getJSON(`/api/cell/${cell}?date=${d}`);
+    info = await getJSON(`/api/cell/${cell}?${qs(d)}`);
   } catch {
     return;
   }
@@ -186,7 +190,9 @@ async function selectCell(cell, scroll) {
     .join("");
   const n = info.fires_next3_actual;
   $("d-outcome").textContent =
-    n > 0
+    n === null || n === undefined
+      ? "What actually happened: not known yet. The 3 days after this date have not all passed."
+      : n > 0
       ? `What actually happened: ${n} fire(s) were detected here in the next 3 days.`
       : "What actually happened: no fires were detected here in the next 3 days.";
   if (scroll) $("detail").scrollIntoView({ behavior: "smooth", block: "start" });
@@ -211,25 +217,108 @@ map.on("load", async () => {
   map.on("mouseenter", "risk-fill", () => (map.getCanvas().style.cursor = "pointer"));
   map.on("mouseleave", "risk-fill", () => (map.getCanvas().style.cursor = ""));
 
-  const meta = await getJSON("/api/meta");
-  if (meta.bbox) map.fitBounds([[meta.bbox[0], meta.bbox[1]], [meta.bbox[2], meta.bbox[3]]], { padding: 24, duration: 0 });
-  state.dates = meta.dates;
-  state.index = Math.max(0, meta.dates.indexOf(meta.default_date));
-  $("date-range").max = meta.dates.length - 1;
-  if (meta.metrics && meta.metrics.test) {
-    const m = meta.metrics.test;
-    const rule = meta.metrics.best_rule;
-    $("metrics-line").textContent =
-      `On the unseen 2025 season, the 10% of cells ranked highest each day held ${pct(m.fire_capture_top10pct, 1)} ` +
-      `of the next 3 days' fires (best simple rule: ${pct(rule.fire_capture_top10pct, 1)}).`;
-    $("kpi-capture").textContent = pct(m.fire_capture_top10pct, 1);
-    $("kpi-capture-rule").textContent = `best rule ${pct(rule.fire_capture_top10pct, 1)}`;
-    $("kpi-prauc").textContent = m.pr_auc.toFixed(3);
-    $("kpi-prauc-rule").textContent = `best rule ${rule.pr_auc.toFixed(3)}`;
-  }
-  try { state.season = await getJSON("/api/season"); } catch { state.season = []; }
-  await loadDay();
+  await loadSeason(null, true);
+  // live data is rebuilt every few hours: pick up a new build without a page reload
+  setInterval(refreshLive, 10 * 60 * 1000);
 });
+
+const SHORT_DATE = { day: "numeric", month: "short" };
+const fmtDate = (iso) => new Date(iso.length === 10 ? iso + "T00:00:00" : iso).toLocaleDateString("en-IN", SHORT_DATE);
+
+// Load a season (null = the server's default: live when available) and everything that depends on it.
+async function loadSeason(season, first = false) {
+  const meta = await getJSON("/api/meta" + (season ? `?season=${season}` : ""));
+  if (first && meta.bbox) map.fitBounds([[meta.bbox[0], meta.bbox[1]], [meta.bbox[2], meta.bbox[3]]], { padding: 24, duration: 0 });
+  const keepDate = !first && meta.season === state.year ? state.dates[state.index] : null;
+  state.year = meta.season;
+  state.mode = meta.mode;
+  state.version = meta.live ? meta.live.built_at : "";
+  state.dates = meta.dates;
+  const at = keepDate ? meta.dates.indexOf(keepDate) : -1;
+  state.index = at >= 0 ? at : Math.max(0, meta.dates.indexOf(meta.default_date));
+  $("date-range").max = meta.dates.length - 1;
+  if (!keepDate) {
+    state.selected = null;
+    $("detail").hidden = true;
+    highlight("");
+  }
+  renderSeasonSwitch(meta);
+  renderHeader(meta);
+  try { state.timeline = await getJSON(`/api/season?season=${state.year}` + (state.version ? `&v=${encodeURIComponent(state.version)}` : "")); } catch { state.timeline = []; }
+  await loadDay();
+}
+
+function renderSeasonSwitch(meta) {
+  const seg = $("season-seg");
+  const seasons = meta.seasons || [];
+  seg.hidden = seasons.length < 2;
+  seg.innerHTML = seasons
+    .map((s) => {
+      const on = s.season === meta.season;
+      const label = s.mode === "live" ? `<span class="live-dot" aria-hidden="true"></span>Live ${s.season}` : `${s.season} replay`;
+      return `<button class="seg-btn${on ? " active" : ""}" aria-pressed="${on}" data-season="${s.season}">${label}</button>`;
+    })
+    .join("");
+}
+
+$("season-seg").addEventListener("click", (e) => {
+  const btn = e.target.closest("button[data-season]");
+  if (!btn || Number(btn.dataset.season) === state.year) return;
+  setPlaying(false);
+  loadSeason(Number(btn.dataset.season));
+});
+
+function renderHeader(meta) {
+  const live = meta.mode === "live";
+  const badge = $("mode-badge");
+  badge.classList.toggle("replay", !live);
+  if (live) {
+    const built = new Date(meta.live.built_at);
+    badge.textContent = `Satellite data to ${fmtDate(meta.live.last_data_date)}`;
+    badge.title = `Rebuilt ${built.toLocaleString("en-IN", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })} from ${meta.live.source}`;
+  } else {
+    badge.textContent = `${meta.season} season · scored`;
+    badge.title = "A finished season the model never saw in training, replayed day by day";
+  }
+  $("timeline-title").textContent = live ? `Fires detected per day, ${meta.season} season so far` : `Fires detected per day, ${meta.season} season`;
+  $("data-line").textContent = live
+    ? "Data: NASA FIRMS (VIIRS, near-real-time), Open-Meteo forecast, geoBoundaries."
+    : "Data: NASA FIRMS (VIIRS), Open-Meteo ERA5, geoBoundaries.";
+
+  const m = meta.metrics && meta.metrics.test;
+  const rule = meta.metrics && meta.metrics.best_rule;
+  for (const id of ["kpi-capture", "kpi-capture-rule", "kpi-prauc", "kpi-prauc-rule"]) $(id).textContent = id.endsWith("rule") ? "" : "–";
+  $("kpi-prauc-label").textContent = live ? `PR-AUC (${meta.season} so far)` : `PR-AUC (${meta.season}, unseen)`;
+  $("kpis").setAttribute("aria-label", live ? `Model accuracy on the ${meta.season} season so far` : `Model performance on the unseen ${meta.season} season`);
+  if (!m || !rule) {
+    $("metrics-line").textContent = live
+      ? "Accuracy appears once the first forecasts' 3-day windows have passed."
+      : "";
+    return;
+  }
+  const scope = live
+    ? `So far this season (${meta.metrics.days_scored} days whose outcome is known)`
+    : `On the unseen ${meta.season} season`;
+  $("metrics-line").textContent =
+    `${scope}, the 10% of cells ranked highest each day held ${pct(m.fire_capture_top10pct, 1)} ` +
+    `of the next 3 days' fires (best simple rule: ${pct(rule.fire_capture_top10pct, 1)}).`;
+  $("kpi-capture").textContent = pct(m.fire_capture_top10pct, 1);
+  $("kpi-capture-rule").textContent = `best rule ${pct(rule.fire_capture_top10pct, 1)}`;
+  $("kpi-prauc").textContent = m.pr_auc.toFixed(3);
+  $("kpi-prauc-rule").textContent = `best rule ${rule.pr_auc.toFixed(3)}`;
+}
+
+async function refreshLive() {
+  if (state.mode !== "live" || state.timer) return;
+  try {
+    const meta = await getJSON(`/api/meta?season=${state.year}`);
+    if (meta.live && meta.live.built_at !== state.version) {
+      const onLatest = state.index === state.dates.length - 1;
+      await loadSeason(state.year);
+      if (onLatest && state.index !== state.dates.length - 1) { state.index = state.dates.length - 1; loadDay(); }
+    }
+  } catch { /* try again next time */ }
+}
 
 $("date-range").addEventListener("input", (e) => { state.index = Number(e.target.value); loadDay(); });
 function step(delta) {
@@ -266,7 +355,7 @@ $("play").addEventListener("click", () => {
 // Season timeline: fires detected per day, the selected day in the accent colour.
 function renderTimeline() {
   const svg = $("timeline");
-  const rows = state.season;
+  const rows = state.timeline;
   if (!rows.length) { svg.innerHTML = ""; return; }
   const w = svg.clientWidth || 600, h = 46, top = 2, axis = 12;
   const max = Math.max(...rows.map((r) => r.fires), 1);
@@ -296,7 +385,7 @@ tip.className = "tooltip";
 tip.hidden = true;
 document.querySelector(".timeline-wrap").appendChild(tip);
 $("date-range").addEventListener("pointermove", (e) => {
-  const rows = state.season;
+  const rows = state.timeline;
   if (!rows.length) return;
   const box = $("timeline").getBoundingClientRect();
   const i = Math.min(rows.length - 1, Math.max(0, Math.floor(((e.clientX - box.left) / box.width) * rows.length)));
@@ -346,7 +435,7 @@ $("approve-form").addEventListener("submit", async (e) => {
   e.preventDefault();
   const name = $("approver").value.trim();
   if (name.length < 2) { $("approver").focus(); return; }
-  const res = await fetch(`/api/bulletin/approve?date=${state.dates[state.index]}`, {
+  const res = await fetch(`/api/bulletin/approve?${qs(state.dates[state.index])}`, {
     method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ official: name }),
   });
   if (res.ok) { state.bulletin = await res.json(); renderBulletin(); }

@@ -25,12 +25,15 @@
         <span class="brand-sub">Crop-residue fire risk · Punjab &amp; Haryana · next 3 days</span>
       </span>
     </a>
-    <dl class="kpis" aria-label="Model performance on the unseen 2025 season">
-      <div class="kpi"><dt>Fires caught in top 10% of cells</dt><dd><span id="kpi-capture">–</span><small id="kpi-capture-rule"></small></dd></div>
-      <div class="kpi"><dt>PR-AUC (2025, unseen)</dt><dd><span id="kpi-prauc">–</span><small id="kpi-prauc-rule"></small></dd></div>
+    <dl class="kpis" id="kpis" aria-label="Model performance">
+      <div class="kpi"><dt id="kpi-capture-label">Fires caught in top 10% of cells</dt><dd><span id="kpi-capture">–</span><small id="kpi-capture-rule"></small></dd></div>
+      <div class="kpi"><dt id="kpi-prauc-label">PR-AUC</dt><dd><span id="kpi-prauc">–</span><small id="kpi-prauc-rule"></small></dd></div>
       <div class="kpi"><dt>Grid</dt><dd>2,455<small>H3 cells</small></dd></div>
     </dl>
-    <span class="badge" id="mode-badge">Demo · 2025 season replay</span>
+    <div class="season-switch">
+      <div class="seg" id="season-seg" role="group" aria-label="Season" hidden></div>
+      <span class="badge" id="mode-badge">Loading…</span>
+    </div>
   </header>
 
   <main class="layout">
@@ -70,7 +73,7 @@
         <section class="card about">
           <p id="metrics-line"></p>
           <p>Cells are ~36 km² H3 hexagons. Probabilities are calibrated on the 2024 season.
-            Data: NASA FIRMS (VIIRS), Open-Meteo ERA5, geoBoundaries.</p>
+            <span id="data-line">Data: NASA FIRMS (VIIRS), Open-Meteo ERA5, geoBoundaries.</span></p>
         </section>
       </div>
 
@@ -134,7 +137,7 @@
         </div>
         <div class="timeline-wrap">
           <div class="timeline-head">
-            <span class="eyebrow">Fires detected per day, 2025 season</span>
+            <span class="eyebrow" id="timeline-title">Fires detected per day</span>
             <span class="timeline-readout" id="timeline-readout"></span>
           </div>
           <svg id="timeline" class="timeline" role="img" aria-label="Fires detected per day across the season; the selected day is highlighted"></svg>

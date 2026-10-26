@@ -20,6 +20,7 @@ from parali.app.explain import describe
 class Store:
     demo_dir: Path = config.DEMO_DIR
     year: int = config.TEST_YEARS[0]
+    live: bool = False  # live season: open on the latest day; recent outcomes are not known yet
 
     @cached_property
     def grid(self) -> pd.DataFrame:
@@ -57,7 +58,9 @@ class Store:
         return sorted(self.forecast["date"].unique())
 
     def default_date(self) -> date:
-        """The day with the most fires in the following 3 days: the most interesting demo day."""
+        """Live: the latest day. Replay: the day with the most fires in the following 3 days."""
+        if self.live:
+            return self.dates[-1]
         totals = self.forecast.groupby("date")["fires_next3_count"].sum()
         return totals.idxmax()
 
@@ -180,7 +183,7 @@ class Store:
         out.update(
             date=d.isoformat(),
             reasons=reasons,
-            fires_next3_actual=int(r["fires_next3_count"]),
+            fires_next3_actual=None if pd.isna(r["fires_next3_count"]) else int(r["fires_next3_count"]),
             history=[
                 {
                     "date": (history_start + timedelta(days=i)).isoformat(),

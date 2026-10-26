@@ -69,12 +69,14 @@ class State(TypedDict, total=False):
     bulletin: Bulletin
 
 
-def _store() -> Store:
-    return Store()
+def _store(d: date) -> Store:
+    from parali.app import seasons
+
+    return seasons.for_date(d)
 
 
 def monitor(state: State) -> State:
-    s, d = _store(), state["date"]
+    s, d = _store(state["date"]), state["date"]
     fires = s.fires.merge(s.grid[["district"]], left_on="cell", right_index=True)
     last3 = fires[(fires["acq_date"] > d - timedelta(days=3)) & (fires["acq_date"] <= d)]
     prev3 = fires[(fires["acq_date"] > d - timedelta(days=6)) & (fires["acq_date"] <= d - timedelta(days=3))]
@@ -97,7 +99,7 @@ def _level(expected: float, high_cells: int) -> Level:
 
 def analyst(state: State, n_districts: int = 5, cells_per_district: int = 2) -> State:
     """Plan: focus on the districts expected to have the most fire cells, and explain why."""
-    s, d, obs = _store(), state["date"], state["observations"]
+    s, d, obs = _store(state["date"]), state["date"], state["observations"]
     focus = []
     day = s.day(d).merge(s.grid[["district"]], left_on="cell", right_index=True)
     for row in obs["summary"][:n_districts]:

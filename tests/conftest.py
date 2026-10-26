@@ -40,3 +40,14 @@ def flat_weather(small_grid) -> pd.DataFrame:
                     }
                 )
     return pd.DataFrame(frames)
+
+
+def pytest_configure(config):
+    """Tests use the committed 2025 replay: point live mode at an empty folder for the whole run
+    (tests that need a live season build their own and monkeypatch LIVE_DIR)."""
+    import tempfile
+    from pathlib import Path
+
+    from parali import config as parali_config
+
+    parali_config.LIVE_DIR = Path(tempfile.mkdtemp(prefix="parali-live-empty-"))

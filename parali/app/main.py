@@ -15,6 +15,7 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 from parali import __version__, config
+from parali.app import seasons
 from parali.app.store import Store
 
 STATIC = config.ROOT / "parali" / "app" / "static"
@@ -40,9 +41,44 @@ def _warm_up() -> None:
     threading.Thread(target=load, daemon=True).start()
 
 
+LIVE_STATUS: dict = {"state": "off", "error": None}
+
+
+def _live_updates() -> None:
+    """With FIRMS_MAP_KEY set: rebuild the live season now if it is stale, then every few hours
+    (PARALI_LIVE_REFRESH_HOURS, default 3). Runs in the background; the app serves meanwhile."""
+    import logging
+    import os
+    import threading
+    import time
+
+    from parali import live
+
+    if not live.available() or os.environ.get("PARALI_LIVE", "1") != "1":
+        LIVE_STATUS["state"] = "off (set FIRMS_MAP_KEY in .env)" if not live.available() else "off"
+        return
+
+    def loop() -> None:
+        while True:
+            if live.stale():
+                LIVE_STATUS.update(state="updating", error=None)
+                try:
+                    live.refresh()
+                    LIVE_STATUS["state"] = "ok"
+                except Exception as exc:  # network or data problems: keep serving the last build
+                    logging.getLogger(__name__).warning("live refresh failed: %s", exc)
+                    LIVE_STATUS.update(state="error", error=str(exc)[:300])
+            else:
+                LIVE_STATUS["state"] = "ok"
+            time.sleep(600)  # check every 10 minutes; refresh() only runs when the data is stale
+
+    threading.Thread(target=loop, daemon=True).start()
+
+
 @asynccontextmanager
 async def lifespan(_: FastAPI):
     _warm_up()
+    _live_updates()
     yield
 
 
@@ -52,14 +88,16 @@ app = FastAPI(
     description="Next-3-day crop-residue fire risk for Punjab and Haryana, with reasons.",
     lifespan=lifespan,
 )
-store = Store()
+store = seasons.REPLAY  # kept for code that wants the replay season directly
 # Compress JSON: one day's risk map is ~500 KB of GeoJSON and shrinks about 8x.
 app.add_middleware(GZipMiddleware, minimum_size=1000)
 
-# The demo season never changes while the app runs, so browsers may reuse these responses.
+# The replay season never changes while the app runs, so browsers may reuse these responses.
+# Live data changes with each rebuild: the dashboard adds ?v=<build time> so a new build gets new
+# URLs; live requests without it are only cached briefly. /api/meta is never cached (it announces
+# new builds).
 CACHEABLE = (
     "/static/",
-    "/api/meta",
     "/api/risk",
     "/api/fires",
     "/api/top",
@@ -74,19 +112,34 @@ CACHEABLE = (
 async def cache_headers(request: Request, call_next):
     response = await call_next(request)
     if request.method == "GET" and response.status_code == 200 and request.url.path.startswith(CACHEABLE):
-        response.headers.setdefault("Cache-Control", "public, max-age=3600")
+        response.headers.setdefault("Cache-Control", f"public, max-age={_max_age(request)}")
     return response
 
 
-def _parse_day(value: str | None) -> date:
+def _max_age(request: Request) -> int:
+    q = request.query_params
+    if "v" in q or q.get("season") == str(seasons.REPLAY.year) or request.url.path.startswith("/static/"):
+        return 3600
+    return 120 if seasons.live_store() is not None else 3600
+
+
+def _season(season: int | None) -> Store:
+    try:
+        return seasons.get(season)
+    except KeyError as exc:
+        raise HTTPException(404, f"no data for season {season}") from exc
+
+
+def _parse_day(value: str | None, st: Store | None = None) -> date:
+    st = st or seasons.get()
     if value is None:
-        return store.default_date()
+        return st.default_date()
     try:
         d = date.fromisoformat(value)
     except ValueError as exc:
         raise HTTPException(400, "date must be YYYY-MM-DD") from exc
-    if d not in set(store.dates):
-        raise HTTPException(404, f"no forecast for {d}; available {store.dates[0]} to {store.dates[-1]}")
+    if d not in set(st.dates):
+        raise HTTPException(404, f"no forecast for {d}; available {st.dates[0]} to {st.dates[-1]}")
     return d
 
 
@@ -104,43 +157,76 @@ def health() -> dict:
     return {"status": "ok", "version": __version__}
 
 
+@app.get("/api/live/status")
+def live_status() -> dict:
+    """Live mode: is it on, when was it last rebuilt, up to which day is the satellite data."""
+    from parali import live
+
+    m = live.meta() or {}
+    return {**LIVE_STATUS, "built_at": m.get("built_at"), "last_data_date": m.get("last_data_date")}
+
+
 @app.get("/api/meta")
-def meta() -> dict:
-    return {
-        "mode": "demo",
-        "season": store.year,
-        "dates": [d.isoformat() for d in store.dates],
-        "default_date": store.default_date().isoformat(),
+def meta(season: int | None = None) -> dict:
+    """The served season (live if available unless ?season= picks one), its dates and accuracy."""
+    from parali import live
+
+    st = _season(season)
+    out = {
+        "mode": "live" if st.live else "replay",
+        "season": st.year,
+        "seasons": seasons.available(),
+        "dates": [d.isoformat() for d in st.dates],
+        "default_date": st.default_date().isoformat(),
         "horizon_days": config.HORIZON_DAYS,
         "bbox": config.BBOX,
         "metrics": _metrics(),
     }
+    if st.live:
+        m = live.meta() or {}
+        out["live"] = {k: m.get(k) for k in ("built_at", "last_data_date", "last_complete_outcome", "source")}
+        out["metrics"] = (
+            {
+                "test": m["metrics"]["model"],
+                "best_rule": m["metrics"]["best_rule"],
+                "days_scored": m["metrics"]["days_scored"],
+            }
+            if m.get("metrics")
+            else {}
+        )
+    return out
 
 
 @app.get("/api/risk")
-def risk(date: str | None = None, min_prob: float = Query(0.0, ge=0, le=1)) -> dict:
-    return store.risk_geojson(_parse_day(date), min_prob)
+def risk(
+    date: str | None = None, min_prob: float = Query(0.0, ge=0, le=1), season: int | None = None
+) -> dict:
+    st = _season(season)
+    return st.risk_geojson(_parse_day(date, st), min_prob)
 
 
 @app.get("/api/fires")
-def fires(date: str | None = None, days: int = Query(1, ge=1, le=7)) -> dict:
-    return store.fires_geojson(_parse_day(date), days)
+def fires(date: str | None = None, days: int = Query(1, ge=1, le=7), season: int | None = None) -> dict:
+    st = _season(season)
+    return st.fires_geojson(_parse_day(date, st), days)
 
 
 @app.get("/api/season")
-def season() -> list[dict]:
+def season_timeline(season: int | None = None) -> list[dict]:
     """Per-day totals for the whole season: fires detected, expected fire cells, high-risk cells."""
-    return store.season
+    return _season(season).season
 
 
 @app.get("/api/top")
-def top(date: str | None = None, n: int = Query(10, ge=1, le=100)) -> list[dict]:
-    return store.top(_parse_day(date), n)
+def top(date: str | None = None, n: int = Query(10, ge=1, le=100), season: int | None = None) -> list[dict]:
+    st = _season(season)
+    return st.top(_parse_day(date, st), n)
 
 
 @app.get("/api/cell/{cell}")
-def cell(cell: str, date: str | None = None) -> dict:
-    out = store.cell(cell, _parse_day(date))
+def cell(cell: str, date: str | None = None, season: int | None = None) -> dict:
+    st = _season(season)
+    out = st.cell(cell, _parse_day(date, st))
     if out is None:
         raise HTTPException(404, "cell not in study area")
     return out
@@ -152,8 +238,9 @@ def districts() -> dict:
 
 
 @app.get("/api/district-summary")
-def district_summary(date: str | None = None) -> list[dict]:
-    return store.district_summary(_parse_day(date))
+def district_summary(date: str | None = None, season: int | None = None) -> list[dict]:
+    st = _season(season)
+    return st.district_summary(_parse_day(date, st))
 
 
 class Question(BaseModel):
@@ -304,12 +391,19 @@ def put_profile(user_id: str, p: ProfileIn) -> dict:
 
 
 @app.get("/api/bulletin")
-def get_bulletin(date: str | None = None) -> dict:
-    """The agent-written district bulletin for a date (generated on first request, saved as draft)."""
+def get_bulletin(date: str | None = None, season: int | None = None) -> dict:
+    """The agent-written district bulletin for a date (generated on first request, saved as draft).
+    Live-season drafts are rewritten after each data refresh; approved bulletins are kept."""
+    from parali import live
     from parali.agents import bulletin
 
-    d = _parse_day(date)
-    return (bulletin.load(d) or bulletin.generate(d)).model_dump(mode="json")
+    st = _season(season)
+    d = _parse_day(date, st)
+    b = bulletin.load(d)
+    built = (live.meta() or {}).get("built_at") if st.live else None
+    if b is None or (built and b.status == "draft" and b.generated_at < built):
+        b = bulletin.generate(d)
+    return b.model_dump(mode="json")
 
 
 class Approval(BaseModel):
@@ -317,11 +411,12 @@ class Approval(BaseModel):
 
 
 @app.post("/api/bulletin/approve")
-def approve_bulletin(a: Approval, date: str | None = None) -> dict:
+def approve_bulletin(a: Approval, date: str | None = None, season: int | None = None) -> dict:
     """Human in the loop: an official approves the draft before it is shared."""
     from parali.agents import bulletin
 
-    return bulletin.approve(_parse_day(date), a.official).model_dump(mode="json")
+    st = _season(season)
+    return bulletin.approve(_parse_day(date, st), a.official).model_dump(mode="json")
 
 
 app.mount("/static", StaticFiles(directory=STATIC), name="static")

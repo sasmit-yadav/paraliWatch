@@ -2,6 +2,24 @@
 
 Decisions and findings, newest first. Each entry says what changed and why.
 
+## 2026-10-26: live 2026 season
+
+- The dashboard only replayed 2025, a finished season. Live mode now runs the same saved model on
+  this season's data: NASA FIRMS near-real-time VIIRS S-NPP fire points (same sensor as training)
+  and Open-Meteo forecast weather, through the same `build_panel` code. Rebuild: ~2 minutes on 2
+  cores; refreshed every 3 hours in the background.
+- FIRMS area API accepts at most 5 days per request, so the season is fetched in 5-day windows;
+  windows older than a week are cached because near-real-time files stop changing.
+- Outcomes are only complete 3 days after a forecast, so the last 3 days show "not known yet"
+  instead of a misleading 0, and only completed days are scored.
+- 2026 so far (31 scored days to 22 Oct): PR-AUC 0.227 vs 0.144 for the best simple rule,
+  capture@10% 72.6% vs 54.7%. Not comparable with the 2025 table (partial, concentrated season);
+  the comparable part is the margin over the rule, which held.
+- API: every data endpoint takes `?season=`; the bulletin agents and MCP tools pick the season by
+  date. Dashboard: Live / replay switch, data-freshness badge, build-versioned URLs so caches
+  never serve an old build, a check for new builds every 10 minutes.
+- The key lives only in `.env` (git-ignored) or a Space secret; `data/live/` is git-ignored.
+
 ## 2026-10-25 (evening): speed
 
 - Warm-up at start-up is now on by default and also precomputes (and saves) the vectors of every

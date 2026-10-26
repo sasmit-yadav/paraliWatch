@@ -213,8 +213,11 @@ def build_season(
     return pd.DataFrame(frame)
 
 
-def build_panel(fires: pd.DataFrame, weather: pd.DataFrame, grid: pd.DataFrame, years=None) -> pd.DataFrame:
-    """All seasons stacked. The first year in config.YEARS only seeds 'last year' features."""
+def build_panel(
+    fires: pd.DataFrame, weather: pd.DataFrame, grid: pd.DataFrame, years=None, only: int | None = None
+) -> pd.DataFrame:
+    """All seasons stacked. The first year in config.YEARS only seeds 'last year' features.
+    only=<year>: build just that season (earlier years still feed its history features)."""
     from parali.pipeline.weather import weather_points
 
     years = years or config.YEARS
@@ -225,6 +228,8 @@ def build_panel(fires: pd.DataFrame, weather: pd.DataFrame, grid: pd.DataFrame, 
 
     frames = []
     for i, year in enumerate(years[1:], start=1):
+        if only is not None and year != only:
+            continue
         earlier = [seasons[y].counts.sum(axis=1) for y in years[:i]]
         history = np.mean(earlier, axis=0)
         frames.append(build_season(seasons[year], seasons[years[i - 1]], history, grid, weather, a1, a2))

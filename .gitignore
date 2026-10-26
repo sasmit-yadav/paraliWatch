@@ -9,6 +9,8 @@ __pycache__/
 # Data: raw downloads and intermediate files are rebuilt with `python -m parali data`
 data/raw/
 data/processed/
+# Live season (rebuilt from today's satellite data every few hours: python -m parali live)
+data/live/
 models/*.tmp
 
 # Secrets

@@ -24,25 +24,36 @@ mcp = MCPServer(
         "Crop-residue fire risk forecasts, explanations, bulletins and scheme answers for Punjab and Haryana."
     ),
 )
-_store = Store()
+
+
+def _store_for(d: date | None = None) -> Store:
+    """The live season when built (and the date is in it), otherwise the 2025 replay."""
+    from parali.app import seasons
+
+    return seasons.get() if d is None else seasons.for_date(d)
 
 
 def _day(value: str | None) -> date:
     if not value:
-        return _store.default_date()
+        return _store_for().default_date()
     d = date.fromisoformat(value)
-    if d not in set(_store.dates):
-        raise ValueError(f"No forecast for {d}. Available: {_store.dates[0]} to {_store.dates[-1]}.")
+    s = _store_for(d)
+    if d not in set(s.dates):
+        raise ValueError(f"No forecast for {d}. Available: {s.dates[0]} to {s.dates[-1]}.")
     return d
 
 
 @mcp.tool()
 def available_dates() -> dict:
-    """Dates that have a forecast, and the default (busiest) date."""
+    """Dates that have a forecast (the live season if running, else the 2025 replay) and the
+    default date (live: latest day; replay: busiest day)."""
+    s = _store_for()
     return {
-        "first": _store.dates[0].isoformat(),
-        "last": _store.dates[-1].isoformat(),
-        "default": _store.default_date().isoformat(),
+        "season": s.year,
+        "live": s.live,
+        "first": s.dates[0].isoformat(),
+        "last": s.dates[-1].isoformat(),
+        "default": s.default_date().isoformat(),
     }
 
 
@@ -51,7 +62,7 @@ def get_risk(date: str | None = None, district: str | None = None, top_n: int = 
     """Highest-risk H3 cells for a date (YYYY-MM-DD), optionally within one district. Each item has
     the calibrated probability of a detected fire in the next 3 days and its rank that day."""
     d = _day(date)
-    rows = _store.top(d, n=10_000 if district else max(1, min(top_n, 100)))
+    rows = _store_for(d).top(d, n=10_000 if district else max(1, min(top_n, 100)))
     if district:
         rows = [r for r in rows if r["district"].lower() == district.lower()][: max(1, min(top_n, 100))]
     return rows
@@ -60,8 +71,9 @@ def get_risk(date: str | None = None, district: str | None = None, top_n: int = 
 @mcp.tool()
 def explain_cell(cell: str, date: str | None = None) -> dict:
     """Why a cell is at risk: top 3 reasons in plain language, 14-day fire history, and what was
-    actually detected in the following 3 days (demo season only)."""
-    out = _store.cell(cell, _day(date))
+    actually detected in the following 3 days (null while those days have not passed)."""
+    d = _day(date)
+    out = _store_for(d).cell(cell, d)
     if out is None:
         raise ValueError("Cell is not in the study area.")
     return out
@@ -71,9 +83,10 @@ def explain_cell(cell: str, date: str | None = None) -> dict:
 def get_fires(date: str | None = None, days: int = 1, district: str | None = None) -> dict:
     """Fire points detected by NASA VIIRS on the given date (and up to 6 days before it)."""
     d = _day(date)
-    fc = _store.fires_geojson(d, max(1, min(days, 7)))
+    s = _store_for(d)
+    fc = s.fires_geojson(d, max(1, min(days, 7)))
     if district:
-        cells = set(_store.grid.index[_store.grid["district"].str.lower() == district.lower()])
+        cells = set(s.grid.index[s.grid["district"].str.lower() == district.lower()])
         fc["features"] = [f for f in fc["features"] if _in_district(f, cells)]
     return {"count": len(fc["features"]), "fires": fc["features"][:500]}
 
@@ -86,7 +99,8 @@ def _in_district(feature: dict, cells: set[str]) -> bool:
 @mcp.tool()
 def district_summary(date: str | None = None) -> list[dict]:
     """Per district: expected number of cells with fires in the next 3 days, and high-risk cells."""
-    return _store.district_summary(_day(date))
+    d = _day(date)
+    return _store_for(d).district_summary(d)
 
 
 @mcp.tool()

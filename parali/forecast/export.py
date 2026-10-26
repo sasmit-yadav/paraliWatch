@@ -19,6 +19,13 @@ CONTEXT = ["fires_3d", "ring1_3d", "ring1_7d", "ring2_3d", "last_year_week", "ra
 
 
 def run(booster, test: pd.DataFrame) -> None:
+    write_season(booster, test, config.DEMO_DIR, DEMO_YEAR, build.load_fires([DEMO_YEAR]))
+    build.step_grid()[["cell", "lat", "lon", "district", "state"]].to_parquet(GRID, index=False)
+
+
+def write_season(booster, test: pd.DataFrame, out_dir, year: int, fires: pd.DataFrame) -> None:
+    """forecast_<year>.parquet (probabilities + top-3 reasons per cell-day) and fires_<year>.parquet."""
+    out_dir.mkdir(parents=True, exist_ok=True)
     reasons = explain(booster, test)
     # the value of each reason's feature, so the dashboard can say "12 fires nearby", not just "ring1_3d"
     values = test.reset_index(drop=True)
@@ -41,13 +48,9 @@ def run(booster, test: pd.DataFrame) -> None:
         out[col] = out[col].astype("category")
     for col in ("reason1_shap", "reason2_shap", "reason3_shap"):
         out[col] = out[col].round(3)
-    out.to_parquet(FORECAST, index=False, compression="zstd")
-
-    fires = build.load_fires([DEMO_YEAR])[
-        ["latitude", "longitude", "acq_date", "acq_time", "frp", "daynight", "cell"]
-    ]
-    fires.to_parquet(FIRES, index=False, compression="zstd")
-    build.step_grid()[["cell", "lat", "lon", "district", "state"]].to_parquet(GRID, index=False)
+    out.to_parquet(out_dir / f"forecast_{year}.parquet", index=False, compression="zstd")
+    fires = fires[["latitude", "longitude", "acq_date", "acq_time", "frp", "daynight", "cell"]]
+    fires.to_parquet(out_dir / f"fires_{year}.parquet", index=False, compression="zstd")
 
 
 def from_saved_model() -> None:

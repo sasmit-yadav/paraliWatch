@@ -57,6 +57,13 @@ button, input, textarea { font: inherit; color: inherit; }
   font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; white-space: nowrap;
   padding: 5px 10px; border: 1px solid var(--accent); color: var(--accent); border-radius: var(--radius);
 }
+.badge.replay { border-color: var(--line-strong); color: var(--muted); }
+.season-switch { display: flex; align-items: center; gap: 10px; }
+.season-switch .seg-btn { display: inline-flex; align-items: center; gap: 6px; letter-spacing: 0.08em; text-transform: uppercase; font-size: 11px; }
+.live-dot { width: 7px; height: 7px; border-radius: 50%; background: #ff5a36; box-shadow: 0 0 0 0 rgba(255, 90, 54, 0.6); animation: pulse 1.8s infinite; }
+.seg-btn.active .live-dot { background: #1a1a1a; animation: none; }
+@keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255, 90, 54, 0.6); } 70% { box-shadow: 0 0 0 7px rgba(255, 90, 54, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 90, 54, 0); } }
+@media (prefers-reduced-motion: reduce) { .live-dot { animation: none; } }
 
 /* ---------- layout ---------- */
 .layout { display: grid; grid-template-columns: 400px 1fr; height: calc(100% - 64px); }
@@ -269,7 +276,7 @@ button, input, textarea { font: inherit; color: inherit; }
   .kpi:first-child { border-left: 0; padding-left: 0; }
   .kpi dt { white-space: normal; }
   .kpi dd small { display: block; margin: 0; }
-  .badge { margin-left: auto; }
+  .season-switch { margin-left: auto; flex-wrap: wrap; justify-content: flex-end; }
   .layout { display: flex; flex-direction: column; height: auto; }
   .stage { order: 1; }
   #map { height: 52vh; flex: none; }

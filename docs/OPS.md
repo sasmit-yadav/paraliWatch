@@ -203,6 +203,11 @@ the app doesn't use (Spaces need Git LFS above 10 MB), and adds `PARALI_WARMUP=1
 models load while the Space starts. It was tested against a local git remote. The real push needs
 your Hugging Face login.
 
+For live mode on the Space, add the secret `FIRMS_MAP_KEY` (never commit it). Live mode also
+needs the archive of earlier seasons, which the repository does not ship; without it the Space
+reports the reason at `/api/live/status` and keeps serving the 2025 replay. See
+[Live mode](LIVE.md).
+
 To add written answers on the Space, set the Space secrets `PARALI_LLM_BASE_URL`,
 `PARALI_LLM_MODEL` and `PARALI_LLM_API_KEY` to any OpenAI-compatible provider. The guardrails
 still apply.
@@ -229,7 +234,21 @@ but recall@1 fell from 0.95 to 0.89 / 0.87.
 The remaining cost is the reranker itself (a 568M-parameter multilingual model, needed for
 Hindi). On a GPU, or with an LLM-free cached answer, answers are effectively instant.
 
-## 8. What is not done (and would be next)
+## 8. Live data
+
+Live mode ([details](LIVE.md)) is the operational loop the rest of this document prepares for:
+
+- **Scheduled refresh:** a background thread in the app checks every 10 minutes and rebuilds the
+  live season when the last build is older than `PARALI_LIVE_REFRESH_HOURS` (3). A failed
+  rebuild (network, NASA outage) is logged and shown at `/api/live/status`; the last good build
+  keeps being served.
+- **Online evaluation:** each rebuild scores the days whose outcome is complete against the best
+  simple rule. This is the live version of the offline test, and the number to watch for drift:
+  if the model ever falls behind the rule for a sustained period, retraining is due.
+- **Cache safety:** live responses carry the build time in their URL, so browsers never show an
+  old build as new.
+
+## 9. What is not done (and would be next)
 
 - **Alerts.** Drift and latency are reports, not notifications. Next would be a scheduled job
   (cron or GitHub Actions) running `python -m parali drift` weekly during the season and posting
